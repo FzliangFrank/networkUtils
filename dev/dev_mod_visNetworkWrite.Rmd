@@ -1,0 +1,60 @@
+---
+title: "Developint Editing tool"
+---
+
+```{r}
+source("dev_mod_visNetworkWrite.R")
+```
+
+Okay modify graph is a bit tricky. There are a few concept you need to know. 
+
+## Reactive Value
+
+First is shiny `reactiveValues`. This is the only method that let you write change 
+an object (it's sister `reactiveVal` is pretty much useless). 
+
+Object accessed via `reactiveValues$x` will be automatically reactive. Assign is 
+allowed so I guess this is some sort of active field. 
+
+## Index Edge
+
+The second concept is igraph operation, igraph vertex indexing. 
+```{r}
+g <- igraph::make_graph(~ A-+B:C,
+                        B-+D:E, C-+F:G
+)
+# turns out you can subset vertex by just using 
+E(g)[.inc("A")] # incident vertex of A
+E(g)[.from("A")] # from vertex of A
+E(g)[.to("B")] # to vertex of B
+E(g)["F" %--% "C"] # edge between F and C
+E(g)["A" %->% "B"]
+
+new_g <- g + edge(1, 4)
+new_g <- g + edge("A", "G")
+visIgraph(new_g)
+```
+
+Igraph have "interesting" way of decideing which ones are id which ones are not. 
+
+## `_graphChange$cme == "editEdge"`
+This one is really tricky, because you need to find ways to save edge attributes
+data and assign it to another way. 
+
+Yet our shiny app track edge id by a randomly assigned uid, **unless you specify 
+yourself**. 
+
+Now what happen if we use tidygraph? 
+Nope! nothing changes!
+
+if you have both id and name in your igraph? 
+For edge, you can only use id.
+Apparently it have a preference for col name `id`
+
+What about uid? 
+Nope! only recognize `id`
+
+```{r}
+E(g)["2"]
+```
+

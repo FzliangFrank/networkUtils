@@ -1,0 +1,106 @@
+---
+title: "To Explore What DOT do exactly"
+---
+
+```{r}
+#| eval: false
+# install.packages("BiocManager")
+BiocManager::install("Rgraphviz")
+# library(Graphviz)
+install.packages("DiagrammeR")
+DiagrammeR::grViz(readr::read_file("dev/dev_output/export_as_dot.dot"))
+
+# export_svg(grVis(dot_string))
+```
+
+
+```{dot}
+/* Created by igraph 1.3.1.9037 */
+digraph {
+  0 [
+    label= "Source Node \n newline"
+    shape = box
+    name=1
+    attr_1=7
+    attr_2=WK
+  ];
+  1 [
+    name=2
+    attr_1=1
+    attr_2=J
+  ];
+  2 [
+    name=3
+    attr_1=4
+    attr_2=Q
+  ];
+  3 [
+    name=4
+    attr_1=10
+    attr_2=C
+  ];
+  4 [
+    name=5
+    attr_1=4
+    attr_2=T
+  ];
+  5 [
+    name=6
+    attr_1=5
+    attr_2=W
+  ];
+  6 [
+    name=7
+    attr_1=3
+    attr_2=S
+  ];
+
+  0 -> 1 [
+    color=blue
+    attr1=K
+    attr2=7
+  ];
+  0 -> 2 [
+    attr1=J
+    attr2=10
+  ];
+  1 -> 3 [
+    color=blue
+    attr1=B
+    attr2=6
+  ];
+  1 -> 4 [
+    attr1=V
+    attr2=9
+  ];
+  2 -> 5 [
+    attr1=P
+    attr2=1
+  ];
+  2 -> 6 [
+    attr1=K
+    attr2=3
+  ];
+}
+```
+
+Okay so basically in your I graph object export everything to Label as thing you 
+want to be dispalyed. Concat a new line is also by using new line. 
+  
+```{r}
+#| eval: 
+tempfile()
+tempdir()
+
+write_graph()
+
+# igraph_to_svg <- function(igraphObj, exportPath) {
+#   dummyFile <- paste0(tempfile(pattern = "something"), ".dot")
+#   igraph::write_graph(igraphObj, file=dummyFile, format = "dot")
+#   dotString <- readr::read_file(dummyFile)
+#   export_svg(grVis(dotString))
+# }
+
+igraph_to_svg(g, "dev/dev_output/svg_example.svg")
+```
+
