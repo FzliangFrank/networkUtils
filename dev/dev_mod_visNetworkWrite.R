@@ -12,8 +12,10 @@ V(g)$attr_1 <- sample(seq(10), g_length, replace = T)
 V(g)$attr_2 <- sample(LETTERS, g_length, replace = T)
 E(g)$attr1 <- sample(LETTERS, e_length, replace = T)
 E(g)$attr2 <- sample(seq(10), e_length, replace = T)
-E(g)$name <- seq(e_length) |> as.character()
-E(g)$id <- seq(e_length) |> as.character()
+# E(g)$name <- seq(e_length) |> as.character()
+E(g)$id <- seq(e_length) |> as.character() |> paste0(".id") # this attribute won't
+#' get recognised
+
 g <- tidygraph::as_tbl_graph(g)
 
 
@@ -44,6 +46,7 @@ if(T) {
   server <- function(input, output, session) {
     mod_visNetworkWrite_server("id", reactive(g))
   }
+  options(shiny.autoreload = T)
   shinyApp(ui, server)
 }
 

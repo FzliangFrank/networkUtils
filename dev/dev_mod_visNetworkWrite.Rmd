@@ -4,6 +4,9 @@ title: "Developint Editing tool"
 
 ```{r}
 source("dev_mod_visNetworkWrite.R")
+E(g)$title <- pasteEdgeDetails(g)
+V(g)$title <- pasteNodeDetails(g)
+visIgraph(g)
 ```
 
 Okay modify graph is a bit tricky. There are a few concept you need to know. 
@@ -55,6 +58,18 @@ What about uid?
 Nope! only recognize `id`
 
 ```{r}
-E(g)["2"]
+g - edge("2.id", by = "id") # this won't run
+g - edge("2.name", by = "2") # this will
+g - edge(2)
+g - edge("2")
+
+
+delete_edges(g, )
+
+get.edge.ids(g, c(1, 2))
+E(g)$id
+
 ```
 
+Igraph preper edge name over an attribute named id..
+But in visIgraph any attribute named `id` or `name` will be interpreated as edge

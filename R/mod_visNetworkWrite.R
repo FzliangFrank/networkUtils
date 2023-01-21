@@ -10,11 +10,15 @@
 mod_visNetworkWrite_ui <- function(id){
   ns <- NS(id)
   tagList(
-    visNetwork::visNetworkOutput(ns("plot")),
+    shinyjs::useShinyjs(),
     shinyWidgets::switchInput(ns("edit"), "edit mode"),
-    shinyWidgets::actionGroupButtons(ns("save"), "save"),
+    visNetwork::visNetworkOutput(ns("plot")),
+    wellPanel(
+      actionButton(ns("save"), "Save"),
+      downloadButton(ns("export"))
+    ),
     shiny::uiOutput("AttrEditor"),
-    downloadButton(ns("export")),
+
     shiny::verbatimTextOutput(ns("dev"))
   )
 }
@@ -24,20 +28,38 @@ mod_visNetworkWrite_ui <- function(id){
 #' @noRd
 mod_visNetworkWrite_server <- function(id, igraphObj){
   # stop if not reactive
-  moduleServer( id, function(input, output, session){
+  moduleServer(id, function(input, output, session){
     ns <- session$ns
-
+    # DYNAMIC UI ---------------------------------------------------------------
+    observeEvent(input$edit, {
+      shinyjs::toggle("save", T)
+      shinyjs::toggle("export", T)
+    })
+    # STAGE  -------------------------------------------------------------------
     curGraph <- reactiveValues(g = NULL)
     mainGraph <- reactiveValues(g = NULL)
     observe({
-      curGraph$g <- igraphObj()
-      mainGraph$g <- igraphObj()
+      g <- igraphObj()
+      #' id will be used by igraph to pick up edges. It has to be a numeric vector
+      #' other input will cause function `edge()` to crash
+      #' Needs to clean up on session end?
+      if("id" %in% vertex_attr_names(g)) {
+        V(g)$.ref_id <-V(g)$id
+        V(g)$id <- seq(length(V(g)))
+      }
+      if("id" %in% edge_attr_names(g)) {
+        E(g)$.ref_id <- E(g)$id
+        E(g)$id <- seq(length(E(g)))
+      }
+      curGraph$g <- g
+      mainGraph$g <- g
     })
-    observe({
+    # COMMIT LOGIC -------------------------------------------------------------
+    observe(label = "Save to Main", {
       mainGraph$g <- isolate(curGraph$g)
     }) |>
       bindEvent(input$save)
-
+    # MAIN VISUALISATION + CUSTOM EVENT-----------------------------------------
     output$plot <- visNetwork::renderVisNetwork({
       g <- mainGraph$g
       # this to should be done first before adding visNetwork default namespace
@@ -66,50 +88,63 @@ mod_visNetworkWrite_server <- function(id, igraphObj){
         # )),
        selectEdge = htmlwidgets::JS(sprintf("function(properties){
                     Shiny.setInputValue('%s',
-                    properties.edges[0])
+                    properties.edges)
                     }", ns("click_edge")
        ))
         )
     })
-    observe(label = "htmlwidgets",{
+    observe(label = "VizProxy",{
       visNetworkProxy(ns("plot"))
     })
-
-    output$dev <- shiny::renderPrint({
-        # print(input$click)
-
-        print(paste("click node:", input$click_node))
-        print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
-        print(paste("try find edge:"))
-        print(input$plot_graphChange)
-        print(curGraph$g)
-
-        #' $cmd == "addEdge"
-        #' $cmd == "addNode"
-        #' $cmd == "edgeNode"
-        #' You might want to capture input$plot_graphChange as a req
-        #' The other thing only use default value
-    })
+    # GRAPH EDITING LOGIC ------------------------------------------------------
     observeEvent(input$plot_graphChange, {
       req(!is.null(input$plot_graphChange$cmd))
       if(input$plot_graphChange$cmd == "addNode") {
         id <- isolate(input$plot_graphChange$id)
         curGraph$g <- curGraph$g + vertex(id)
       } else if (input$plot_graphChange$cmd == "addEdge") {
+        if(is.null(NULL)) id = length(E(curGraph$g)) + 1
         from = isolate(input$plot_graphChange$from)
         to = isolate(input$plot_graphChange$to)
-        curGraph$g <- curGraph$g + edge(c(from, to))
+        curGraph$g <- curGraph$g + edge(c(from, to), id = id)
       } else if (input$plot_graphChange$cmd == "editEdge") {
         id <- isolate(input$plot_graphChange$id)
         from = isolate(input$plot_graphChange$from)
         to = isolate(input$plot_graphChange$to)
         g <- curGraph$g
+      # save attributes asided
         attrs <- edge_attr(g, index = id)
-
+      # add and delete edges
         g <- g - edge(id)
         curGraph$g <- add_edges(g, c(from, to), attr = attrs)
+      } else if (input$plot_graphChange$cmd == "deleteElements") {
+
+        g <- curGraph$g
+        edges <- isolate(unlist(input$plot_graphChange$edges))
+        nodes <- isolate(unlist(input$plot_graphChanges$nodes))
+        g <- g - edge(edges)
+        g <- igraph::delete_vertices(g, nodes)
+        curGraph$g <- g
       }
     })
+    # DEV AREA -----------------------------------------------------------------
+    output$dev <- shiny::renderPrint({
+      # print(input$click)
+
+      print(paste("click node:", input$click_node))
+      print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
+      # print(paste("try find edge:", E(curGraph$g)[input$click_edge]))
+      print(input$plot_graphChange)
+
+      if(!is.null(input$plot_graphChange)) {
+        if(input$plot_graphChange$cmd == "deleteElements") {
+          print(input$plot_graphChange$edges |> unlist())
+          print(unlist(input$plot_graphChanges$nodes))
+        }
+      }
+      print(curGraph$g)
+    })
+    # MODULE END ---------------------------------------------------------------
   })
 }
 
