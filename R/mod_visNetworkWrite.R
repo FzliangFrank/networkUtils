@@ -11,11 +11,12 @@ mod_visNetworkWrite_ui <- function(id){
   ns <- NS(id)
   tagList(
     shinyjs::useShinyjs(),
-    shinyWidgets::switchInput(ns("edit"), "edit mode"),
+    shinyWidgets::switchInput(ns("edit"), "enable edit", size = "small"),
+    p("you are in editing mode, exit without save will revert to original", id = ns("note")),
     visNetwork::visNetworkOutput(ns("plot")),
     wellPanel(
-      actionButton(ns("save"), "Save"),
-      downloadButton(ns("export"))
+      actionButton(ns("save"), "Commit Change"),
+      downloadButton(ns("export")),
     ),
     shiny::uiOutput("AttrEditor"),
 
@@ -34,6 +35,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj){
     observeEvent(input$edit, {
       shinyjs::toggle("save", T)
       shinyjs::toggle("export", T)
+      shinyjs::toggle("note", T)
     })
     # STAGE  -------------------------------------------------------------------
     curGraph <- reactiveValues(g = NULL)
@@ -59,6 +61,16 @@ mod_visNetworkWrite_server <- function(id, igraphObj){
       mainGraph$g <- isolate(curGraph$g)
     }) |>
       bindEvent(input$save)
+    # SAVE A FILE ANY TIME
+    output$export <- downloadHandler(
+      filename = function() {
+        paste("graph-", Sys.Date(), ".gml", sep = "")
+      },
+      content = function(file) {
+        warning("Need To Clean up .ref_id before export")
+        igraph::write_graph(curGraph$g,file, format = "gml")
+      }
+    )
     # MAIN VISUALISATION + CUSTOM EVENT-----------------------------------------
     output$plot <- visNetwork::renderVisNetwork({
       g <- mainGraph$g
