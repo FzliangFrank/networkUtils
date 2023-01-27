@@ -7,7 +7,7 @@ g <- igraph::make_graph(~ A-+B:C,
 # g <- igraph::make_tree(30, 3)
 g_length <- length(V(g))
 e_length <- length(E(g))
-V(g)$name <- seq(g_length) |> as.character()
+V(g)$name <- seq(g_length) |> as.character() |> paste0(".name")
 V(g)$attr_1 <- sample(seq(10), g_length, replace = T)
 V(g)$attr_2 <- sample(LETTERS, g_length, replace = T)
 E(g)$attr1 <- sample(LETTERS, e_length, replace = T)
@@ -36,7 +36,7 @@ g <- tidygraph::as_tbl_graph(g)
 ##' The Optimal formate to export is probably gml.
 ##' DOT is good igraph won't able to read them immediatly
 ##'
-if(T) {
+if(interactive()) {
   library(shiny)
 
   ui <- fluidPage(

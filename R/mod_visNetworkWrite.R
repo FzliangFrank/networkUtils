@@ -13,7 +13,7 @@ mod_visNetworkWrite_ui <- function(id){
     shinyjs::useShinyjs(),
     shinyWidgets::switchInput(ns("edit"), "enable edit", size = "small"),
     p("you are in editing mode, exit without save will revert to original", id = ns("note")),
-    visNetwork::visNetworkOutput(ns("plot")),
+    visNetwork::visNetworkOutput(ns("NetworkWidget")),
     wellPanel(
       actionButton(ns("save"), "Commit Change"),
       downloadButton(ns("export")),
@@ -27,8 +27,9 @@ mod_visNetworkWrite_ui <- function(id){
 #' visNetworkWrite Server Functions
 #'
 #' @noRd
-mod_visNetworkWrite_server <- function(id, igraphObj){
+mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
   # stop if not reactive
+
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     # DYNAMIC UI ---------------------------------------------------------------
@@ -40,17 +41,24 @@ mod_visNetworkWrite_server <- function(id, igraphObj){
     # STAGE  -------------------------------------------------------------------
     curGraph <- reactiveValues(g = NULL)
     mainGraph <- reactiveValues(g = NULL)
+
+    # Graph <- reactiveValues(
+    #   Current = NULL,
+    #   Main = NULL
+    # )
     observe({
       g <- igraphObj()
-      #' id will be used by igraph to pick up edges. It has to be a numeric vector
-      #' other input will cause function `edge()` to crash
-      #' Needs to clean up on session end?
+      # id will be used by igraph to pick up edges. It has to be a numeric vector
+      # other input will cause function `edge()` to crash
+      # Needs to clean up on session end?
       if("id" %in% vertex_attr_names(g)) {
         V(g)$.ref_id <-V(g)$id
+      } else {
         V(g)$id <- seq(length(V(g)))
       }
       if("id" %in% edge_attr_names(g)) {
         E(g)$.ref_id <- E(g)$id
+      } else {
         E(g)$id <- seq(length(E(g)))
       }
       curGraph$g <- g
@@ -72,7 +80,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj){
       }
     )
     # MAIN VISUALISATION + CUSTOM EVENT-----------------------------------------
-    output$plot <- visNetwork::renderVisNetwork({
+    output$NetworkWidget <- visNetwork::renderVisNetwork({
       g <- mainGraph$g
       # this to should be done first before adding visNetwork default namespace
       V(g)$title <- pasteNodeDetails(g)
@@ -142,7 +150,6 @@ mod_visNetworkWrite_server <- function(id, igraphObj){
     # DEV AREA -----------------------------------------------------------------
     output$dev <- shiny::renderPrint({
       # print(input$click)
-
       print(paste("click node:", input$click_node))
       print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
       # print(paste("try find edge:", E(curGraph$g)[input$click_edge]))
@@ -155,6 +162,13 @@ mod_visNetworkWrite_server <- function(id, igraphObj){
         }
       }
       print(curGraph$g)
+    })
+    observe({
+      if(dev) {
+        shinyjs::show("dev")
+      } else {
+        shinyjs::hide("dev")
+      }
     })
     # MODULE END ---------------------------------------------------------------
   })

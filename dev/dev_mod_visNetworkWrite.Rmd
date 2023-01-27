@@ -1,9 +1,46 @@
 ---
 title: "Developint Editing tool"
+output: html_document
+runtime: shiny 
 ---
+```{r setup}
+library(igraph)
+library(visNetwork)
+library(shinyjs)
+devtools::load_all()
+```
 
+
+### Create Object
 ```{r}
-source("dev_mod_visNetworkWrite.R")
+g <- igraph::make_graph(~ A-+B:C,
+                        B-+D:E, C-+F:G
+)
+
+# g <- igraph::make_tree(30, 3)
+g_length <- length(V(g))
+e_length <- length(E(g))
+V(g)$name <- seq(g_length) |> as.character() |> paste0(".name")
+V(g)$attr_1 <- sample(seq(10), g_length, replace = T)
+V(g)$attr_2 <- sample(LETTERS, g_length, replace = T)
+E(g)$attr1 <- sample(LETTERS, e_length, replace = T)
+E(g)$attr2 <- sample(seq(10), e_length, replace = T)
+# E(g)$name <- seq(e_length) |> as.character()
+E(g)$id <- seq(e_length) |> as.character() |> paste0(".id")
+```
+
+
+### Run Shiny Module Preview
+```{r}
+mod_visNetworkWrite_ui("id")
+# function(input, output, session) {
+mod_visNetworkWrite_server("id", reactive(g))
+# }
+```
+
+
+### View Origin
+```{r}
 E(g)$title <- pasteEdgeDetails(g)
 V(g)$title <- pasteNodeDetails(g)
 visIgraph(g)
@@ -57,8 +94,9 @@ Apparently it have a preference for col name `id`
 What about uid? 
 Nope! only recognize `id`
 
-```{r}
-g - edge("2.id", by = "id") # this won't run
+```{r eval = FALSE}
+
+# g - edge("2.id", by = "id") # this won't run
 g - edge("2.name", by = "2") # this will
 g - edge(2)
 g - edge("2")
@@ -68,7 +106,6 @@ delete_edges(g, )
 
 get.edge.ids(g, c(1, 2))
 E(g)$id
-
 ```
 
 Igraph preper edge name over an attribute named id..

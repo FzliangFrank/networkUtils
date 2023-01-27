@@ -1,0 +1,20 @@
+---
+title: "This is Igraph"
+---
+
+```{r}
+getwd()
+saveRDS(g, file = "dev/dev_data/g.rds")
+```
+
+```{r}
+readRDS("dev/dev_data/g.rds")
+V(g)[1]
+V(g)$id <- seq(length(V(g))) |> paste()
+V(g)[[1]]
+g_nameless <- delete_vertex_attr(g, "name")
+V(g_nameless)[[1]]
+V(g)[[1]]
+V(g_nameless)
+```
+

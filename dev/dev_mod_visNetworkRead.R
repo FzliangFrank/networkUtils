@@ -24,10 +24,12 @@ vertex_attr(g) |>
 
 if(interactive()) {
   ui <- fluidPage(
-    mod_visNetworkRead_ui("id")
+    mod_visNetworkReadDisplay_ui("id"),
+    mod_visNetworkReadControler_ui("id")
   )
   server <- function(input, output, session) {
-    mod_visNetworkRead_server("id", reactive(g))
+    mod_visNetworkReadDisplay_server("id", reactive(g))
+    mod_visNetworkReadControler_server("id", reactive(g))
   }
 
   shinyApp(ui, server)
