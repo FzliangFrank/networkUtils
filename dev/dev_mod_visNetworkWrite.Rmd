@@ -110,3 +110,39 @@ E(g)$id
 
 Igraph preper edge name over an attribute named id..
 But in visIgraph any attribute named `id` or `name` will be interpreated as edge
+
+
+## Use Binding Reactive Values
+
+```{r eval=FALSE}
+library(shiny)
+
+ui <- fluidPage(
+  verbatimTextOutput("text"),
+  sliderInput("init", "set Initial Value", min = 1, max = 5,value = 2),
+  sliderInput("set", "set value b to", min = 1, max = 5,value = 2),
+  actionButton("commit", "commit change")
+)
+
+server <- function(input, output, session) {
+  g <- reactiveValues(a = NULL,
+                      b = NULL)
+  output$text <- renderPrint({
+    print(sprintf("a is: %i", g$a))
+    print(sprintf("b is : %i", g$b))
+  })
+  observe({
+    g$a <- input$init
+    g$b <- input$init
+    print("initial Assignment")
+  })
+  
+  observe({
+    g$b <- input$set
+  })
+  observeEvent(input$commit, {
+    g$a <- g$b 
+  })
+}
+shinyApp(ui, server)
+```
