@@ -2,7 +2,11 @@
 title: "Developint Editing tool"
 output: html_document
 runtime: shiny 
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
+
 ```{r setup}
 library(igraph)
 library(visNetwork)
@@ -10,8 +14,39 @@ library(shinyjs)
 devtools::load_all()
 ```
 
+## Executive Summary
+
+Yo, a little background here. Developing Schema to modify visNetwork
+Change is really not the most intuitive way.
+
+### When to prepend Namespace?
+
+The First challenge is with `namespace`. There are a few situation you
+need to reconsider namespace in server: - in `visNetworkProxy` this the
+id needs to be ns() - in `visEvent` (so this function basically expose a
+few more clickable html component available to shiny via javascript
+`Shiny.onInputChange` or `Shiny.setInputValue`. The input id created by
+this will be made available as it is... . But because in any shiny
+server module context, any input, output will get automatically
+**prefixed** id, server written will access wrong Id. (do so use a
+`sprintf`).
+
+With current `visNetworkVersion` anyway... in future this may change.
+They should have update this anyway
+
+Following situation do not need namespace, even it input is passed as
+string argument: - update input (default shiny) - using anything you set
+up with `shinyjs`
+
+### Triva about the `<visNetworkId>_graphChange` input id
+
+Input id of manipulation option. If you accidentally change namespace of the visNetworkId you will have to change the following too. It is a painfully process. If you don't realise this will take you a while to debug.
+
+
+## Lab Area
 
 ### Create Object
+
 ```{r}
 g <- igraph::make_graph(~ A-+B:C,
                         B-+D:E, C-+F:G
@@ -29,8 +64,8 @@ E(g)$attr2 <- sample(seq(10), e_length, replace = T)
 E(g)$id <- seq(e_length) |> as.character() |> paste0(".id")
 ```
 
-
 ### Run Shiny Module Preview
+
 ```{r}
 mod_visNetworkWrite_ui("id")
 # function(input, output, session) {
@@ -38,27 +73,33 @@ mod_visNetworkWrite_server("id", reactive(g))
 # }
 ```
 
-
 ### View Origin
+
 ```{r}
 E(g)$title <- pasteEdgeDetails(g)
 V(g)$title <- pasteNodeDetails(g)
 visIgraph(g)
 ```
 
-Okay modify graph is a bit tricky. There are a few concept you need to know. 
+Okay modify graph is a bit tricky. There are a few concept you need to
+know.
 
-## Reactive Value
 
-First is shiny `reactiveValues`. This is the only method that let you write change 
-an object (it's sister `reactiveVal` is pretty much useless). 
+## Figure out a schematic of update network
 
-Object accessed via `reactiveValues$x` will be automatically reactive. Assign is 
-allowed so I guess this is some sort of active field. 
+### Reactive Value
 
-## Index Edge
+First is shiny `reactiveValues`. This is the only method that let you
+write change an object (it's sister `reactiveVal` is pretty much
+useless).
 
-The second concept is igraph operation, igraph vertex indexing. 
+Object accessed via `reactiveValues$x` will be automatically reactive.
+Assign is allowed so I guess this is some sort of active field.
+
+### Index Edge
+
+The second concept is igraph operation, igraph vertex indexing.
+
 ```{r}
 g <- igraph::make_graph(~ A-+B:C,
                         B-+D:E, C-+F:G
@@ -75,24 +116,23 @@ new_g <- g + edge("A", "G")
 visIgraph(new_g)
 ```
 
-Igraph have "interesting" way of decideing which ones are id which ones are not. 
+Igraph have "interesting" way of decideing which ones are id which ones
+are not.
 
-## `_graphChange$cme == "editEdge"`
-This one is really tricky, because you need to find ways to save edge attributes
-data and assign it to another way. 
+### `_graphChange$cme == "editEdge"`
 
-Yet our shiny app track edge id by a randomly assigned uid, **unless you specify 
-yourself**. 
+This one is really tricky, because you need to find ways to save edge
+attributes data and assign it to another way.
 
-Now what happen if we use tidygraph? 
-Nope! nothing changes!
+Yet our shiny app track edge id by a randomly assigned uid, **unless you
+specify yourself**.
 
-if you have both id and name in your igraph? 
-For edge, you can only use id.
-Apparently it have a preference for col name `id`
+Now what happen if we use tidygraph? Nope! nothing changes!
 
-What about uid? 
-Nope! only recognize `id`
+if you have both id and name in your igraph? For edge, you can only use
+id. Apparently it have a preference for col name `id`
+
+What about uid? Nope! only recognize `id`
 
 ```{r eval = FALSE}
 
@@ -108,9 +148,8 @@ get.edge.ids(g, c(1, 2))
 E(g)$id
 ```
 
-Igraph preper edge name over an attribute named id..
-But in visIgraph any attribute named `id` or `name` will be interpreated as edge
-
+Igraph preper edge name over an attribute named id.. But in visIgraph
+any attribute named `id` or `name` will be interpreated as edge
 
 ## Use Binding Reactive Values
 

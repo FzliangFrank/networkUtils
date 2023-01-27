@@ -18,7 +18,7 @@ mod_visNetworkReadControler_ui <- function(id){
 }
 mod_visNetworkReadDisplay_ui <- function(id) {
   ns <- NS(id)
-  visNetwork::visNetworkOutput(ns("NetworkWidget"))
+  visNetwork::visNetworkOutput(ns("visNetworkId"))
 }
 
 # SERVER SIDE ------------------------------------------------------------------
@@ -28,7 +28,7 @@ mod_visNetworkReadDisplay_ui <- function(id) {
 mod_visNetworkReadDisplay_server <- function(id, graph) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    output$NetworkWidget <- visNetwork::renderVisNetwork({
+    output$visNetworkId <- visNetwork::renderVisNetwork({
       g <- graph()
       # this to should be done first before adding visNetwork default namespace
       V(g)$title <- pasteNodeDetails(g)
@@ -64,7 +64,7 @@ mod_visNetworkReadControler_server <- function(id, graph) {
     })
     observe({
       if(selectNode() != "ALL") {
-        visNetwork::visNetworkProxy(ns("NetworkWidget")) |>
+        visNetwork::visNetworkProxy(ns("visNetworkId")) |>
           visNetwork::visSelectNodes(selectNode())
       }
     }, label = "select node")
@@ -77,7 +77,7 @@ mod_visNetworkReadControler_server <- function(id, graph) {
       edgeFound <- which(edge_attr(graph(), input$edgeAttrName) == input$edgeAttr)
       nodeFound <-
         c(edgeList[edgeFound, 1], edgeList[tail(edgeFound, 1), 2])
-      visNetwork::visNetworkProxy(ns("NetworkWidget")) |>
+      visNetwork::visNetworkProxy(ns("visNetworkId")) |>
         visNetwork::visSelectNodes(nodeFound)
     })
   })

@@ -13,7 +13,7 @@ mod_visNetworkWrite_ui <- function(id){
     shinyjs::useShinyjs(),
     shinyWidgets::switchInput(ns("edit"), "enable edit", size = "small"),
     p("you are in editing mode, exit without save will revert to original", id = ns("note")),
-    visNetwork::visNetworkOutput(ns("NetworkWidget")),
+    visNetwork::visNetworkOutput(ns("visNetworkId")),
     wellPanel(
       actionButton(ns("save"), "Commit Change"),
       downloadButton(ns("export")),
@@ -75,7 +75,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
       }
     )
     # MAIN VISUALISATION + CUSTOM EVENT-----------------------------------------
-    output$NetworkWidget <- visNetwork::renderVisNetwork({
+    output$visNetworkId <- visNetwork::renderVisNetwork({
       g <- Graph$Main
       # this to should be done first before adding visNetwork default namespace
       V(g)$title <- pasteNodeDetails(g)
@@ -112,31 +112,31 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
       visNetworkProxy(ns("plot"))
     })
     # GRAPH EDITING LOGIC ------------------------------------------------------
-    observeEvent(input$NetworkWidget_graphChange, {
-      req(!is.null(input$NetworkWidget_graphChange$cmd))
-      if(input$NetworkWidget_graphChange$cmd == "addNode") {
-        id <- isolate(input$NetworkWidget_graphChange$id)
+    observeEvent(input$visNetworkId_graphChange, {
+      req(!is.null(input$visNetworkId_graphChange$cmd))
+      if(input$visNetworkId_graphChange$cmd == "addNode") {
+        id <- isolate(input$visNetworkId_graphChange$id)
         Graph$Current <- Graph$Current + vertex(id)
-      } else if (input$NetworkWidget_graphChange$cmd == "addEdge") {
+      } else if (input$visNetworkId_graphChange$cmd == "addEdge") {
         if(is.null(NULL)) id = length(E(Graph$Current)) + 1
-        from = isolate(input$NetworkWidget_graphChange$from)
-        to = isolate(input$NetworkWidget_graphChange$to)
+        from = isolate(input$visNetworkId_graphChange$from)
+        to = isolate(input$visNetworkId_graphChange$to)
         Graph$Current <- Graph$Current + edge(c(from, to), id = id)
-      } else if (input$NetworkWidget_graphChange$cmd == "editEdge") {
-        id <- isolate(input$NetworkWidget_graphChange$id)
-        from = isolate(input$NetworkWidget_graphChange$from)
-        to = isolate(input$NetworkWidget_graphChange$to)
+      } else if (input$visNetworkId_graphChange$cmd == "editEdge") {
+        id <- isolate(input$visNetworkId_graphChange$id)
+        from = isolate(input$visNetworkId_graphChange$from)
+        to = isolate(input$visNetworkId_graphChange$to)
         g <- Graph$Current
       # save attributes asided
         attrs <- edge_attr(g, index = id)
       # add and delete edges
         g <- g - edge(id)
         Graph$Current <- add_edges(g, c(from, to), attr = attrs)
-      } else if (input$NetworkWidget_graphChange$cmd == "deleteElements") {
+      } else if (input$visNetworkId_graphChange$cmd == "deleteElements") {
 
         g <- Graph$Current
-        edges <- isolate(unlist(input$NetworkWidget_graphChange$edges))
-        nodes <- isolate(unlist(input$NetworkWidget_graphChange$nodes))
+        edges <- isolate(unlist(input$visNetworkId_graphChange$edges))
+        nodes <- isolate(unlist(input$visNetworkId_graphChange$nodes))
         g <- g - edge(edges)
         g <- igraph::delete_vertices(g, nodes)
         Graph$Current <- g
@@ -148,12 +148,12 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
       print(paste("click node:", input$click_node))
       print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
       # print(paste("try find edge:", E(Graph$Current)[input$click_edge]))
-      print(input$NetworkWidget_graphChange)
+      print(input$visNetworkId_graphChange)
 
-      if(!is.null(input$NetworkWidget_graphChange)) {
-        if(input$NetworkWidget_graphChange$cmd == "deleteElements") {
-          print(input$NetworkWidget_graphChange$edges |> unlist())
-          print(unlist(input$NetworkWidget_graphChanges$nodes))
+      if(!is.null(input$visNetworkId_graphChange)) {
+        if(input$visNetworkId_graphChange$cmd == "deleteElements") {
+          print(input$visNetworkId_graphChange$edges |> unlist())
+          print(unlist(input$visNetworkId_graphChanges$nodes))
         }
       }
       print(Graph$Current)
