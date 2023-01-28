@@ -8,15 +8,19 @@ ui <- dashboardPage(
     dropdownMenu(
       type = "tasks"
     ),
-    title = "My First @pp"
+    title = "A Graph Modification App"
   ),
   dashboardSidebar(
+    sidebarMenu(
+      menuItem("Dashboard", tabName = "dashboard"),
+      mod_visNetworkReadControler_ui("id")
+    )
 
   ),
   dashboardBody(
-    fluidRow(
-      box(mod_visNetworkWrite_ui("id")),
-      box(mod_visNetworkReadControler_ui("id"))
+    tabItem(
+      tabName = "Dashboard",
+      box(mod_visNetworkWrite_ui("id"), width = 12)
     )
   )
 )
@@ -31,8 +35,10 @@ server <- function(input, output, session){
     V(g)$attr2 <- sample(LETTERS, nV, replace = T)
     return(g)
   })
-  mod_visNetworkWrite_server("id", g, dev = F)
-  mod_visNetworkReadControler_server("id", g)
+
+  grv <- mod_visNetworkWrite_server("id", g, dev = F)
+  gr <- reactive(grv$Current)
+  mod_visNetworkReadControler_server("id", gr)
 }
 
 shinyApp(ui, server)

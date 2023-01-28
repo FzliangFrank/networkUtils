@@ -25,8 +25,14 @@ mod_visNetworkWrite_ui <- function(id){
 }
 
 #' visNetworkWrite Server Functions
-#'
-#' @noRd
+
+#' @param id shiny server id
+#' @param igraphObj a reactive graph mobject
+#' @return reactiveValues $Curent and $Main
+#' @details
+#' $Current is a reactive igraph Object that every is being modified now
+#' $Main is the igraph Object that has been committed and saved
+#' @export
 mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
   # stop if not reactive
 
@@ -80,7 +86,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
       # this to should be done first before adding visNetwork default namespace
       V(g)$title <- pasteNodeDetails(g)
       E(g)$title <- pasteEdgeDetails(g)
-      base_graph <- visNetwork::visIgraph(g, randomSeed = "3") |>
+      base_graph <- visNetwork::visIgraph(g, randomSeed = "3", type = "square") |>
         visNetwork::visOptions(
           manipulation = input$edit,
           highlightNearest = list(
@@ -107,9 +113,6 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
                     }", ns("click_edge")
        ))
         )
-    })
-    observe(label = "VizProxy",{
-      visNetworkProxy(ns("plot"))
     })
     # GRAPH EDITING LOGIC ------------------------------------------------------
     observeEvent(input$visNetworkId_graphChange, {
@@ -165,6 +168,8 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
         shinyjs::hide("dev")
       }
     })
+    # RETURN -------------------------------------------------------------------
+    return(Graph)
     # MODULE END ---------------------------------------------------------------
   })
 }

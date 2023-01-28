@@ -10,10 +10,11 @@
 mod_visNetworkReadControler_ui <- function(id){
   ns <- NS(id)
   tagList(
-      selectizeInput(ns("nodeId"), "select a node by id", NULL),
-      shinyWidgets::switchInput(ns("phy"), "enable physics", NULL),
-      selectInput(ns("edgeAttrName"), "select an edge attribute", NULL),
-      selectizeInput(ns("edgeAttr"), "query edge that are these", NULL)
+      # shinyWidgets::switchInput(ns("phy"), "enable physics", NULL),
+      selectInput(ns("nodeAttrName"), "Node attribute to query", NULL),
+      selectizeInput(ns("nodeAttr"), "Query node attributes fits these", NULL),
+      selectInput(ns("edgeAttrName"), "Edge attribute to query", NULL),
+      selectizeInput(ns("edgeAttr"), "Query edge attributes fits these", NULL)
   )
 }
 mod_visNetworkReadDisplay_ui <- function(id) {
@@ -35,7 +36,7 @@ mod_visNetworkReadDisplay_server <- function(id, graph) {
       E(g)$title <- pasteEdgeDetails(g)
       # adding local visNetwork default namespace
 
-      base_graph <- visNetwork::visIgraph(g, physics = input$phy) |>
+      base_graph <- visNetwork::visIgraph(g, physics = T) |>
         visNetwork::visOptions(
           highlightNearest = list(
             enabled = T,
@@ -56,21 +57,20 @@ mod_visNetworkReadControler_server <- function(id, graph) {
     selectNode <- reactive(input$nodeId)
     observe({
       edgeAttrNames <- igraph::edge_attr_names(graph())
-      updateSelectizeInput(session, "nodeId", choices = c("ALL", V(graph())$name))
+      nodeAttrNames <- igraph::vertex_attr_names(graph())
+      updateSelectInput(session, "nodeAttrName", choices = c(nodeAttrNames))
       updateSelectInput(session, "edgeAttrName", choices = c(edgeAttrNames))
 
       # attr <- igraph::edge_attr(graph(), input$edgeAttrNames)
       # updateSelectizeInput(session, "edgeAttr", choices = attr)
     })
     observe({
-      if(selectNode() != "ALL") {
-        visNetwork::visNetworkProxy(ns("visNetworkId")) |>
-          visNetwork::visSelectNodes(selectNode())
-      }
-    }, label = "select node")
+      edgeAttr <- igraph::edge_attr(graph(), input$edgeAttrName)
+      updateSelectizeInput(session, "edgeAttr", choices = edgeAttr)
+    })
     observe({
-      attr <- igraph::edge_attr(graph(), input$edgeAttrName)
-      updateSelectizeInput(session, "edgeAttr", choices = attr)
+      nodeAttr <- igraph::vertex_attr(graph(), input$nodeAttrName)
+      updateSelectizeInput(session, "nodeAttr", choices = nodeAttr)
     })
     observe({
       edgeList <- igraph::as_edgelist(graph())
@@ -79,6 +79,19 @@ mod_visNetworkReadControler_server <- function(id, graph) {
         c(edgeList[edgeFound, 1], edgeList[tail(edgeFound, 1), 2])
       visNetwork::visNetworkProxy(ns("visNetworkId")) |>
         visNetwork::visSelectNodes(nodeFound)
+    })
+    observe({
+      nodeList <- V(graph())
+      nodeFound <- which(vertex_attr(graph(), input$nodeAttrName) == input$nodeAttr)
+      visNetwork::visNetworkProxy(ns("visNetworkId")) |>
+        visNetwork::visSelectNodes(nodeFound)
+    })
+    observe({
+      visNetworkProxy(ns("visNetworkId")) |>
+        visPhysics(
+          solver = 'barnesHut',
+          enabled = input$phy)
+      print("reset physics")
     })
   })
 }

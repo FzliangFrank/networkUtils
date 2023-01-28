@@ -10,7 +10,7 @@ g <- igraph::make_graph(~ A-+B:C,
 g_length <- length(V(g))
 e_length <- length(E(g))
 V(g)$name <- seq(g_length) |> as.character()
-V(g)$attr_1 <- sample(seq(10), g_length, replace = T)
+V(g)$attr_1 <- sample(seq(3), g_length, replace = T)
 V(g)$attr_2 <- sample(LETTERS, g_length, replace = T)
 E(g)$attr1 <- sample(LETTERS, e_length, replace = T)
 E(g)$attr2 <- sample(seq(10), e_length, replace = T)

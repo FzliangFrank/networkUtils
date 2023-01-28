@@ -42,6 +42,11 @@ up with `shinyjs`
 
 Input id of manipulation option. If you accidentally change namespace of the visNetworkId you will have to change the following too. It is a painfully process. If you don't realise this will take you a while to debug.
 
+This happens to me when a restyle visNetworkOutput id from `plot` to `visNetworkId`
+
+### Split Code 
+
+The reason for restyling is so I can use `mod_visNetworkRead()` server.
 
 ## Lab Area
 
@@ -164,11 +169,17 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  x <- reactive(1)
   g <- reactiveValues(a = NULL,
                       b = NULL)
   output$text <- renderPrint({
     print(sprintf("a is: %i", g$a))
     print(sprintf("b is : %i", g$b))
+    print(glue::glue(
+      "the difference between c (a reactive expression) and 
+      a g (a reactive value) is x is type of {mode(x)}, 
+      a type of {mode(g$a)}"
+    ))
   })
   observe({
     g$a <- input$init
