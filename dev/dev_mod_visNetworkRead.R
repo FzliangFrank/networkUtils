@@ -28,9 +28,13 @@ if(interactive()) {
     mod_visNetworkReadControler_ui("id")
   )
   server <- function(input, output, session) {
-    mod_visNetworkReadDisplay_server("id", reactive(g))
-    mod_visNetworkReadControler_server("id", reactive(g))
+    gg <- reactiveValues()
+    observe({
+      gg$g = g
+      print(gg$g)
+    })
+    mod_visNetworkReadDisplay_server("id", reactive(gg$g))
+    mod_visNetworkReadControler_server("id", reactive(gg$g))
   }
-
   shinyApp(ui, server)
 }

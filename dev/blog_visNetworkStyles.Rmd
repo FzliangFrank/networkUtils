@@ -1,0 +1,109 @@
+---
+title: How to style a visNetwork Object?
+---
+
+
+Method provided by them do not work
+```{.r}
+nodes <- data.frame(id = 1:3, label = paste("Node", 1:3))
+edges <- data.frame(from = c(1,2), to = c(1,3), label = paste("Edge", 1:2))
+network <- visNetwork(nodes, edges)
+
+library(shiny)
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel = visNetworkEditorUI("id"),
+    mainPanel = visNetworkOutput("plot")
+  )
+)
+
+server <- function(input, output, session) {
+  output$plot = renderVisNetwork({
+    network
+  })
+  callModule(visNetworkEditorServer, "id", 
+             object = reactive(visNetworkProxy("plot"))
+             )
+}
+```
+
+
+```{r}
+visNetworkOptions = list(
+  shape = "box",
+  color = "color",
+  node = "node"
+)
+```
+
+
+
+```{r}
+library(shiny)
+
+g = igraph::make_tree(23, 3)
+V(g)$name = sample(LETTERS, length(V(g))) |> paste(sample(LETTERS, length(V(g))))
+ui <- fluidPage(
+  visNetworkOutput("visNetwork"),
+)
+
+server <- function(input, output, session) {
+  output$visNetwork = renderVisNetwork({
+    visIgraph(g) |> 
+      visSetOptions(options = 
+                      list(nodes = 
+                             list(
+                               shape = "box", 
+                                color= list(
+                                  background = "black",
+                                  border = "black"
+                                  ),
+                                font= list(
+                                  color = "white"
+                                  ),
+                                title = p("helo"),
+                                chosen = list(
+                                  node = "function(values, id, selected, hovering) {
+                                          values.property = chosenValue;
+                                          }"
+                                )
+                                ),
+                   edges = list(arrows = "to"),
+                   layout = list(
+                     hierarchical = T
+                   )
+                              ))
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Okay, with this I can easily implement something like gloabl option. 
+
+I need to create a reactive list of options at the begaingin. 
+Two list actually, 
+
+One four all available options scoped, 
+the other something else, 
+
+Need flatten the first option and lappy it into UI component.
+Parse it into something like `opt.visnetwork.nodes.font.color`. Then I need some sort
+of dynamic scheme
+
+
+The one needs a little transfrom are: 
+
+  - list as hierarchical layout
+  - layout as circle implementing igraph layout
+  
+Those two should be implemented 
+
+
+They other thing is how do I set option conditionally? As set option locally?
+
+```{r}
+
+```
+

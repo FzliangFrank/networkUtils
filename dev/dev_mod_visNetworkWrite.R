@@ -34,8 +34,15 @@ g <- tidygraph::as_tbl_graph(g)
 
 
 ##' The Optimal formate to export is probably gml.
-##' DOT is good igraph won't able to read them immediatly
+##' DOT is good igraph won't able to read them immediately
 ##'
+# This Return Error
+g <- igraph::make_tree(40, 3, mode = "out")
+nV <- length(V(g))
+nE <- length(E(g))
+V(g)$names <- sample(letters, nV, replace = T)
+V(g)$attr1 <- sample(seq(10), nV, replace = T)
+V(g)$attr2 <- sample(LETTERS, nV, replace = T)
 if(interactive()) {
   library(shiny)
 

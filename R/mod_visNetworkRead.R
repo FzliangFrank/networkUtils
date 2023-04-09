@@ -50,10 +50,15 @@ mod_visNetworkReadDisplay_server <- function(id, graph) {
 #' visNetworkReadControler Server Functions
 #'
 #' @noRd
-mod_visNetworkReadControler_server <- function(id, graph) {
+mod_visNetworkReadControler_server <- function(id, igraph_rct) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
+    graph = reactive({
+      req(!is.null(igraph_rct()) )
+      req(inherits(igraph_rct(), "igraph") )
+      igraph_rct()
+    })
     selectNode <- reactive(input$nodeId)
     observe({
       edgeAttrNames <- igraph::edge_attr_names(graph())
@@ -87,11 +92,10 @@ mod_visNetworkReadControler_server <- function(id, graph) {
         visNetwork::visSelectNodes(nodeFound)
     })
     observe({
-      visNetworkProxy(ns("visNetworkId")) |>
-        visPhysics(
+      visNetwork::visNetworkProxy(ns("visNetworkId")) |>
+        visNetwork::visPhysics(
           solver = 'barnesHut',
           enabled = input$phy)
-      print("reset physics")
     })
   })
 }

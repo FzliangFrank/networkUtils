@@ -16,7 +16,7 @@ devtools::load_all()
 
 ## Executive Summary
 
-Yo, a little background here. Developing Schema to modify visNetwork
+Yo, a little background here. Developing Schema to modify `visNetwork`
 Change is really not the most intuitive way.
 
 ### When to prepend Namespace?
@@ -40,11 +40,15 @@ up with `shinyjs`
 
 ### Triva about the `<visNetworkId>_graphChange` input id
 
-Input id of manipulation option. If you accidentally change namespace of the visNetworkId you will have to change the following too. It is a painfully process. If you don't realise this will take you a while to debug.
+Input id of manipulation option. If you accidentally change namespace of
+the visNetworkId you will have to change the following too. It is a
+painfully process. If you don't realise this will take you a while to
+debug.
 
-This happens to me when a restyle visNetworkOutput id from `plot` to `visNetworkId`
+This happens to me when a restyle visNetworkOutput id from `plot` to
+`visNetworkId`
 
-### Split Code 
+### Split Code
 
 The reason for restyling is so I can use `mod_visNetworkRead()` server.
 
@@ -88,7 +92,6 @@ visIgraph(g)
 
 Okay modify graph is a bit tricky. There are a few concept you need to
 know.
-
 
 ## Figure out a schematic of update network
 
@@ -153,7 +156,7 @@ get.edge.ids(g, c(1, 2))
 E(g)$id
 ```
 
-Igraph preper edge name over an attribute named id.. But in visIgraph
+Igraph preper edge name over an attribute named id.. But in visNetwork
 any attribute named `id` or `name` will be interpreated as edge
 
 ## Use Binding Reactive Values
@@ -163,8 +166,8 @@ library(shiny)
 
 ui <- fluidPage(
   verbatimTextOutput("text"),
-  sliderInput("init", "set Initial Value", min = 1, max = 5,value = 2),
-  sliderInput("set", "set value b to", min = 1, max = 5,value = 2),
+  sliderInput("init", "set original Value (a)", min = 1, max = 5,value = 2),
+  sliderInput("set", "stage value (b)", min = 1, max = 5,value = 2),
   actionButton("commit", "commit change")
 )
 
@@ -176,9 +179,9 @@ server <- function(input, output, session) {
     print(sprintf("a is: %i", g$a))
     print(sprintf("b is : %i", g$b))
     print(glue::glue(
-      "the difference between c (a reactive expression) and 
-      a g (a reactive value) is x is type of {mode(x)}, 
-      a type of {mode(g$a)}"
+      "the difference between `x` (a reactive expression) and 
+       `g$a` (a reactive value) is `x` is type of {mode(x)}, 
+      `g$a` type of {mode(g$a)}"
     ))
   })
   observe({
@@ -192,7 +195,56 @@ server <- function(input, output, session) {
   })
   observeEvent(input$commit, {
     g$a <- g$b 
+    updateSliderInput(inputId = 'init', value = g$a)
+    updateSliderInput(inputId = 'set', value = g$b)
   })
 }
 shinyApp(ui, server)
 ```
+
+## Igraph id versus VisNetwork id
+
+For some awkward reasons igraph vertex is identified by attribute
+"name", vertex is by "id". What is more confusing is in tidygraph id
+name is "names"
+
+| Package    | Node Identifier | Edge Identifier |
+|------------|-----------------|-----------------|
+| igraph     | name            | id              |
+| visNetwork | id              | id, from, to;   |
+| tidygarph  | NULL            | from, to;       |
+
+Okay let's test this theory
+
+```{r}
+# EXP1: NULL EXPERIMENT ------------------------------------------------------------------
+ig = igraph::make_star(6) # this graph object have null attributes
+ig |> vertex_attr_names() # this return nothing
+ig |> toVisNetworkData() |> purrr::pluck("nodes") |> names() # you get "id" "label" out of nowhere
+
+ig |> edge_attr_names() # this also return nothing 
+ig |> toVisNetworkData() |> purrr::pluck("edges") |> names() # you get "from" "to" of a sudden 
+# EXP2: NAME IS AN ATTRIBUTE IN IGRAPH
+V(ig)$name = seq(length(V(ig))) |> as.character()
+ig |> vertex_attr_names()
+ig |> toVisNetworkData() |> purrr::pluck("nodes") |> names() # "name" attribute is swapped to "id"
+
+# EXP3: NAMES (plural) IS AN ATTRIBUTE
+ig = igraph::make_star(6)
+V(ig)$names = seq(length(V(ig))) |> as.character()
+ig |> vertex_attr_names()
+ig |> toVisNetworkData() |> purrr::pluck("nodes") |> names()  # "names" is kept
+
+# EXP4: ID IS AN ATTRIBUTE
+ig = igraph::make_star(6)
+V(ig)$id = sample(LETTERS, length(V(ig)))
+ig |> vertex_attr_names()
+ig |> toVisNetworkData() |> purrr::pluck("nodes") |> names()
+ig |> vertex_attr("id", 1) # specifically use id as output
+ig |> toVisNetworkData() |> purrr::pluck("nodes", 1, 1) # "id" is completely overwritten replace with integers
+```
+
+Here is your take away:
+
+-   avoid using "id" when you transfer data between igraph and
+    VisNetwork\

@@ -1,0 +1,13 @@
+name: networkutils
+title:
+username:
+account: frank-the-tank
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8799067
+bundleId: 7067738
+url: https://frank-the-tank.shinyapps.io/networkutils/
+when: 1681058357.80978
+lastSyncTime: 1681058357.80979
+asMultiple: FALSE
+asStatic: FALSE

@@ -88,7 +88,7 @@ Okay so basically in your I graph object export everything to Label as thing you
 want to be dispalyed. Concat a new line is also by using new line. 
   
 ```{r}
-#| eval: 
+#| eval: false
 tempfile()
 tempdir()
 

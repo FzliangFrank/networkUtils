@@ -12,14 +12,13 @@ mod_visNetworkWrite_ui <- function(id){
   tagList(
     shinyjs::useShinyjs(),
     shinyWidgets::switchInput(ns("edit"), "enable edit", size = "small"),
-    p("you are in editing mode, exit without save will revert to original", id = ns("note")),
+    p("You are in editing mode, exit without save will revert to original", id = ns("note")),
     visNetwork::visNetworkOutput(ns("visNetworkId")),
     wellPanel(
       actionButton(ns("save"), "Commit Change"),
       downloadButton(ns("export")),
     ),
     shiny::uiOutput("AttrEditor"),
-
     shiny::verbatimTextOutput(ns("dev"))
   )
 }
@@ -27,7 +26,7 @@ mod_visNetworkWrite_ui <- function(id){
 #' visNetworkWrite Server Functions
 
 #' @param id shiny server id
-#' @param igraphObj a reactive graph mobject
+#' @param igraphObj a reactive graph object
 #' @return reactiveValues $Curent and $Main
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
@@ -54,50 +53,88 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
     )
     observe({
       g <- igraphObj()
+      req(!is.null(g))
       # id will be used by igraph to pick up edges. It has to be a numeric vector
       # other input will cause function `edge()` to crash
       # Needs to clean up on session end?
-      if("id" %in% vertex_attr_names(g)) V(g)$.ref_id <-V(g)$id
-      if("id" %in% edge_attr_names(g)) E(g)$.ref_id <- E(g)$id
-      V(g)$id <- seq(length(V(g)))
-      E(g)$id <- seq(length(E(g)))
+        if("id" %in% vertex_attr_names(g)) V(g)$.ir_id <- V(g)$id
+        if("id" %in% edge_attr_names(g)) E(g)$.ir_id <- E(g)$id
+        if(!"name" %in% vertex_attr_names(g)) V(g)$name <- seq(length(V(g))) |> as.character()
+      E(g)$id <- seq(length(E(g))) |> as.character()
       Graph$Current <- g
       Graph$Main <- g
     })
     # COMMIT LOGIC -------------------------------------------------------------
     observe(label = "Save to Main", {
-      Graph$Main <- Graph$Current
+      g <- Graph$Current
+      # Below code reverse actions
+        # if(".ir_id" %in% vertex_attr_names(g)) {
+        #   V(g)$id <- V(g)$.ir_id
+        #   delete_vertex_attr(g, ".ir_id")
+        # }
+        # if(".ir_id" %in% edge_attr_names(g)) {
+        #   E(g)$id <- E(g)$.ir_id
+        #   delete_edge_attr(g, ".ir_id")
+        # }
+        # if(!"name" %in% vertex_attr_names(Graph$Main)) delete_graph_attr(g, "name")
+      Graph$Main <- g
       print("current write into main")
     }) |>
       bindEvent(input$save)
     # SAVE A FILE ANY TIME
     output$export <- downloadHandler(
       filename = function() {
-        paste("graph-", Sys.Date(), ".gml", sep = "")
+        # paste("graph-", Sys.Date(), ".gml", sep = "")
+        paste("graph-", Sys.Date(), ".xlsx", sep = "")
+
       },
       content = function(file) {
-        warning("Need To Clean up .ref_id before export")
-        igraph::write_graph(Graph$Current,file, format = "gml")
+        g <- Graph$Current
+        # Below code reverse actions
+        if(".ir_id" %in% vertex_attr_names(g)) {
+          V(g)$id <- V(g)$.ir_id
+          delete_vertex_attr(g, ".ir_id")
+        }
+        if(".ir_id" %in% edge_attr_names(g)) {
+          E(g)$id <- E(g)$.ir_id
+          delete_edge_attr(g, ".ir_id")
+        }
+        if(!"name" %in% vertex_attr_names(igraphObj())) delete_graph_attr(g, "name")
+        # igraph::write_graph(Graph$Current,file, format = "gml")
+        edge = igraph::as_data_frame(Graph$Current, what = "edges")
+        node = igraph::as_data_frame(Graph$Current, what = "vertices")
+        wb = openxlsx::createWorkbook()
+        wb |> openxlsx::addWorksheet("node")
+        wb |> openxlsx::addWorksheet("edge")
+        wb |> openxlsx::writeData(sheet = "node", node)
+        wb |> openxlsx::writeData(sheet = "edge", edge)
+        openxlsx::saveWorkbook(wb, file = file)
       }
     )
     # MAIN VISUALISATION + CUSTOM EVENT-----------------------------------------
     output$visNetworkId <- visNetwork::renderVisNetwork({
+      req(!is.null(Graph$Main))
       g <- Graph$Main
       # this to should be done first before adding visNetwork default namespace
       V(g)$title <- pasteNodeDetails(g)
       E(g)$title <- pasteEdgeDetails(g)
       base_graph <- visNetwork::visIgraph(g, randomSeed = "3", type = "square") |>
         visNetwork::visOptions(
-          manipulation = input$edit,
+          clickToUse = T,
+          collapse = T,
+          manipulation = list(
+            enabled = input$edit,
+            addNodeCols = c("label")
+            ),
           highlightNearest = list(
             enabled = T,
             degree = 0,
             algorithm = "hierarchical"
             )
           ) |>
-        visEvents(selectNode = htmlwidgets::JS(sprintf("function(properties){
+        visNetwork::visEvents(selectNode = htmlwidgets::JS(sprintf("function(properties){
                   Shiny.setInputValue('%s',
-                  properties.nodes)
+                  this.body.data.nodes.get(properties.nodes[0]).id)
                   ;}", ns("click_node") # Your shiny module have namespace
         )),
      #    select = "function(properties) {
@@ -121,10 +158,15 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
         id <- isolate(input$visNetworkId_graphChange$id)
         Graph$Current <- Graph$Current + vertex(id)
       } else if (input$visNetworkId_graphChange$cmd == "addEdge") {
-        if(is.null(NULL)) id = length(E(Graph$Current)) + 1
+        id = as.character(length(E(Graph$Current)) + 1)
         from = isolate(input$visNetworkId_graphChange$from)
         to = isolate(input$visNetworkId_graphChange$to)
-        Graph$Current <- Graph$Current + edge(c(from, to), id = id)
+        tryCatch({
+          Graph$Current <- Graph$Current + edge(c(from, to), id = id)
+        }, error = function(e){
+          print(sprintf("Error occur at: from: %s, to: %s, edge id: %s", from, to, id))
+          print(e)
+        })
       } else if (input$visNetworkId_graphChange$cmd == "editEdge") {
         id <- isolate(input$visNetworkId_graphChange$id)
         from = isolate(input$visNetworkId_graphChange$from)
@@ -148,7 +190,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
     # DEV AREA -----------------------------------------------------------------
     output$dev <- shiny::renderPrint({
       # print(input$click)
-      print(paste("click node:", input$click_node))
+      print(paste("click node:", input$click_node, class(input$click_node)))
       print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
       # print(paste("try find edge:", E(Graph$Current)[input$click_edge]))
       print(input$visNetworkId_graphChange)
@@ -169,7 +211,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
       }
     })
     # RETURN -------------------------------------------------------------------
-    return(Graph)
+    return(reactive(Graph$Main))
     # MODULE END ---------------------------------------------------------------
   })
 }
