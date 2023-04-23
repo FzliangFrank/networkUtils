@@ -46,7 +46,7 @@ golem::add_fct("spiderOptions", with_test = TRUE)
 golem::add_fct("sumAttributes.http")
 golem::add_utils("callmebyName", with_test = TRUE)
 golem::add_utils("igraph_to_svg")
-golem::add_utils("")
+golem::add_utils("blurry_range")
 
 ## External resources
 ## Creates .js and .css files at inst/app/www

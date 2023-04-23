@@ -10,10 +10,12 @@ g <- igraph::make_graph(~ A-+B:C,
 g_length <- length(V(g))
 e_length <- length(E(g))
 V(g)$name <- seq(g_length) |> as.character()
-V(g)$attr_1 <- sample(seq(3), g_length, replace = T)
+V(g)$attr_1 <- sample(seq(g_length), g_length, replace = T)
 V(g)$attr_2 <- sample(LETTERS, g_length, replace = T)
+V(g)$attr_3 <- runif(g_length) * 100 |> round(2)
 E(g)$attr1 <- sample(LETTERS, e_length, replace = T)
-E(g)$attr2 <- sample(seq(10), e_length, replace = T)
+E(g)$attr2 <- sample(seq(e_length), e_length, replace = T)
+E(g)$attr3 <- runif(e_length)
 # vertex_attr_names(g) |>
 #   lapply(\(x) vertex_attr(g, name = x)) |>
 #   purrr::reduce(paste)
@@ -23,6 +25,11 @@ vertex_attr(g) |>
   purrr::reduce(paste, sep = "<br>")
 
 if(interactive()) {
+  library(reactlog)
+
+  # tell shiny to log all reactivity
+  reactlogReset()
+  reactlog_enable()
   ui <- fluidPage(
     mod_visNetworkReadDisplay_ui("id"),
     mod_visNetworkReadControler_ui("id")
@@ -38,3 +45,6 @@ if(interactive()) {
   }
   shinyApp(ui, server, options=list(display.mode='showcase'))
 }
+shiny::reactlogShow()
+
+
