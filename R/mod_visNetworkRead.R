@@ -135,7 +135,6 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
                                 ] |> as_ids()
       } else {
         req(length(input$nodeAttr)==1)
-        message(cur_attr_name)
         nodeFound <- which(vertex_attr(g, cur_attr_name) == input$nodeAttr)
       }
       visNetwork::visNetworkProxy(ns("visNetworkId")) |>

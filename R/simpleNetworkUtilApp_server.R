@@ -15,6 +15,8 @@ simpleNetworkUtilApp_server <- function(input, output, session) {
     V(g)$names <- sample(letters, nV, replace = T)
     V(g)$attr1 <- sample(seq(10), nV, replace = T)
     V(g)$attr2 <- sample(LETTERS, nV, replace = T)
+    V(g)$attr3 <- runif(nV) * 100
+    E(g)$attr1 <- runif(nE) * 100
     data$demo = g
   })
   observe({
