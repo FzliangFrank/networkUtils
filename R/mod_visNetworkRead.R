@@ -72,13 +72,14 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
     nodeAttr = reactive({
       igraph::vertex_attr(isolate(graph()), input$nodeAttrName)
     })
+    # DETERMINE UI -------------------------------------------------------------
     output$edgeAttrUi <- renderUI({
       edgeAttrLabel=glue::glue("Query edge attributes fits these")
       if(typeof(edgeAttr())=='double') {
         # Resolution is seet to be 0.01 this is not always Correct
         sliderInput(ns("edgeAttr"), edgeAttrLabel,
                     min=blurry_range(edgeAttr())[1], max=blurry_range(edgeAttr())[2],
-                    value=c(quantile(edgeAttr(), 0.33), quantile(edgeAttr(), 0.66)))
+                    value=c(quantile(edgeAttr(), 0.33,na.rm=T), quantile(edgeAttr(), 0.66, na.rm=T)))
       } else {
         selectizeInput(ns("edgeAttr"), edgeAttrLabel,
                        choices=edgeAttr(), selected = edgeAttr()[1]) # if selected is NULL app crash when switching to a numeric input
@@ -99,10 +100,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
                        )
       }
     })
-    # observe({
-    #   nodeAttr <- igraph::vertex_attr(graph(), input$nodeAttrName)
-    #   updateSelectizeInput(session, "nodeAttr", choices = nodeAttr)
-    # })
+    # SELECTING NODE/EDGE BASED ON ATTRIBUTES ----------------------------------
     observe(label= "Edge Selecter", {
       g <- isolate(graph())
       edgeList <- igraph::as_edgelist(g)
@@ -112,7 +110,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
         inbond=input$edgeAttr[1]
         outbond=input$edgeAttr[2]
         edgeFound <- E(g)[.data[[isolate(input$edgeAttrName)]] >= inbond
-                              & .data[[isolate(input$edgeAttrName)]] <= outbond]
+                        & .data[[isolate(input$edgeAttrName)]] <= outbond]
       } else {
         req(length(input$edgeAttr)==1)
         edgeFound <- E(g)[.data[[isolate(input$edgeAttrName)]] == input$edgeAttr]
@@ -131,7 +129,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
         inbond=input$nodeAttr[1]
         outbond=input$nodeAttr[2]
         nodeFound <- V(g)[.data[[cur_attr_name]] >= inbond
-                              & .data[[cur_attr_name]] <= outbond
+                        & .data[[cur_attr_name]] <= outbond
                                 ] |> as_ids()
       } else {
         req(length(input$nodeAttr)==1)
