@@ -36,5 +36,5 @@ if(interactive()) {
     mod_visNetworkReadDisplay_server("id", reactive(gg$g))
     mod_visNetworkReadControler_server("id", reactive(gg$g))
   }
-  shinyApp(ui, server)
+  shinyApp(ui, server, options=list(display.mode='showcase'))
 }
