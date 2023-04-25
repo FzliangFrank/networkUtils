@@ -67,10 +67,10 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
       updateSelectInput(session, "edgeAttrName", choices = c(edgeAttrNames))
     })
     edgeAttr = reactive({
-      igraph::edge_attr(isolate(graph()), input$edgeAttrName)
+      igraph::edge_attr(graph(), input$edgeAttrName)
     })
     nodeAttr = reactive({
-      igraph::vertex_attr(isolate(graph()), input$nodeAttrName)
+      igraph::vertex_attr(graph(), input$nodeAttrName)
     })
     # DETERMINE UI -------------------------------------------------------------
     output$edgeAttrUi <- renderUI({
@@ -92,6 +92,10 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
                     min=blurry_range(nodeAttr())[1], max=blurry_range(nodeAttr())[2],
                     value=c(quantile(nodeAttr(), 0.33), quantile(nodeAttr(), 0.66))
         )
+      } else if(inherits(nodeAttr(), "sfc")) {
+        plotOutput(ns("nodeAttrPlot"), brush=ns("nodeAttr"),
+                   inline=F,
+                   height='200px')
       } else {
         selectizeInput(ns('nodeAttr'),
                        nodeAttrLabel,
@@ -100,21 +104,42 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
                        )
       }
     })
+    observe({
+      nodeAttrs=nodeAttr()
+      if(inherits(nodeAttrs, "sfc_POINT")) {
+        output$nodeAttrPlot <- renderPlot({
+          sf::st_as_sf(nodeAttrs) |> plotPPPdensity()
+        }, bg='transparent')
+      } else if(inherits(nodeAttr, "sfc")) {
+        output$nodeAttrPlot <- renderPlot({
+          sf::st_as_sf(nodeAttrs) |> plot()
+        })
+      } else {
+        NULL
+      }
+    }, priority = 1)
     # SELECTING NODE/EDGE BASED ON ATTRIBUTES ----------------------------------
     observe(label= "Edge Selecter", {
       g <- isolate(graph())
+      req(input$edgeAttr)
       edgeList <- igraph::as_edgelist(g)
       edgeAttrType=typeof(edgeAttr())
       if(edgeAttrType == 'double') {
         req(length(input$edgeAttr)==2)
+        message("double edge.attr selected")
+        message(input$edgeAttrName)
+        message(input$edgeAttr)
         inbond=input$edgeAttr[1]
         outbond=input$edgeAttr[2]
-        edgeFound <- E(g)[.data[[isolate(input$edgeAttrName)]] >= inbond
-                        & .data[[isolate(input$edgeAttrName)]] <= outbond]
+        edgeFound <- try({
+          which(edgeAttr() >= inbond & edgeAttr() <= outbond)
+        })
       } else {
         req(length(input$edgeAttr)==1)
-        edgeFound <- E(g)[.data[[isolate(input$edgeAttrName)]] == input$edgeAttr]
+        message("single edge.attr selected")
+        edgeFound <- which(edgeAttr() == input$edgeAttr)
       }
+      if(inherits(edgeFound, 'try-error')) return()
       nodeFound <- V(g)[.inc(edgeFound)] |> as_ids()
         # c(edgeList[edgeFound, 1], edgeList[tail(edgeFound, 1), 2])
       visNetwork::visNetworkProxy(ns("visNetworkId")) |>
@@ -123,17 +148,22 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
     observe(label = "Node Selecter", {
       g <- isolate(graph())
       req(input$nodeAttr)
-      cur_attr_name = isolate(input$nodeAttrName)
+      # cur_attr_name = isolate(input$nodeAttrName)
       if(typeof(nodeAttr())=="double") {
         req(length(input$nodeAttr) == 2) #whenever UI render this notify
         inbond=input$nodeAttr[1]
         outbond=input$nodeAttr[2]
-        nodeFound <- V(g)[.data[[cur_attr_name]] >= inbond
-                        & .data[[cur_attr_name]] <= outbond
-                                ] |> as_ids()
+        nodeFound <- which(nodeAttr() >= inbond & nodeAttr() <= outbond)
+      } else if(nodeAttr() |> inherits("sfc_POINT")) {
+        req(input$nodeAttr |> inherits('list'))
+        cur = input$nodeAttr
+        brash_area = sf::st_bbox(c(xmin =cur$xmin, xmax = cur$xmax,
+                               ymin=cur$ymin, ymax =cur$ymax)) |>
+          sf::st_as_sfc()
+        nodeFound =sf::st_intersects(sf::st_as_sf(isolate(nodeAttr())), brash_area, sparse=F) |> which()
       } else {
         req(length(input$nodeAttr)==1)
-        nodeFound <- which(vertex_attr(g, cur_attr_name) == input$nodeAttr)
+        nodeFound <- which(nodeAttr() == input$nodeAttr)
       }
       visNetwork::visNetworkProxy(ns("visNetworkId")) |>
         visNetwork::visSelectNodes(nodeFound)

@@ -49,7 +49,7 @@ simpleNetworkUtilApp_ui <- function(request) {
                     ,
                   href = "https://github.com/FzliangFrank/networkUtils",
                   btnName = icon("github"),
-                  status = NULL,
+                  status = "success",
                   div(
                     tags$figure(
                       align = "center",
@@ -58,9 +58,13 @@ simpleNetworkUtilApp_ui <- function(request) {
                         width = 200
                       ))
                   ),
-                  p("{shinySpider} is part {networkUtil}, a R package
-                  extension aims to make creating, update wraggling network
-                  data easy, lucide, and interactive.
+                  p("{networkUtil}, R package encapsulated shiny module
+                  template aims to make creating, update graph edge and node
+                  data interactive, lucide and ease.
+
+                  `mod_visNetwork_read` let you query node and edge based on attributes.
+                  `mod_visNetowrk_write` let you edit and download as node edge
+                  sheets. It keeps data from original file you uploaded.
                     ")
                 )
                 # ----------------------------------------

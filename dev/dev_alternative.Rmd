@@ -1,0 +1,73 @@
+---
+title: networkD3
+---
+credit to: [stack-over-flow](https://stackoverflow.com/questions/61979235/how-to-subset-data-in-networkd3-on-shiny)
+```{r}
+library(shiny)
+library(networkD3)
+library(dplyr)
+ui <- fluidPage(
+  selectInput(inputId = "school",
+              label   = "School",
+              choices =  c("alpha", "echo")),
+  selectInput(inputId = "school2",
+              label   = "School2",
+              choices =  c("bravo", "charlie", "delta", "foxtrot"),
+              selected = c("bravo", "charlie"),
+              multiple = TRUE),
+
+  sankeyNetworkOutput("diagram")
+)
+
+server <- function(input, output) {
+
+  dat <- reactive({
+    data.frame(schname = c("alpha", "alpha", "alpha", "echo"),
+                    next_schname = c("bravo", "charlie", "delta", "foxtrot"),
+                    count = c(1, 5, 3, 4),
+                    stringsAsFactors = FALSE) %>%
+      filter(next_schname %in% input$school2) %>%
+      mutate(schname = factor(schname),
+             next_schname = factor(next_schname))
+  })
+
+  links <- reactive({
+    data.frame(source = dat()$schname,
+                      target = dat()$next_schname,
+                      value  = dat()$count)
+  })
+
+  nodes <- reactive({
+    data.frame(name = c(as.character(links()$source),
+                               as.character(links()$target)) %>%
+                        unique) 
+    })
+
+
+
+  links2 <-reactive({
+    links <- links()
+    links$IDsource <- match(links$source, nodes()$name) - 1
+    links$IDtarget <- match(links$target, nodes()$name) - 1
+
+    links %>%
+      filter(source == input$school)
+  })
+
+
+  output$diagram <- renderSankeyNetwork({
+    sankeyNetwork(
+      Links = links2(),
+      Nodes = nodes(),
+      Source = "IDsource",
+      Target = "IDtarget",
+      Value = "value",
+      NodeID = "name",
+      sinksRight = FALSE
+    )
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+

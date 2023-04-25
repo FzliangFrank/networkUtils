@@ -15,6 +15,7 @@ Imports:
     pkgload,
     purrr,
     readr,
+    sf,
     shiny (>= 1.7.2),
     shinyjs,
     shinyWidgets,
