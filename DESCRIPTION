@@ -14,11 +14,13 @@ Imports:
     openxlsx,
     pkgload,
     purrr,
+    RColorBrewer,
     readr,
     sf,
     shiny (>= 1.7.2),
     shinyjs,
     shinyWidgets,
+    spatstat,
     visNetwork,
     waiter
 Encoding: UTF-8
