@@ -4,9 +4,9 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @export
 mod_visNetworkReadControler_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -48,8 +48,9 @@ mod_visNetworkReadDisplay_server <- function(id, graph) {
 }
 
 #' visNetworkReadControler Server Functions
-#'
-#' @noRd
+#' @param id id
+#' @param igraph_rct reactive expression for igraph
+#' @export
 mod_visNetworkReadControler_server <- function(id, igraph_rct) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
