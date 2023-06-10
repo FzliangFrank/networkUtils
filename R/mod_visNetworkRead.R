@@ -7,7 +7,7 @@
 #'
 #' @importFrom shiny NS tagList
 #' @export
-mod_visNetworkReadControler_ui <- function(id){
+mod_visNetInteraction_ui <- function(id){
   ns <- NS(id)
   tagList(
       # shinyWidgets::switchInput(ns("phy"), "enable physics", NULL),
@@ -49,18 +49,24 @@ mod_visNetworkReadDisplay_server <- function(id, graph) {
 #' visNetworkReadControler Server Functions
 #' @param id id
 #' @param igraph_rct reactive expression for igraph
+#' @description
+#' This module let you interact with graph
+#'
 #' @export
-mod_visNetworkReadControler_server <- function(id, igraph_rct) {
+mod_visNetInteraction_server <- function(id, igraph_rct) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     graph = reactive(label='Validate Graph', {
+      golem::print_dev("Validating input")
       req(!is.null(igraph_rct()) )
       req(inherits(igraph_rct(), "igraph") )
+      golem::print_dev("Graph validated")
       igraph_rct()
     })
     selectNode <- reactive(input$nodeId)
     observe(label='Populate Attribute Names', {
       g <- graph()
+      golem::print_dev("Populating attribute name")
       edgeAttrNames <- igraph::edge_attr_names(g)
       nodeAttrNames <- igraph::vertex_attr_names(g)
       updateSelectInput(session, "nodeAttrName", choices = c(nodeAttrNames))

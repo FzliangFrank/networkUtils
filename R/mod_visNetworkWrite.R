@@ -8,7 +8,7 @@
 #'
 #' @importFrom shiny NS tagList
 #' @export
-mod_visNetworkWrite_ui <- function(id){
+mod_visNetModification_ui <- function(id){
   ns <- NS(id)
   tagList(
     shinyjs::useShinyjs(),
@@ -19,7 +19,7 @@ mod_visNetworkWrite_ui <- function(id){
       actionButton(ns("save"), "Commit Change"),
       downloadButton(ns("export")),
     ),
-    shiny::uiOutput("AttrEditor"),
+    shiny::uiOutput(ns("AttrEditor")),
     shiny::verbatimTextOutput(ns("dev"))
   )
 }
@@ -33,7 +33,7 @@ mod_visNetworkWrite_ui <- function(id){
 #' $Current is a reactive igraph Object that every is being modified now
 #' $Main is the igraph Object that has been committed and saved
 #' @export
-mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
+mod_visNetModification_server <- function(id, igraphObj, dev = F){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
   moduleServer(id, function(input, output, session){

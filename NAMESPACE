@@ -3,6 +3,8 @@
 export(mod_visNetworkReadControler_server)
 export(mod_visNetworkReadControler_ui)
 export(mod_visNetworkWrite_server)
+export(mod_visNetworkWrite_ui)
+export(modify_graph_i)
 export(run_app)
 export(run_simpleNetworkUtilApp)
 import(shiny)

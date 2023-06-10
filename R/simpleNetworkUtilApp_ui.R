@@ -26,7 +26,7 @@ simpleNetworkUtilApp_ui <- function(request) {
           bs4Dash::tabItem(
             tabName = "graph",
             fluidRow(
-              column(12, bs4Dash::box(mod_visNetworkWrite_ui("id"),
+              column(12, bs4Dash::box(mod_visNetModification_ui("id"),
                                       width = 12,
                                       action = "update",
                                       maximizable = T
@@ -60,7 +60,7 @@ simpleNetworkUtilApp_ui <- function(request) {
                   ),
                   p("{networkUtil}, R package encapsulated shiny module
                   template aims to make creating, update graph edge and node
-                  data interactive, lucide and ease.
+                  data interactive, rjun_lucide and ease.
 
                   `mod_visNetwork_read` let you query node and edge based on attributes.
                   `mod_visNetowrk_write` let you edit and download as node edge
@@ -82,7 +82,7 @@ simpleNetworkUtilApp_ui <- function(request) {
             title = "",
             icon = icon("magnifying-glass-arrow-right"),
             div(class = 'p-3',
-                mod_visNetworkReadControler_ui("id")
+                mod_visNetInteraction_ui("id")
             )
           ),
           bs4Dash::controlbarItem(
