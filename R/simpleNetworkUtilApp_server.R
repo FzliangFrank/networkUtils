@@ -18,7 +18,7 @@ simpleNetworkUtilApp_server <- function(input, output, session) {
     if(is.null(data$prod)) return(data$demo)
     return(data$prod)
   })
-  grv <- mod_visNetworkWrite_server("id", g, dev = F)
+  G = mod_visNetworkWrite_server("id", g, dev = F)
   # gr <- reactive(grv$Current)
-  mod_visNetworkReadControler_server("id", grv)
+  mod_visNetworkReadControler_server("id", reactive(G$Current))
 }

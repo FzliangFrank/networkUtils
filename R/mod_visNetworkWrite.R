@@ -161,40 +161,52 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
     observeEvent(input$visNetworkId_graphChange, {
       req(!is.null(input$visNetworkId_graphChange$cmd))
       message(class(input$visNetworkId_graphChange))
-      # Going to namespase this to put_visNetwork_graphChange
-      if(input$visNetworkId_graphChange$cmd == "addNode") {
-        # ADD NODE
-        id <- isolate(input$visNetworkId_graphChange$id)
-        Graph$Current <- add_vertex_sf(Graph$Current, id)
-      } else if (input$visNetworkId_graphChange$cmd == "addEdge") {
-        id = as.character(length(E(Graph$Current)) + 1)
-        from = isolate(input$visNetworkId_graphChange$from)
-        to = isolate(input$visNetworkId_graphChange$to)
-        tryCatch({
-          Graph$Current <- Graph$Current + edge(c(from, to), id = id)
-        }, error = function(e){
-          print(sprintf("Error occur at: from: %s, to: %s, edge id: %s", from, to, id))
-          print(e)
-        })
-      } else if (input$visNetworkId_graphChange$cmd == "editEdge") {
-        id <- isolate(input$visNetworkId_graphChange$id)
-        from = isolate(input$visNetworkId_graphChange$from)
-        to = isolate(input$visNetworkId_graphChange$to)
-        g <- Graph$Current
-      # save attributes asided
-        attrs <- edge_attr(g, index = id)
-      # add and delete edges
-        g <- g - edge(id)
-        Graph$Current <- add_edges(g, c(from, to), attr = attrs)
-      } else if (input$visNetworkId_graphChange$cmd == "deleteElements") {
-
-        g <- Graph$Current
-        edges <- isolate(unlist(input$visNetworkId_graphChange$edges))
-        nodes <- isolate(unlist(input$visNetworkId_graphChange$nodes))
-        g <- g - edge(edges)
-        g <- igraph::delete_vertices(g, nodes)
-        Graph$Current <- g
+      # # Going to namespase this to put_visNetwork_graphChange
+      # if(input$visNetworkId_graphChange$cmd == "addNode") {
+      #   # ADD NODE
+      #   id <- isolate(input$visNetworkId_graphChange$id)
+      #   Graph$Current <- add_vertex_sf(Graph$Current, id)
+      # } else if (input$visNetworkId_graphChange$cmd == "addEdge") {
+      #   id = as.character(length(E(Graph$Current)) + 1)
+      #   from = isolate(input$visNetworkId_graphChange$from)
+      #   to = isolate(input$visNetworkId_graphChange$to)
+      #   tryCatch({
+      #     Graph$Current <- Graph$Current + edge(c(from, to), id = id)
+      #   }, error = function(e){
+      #     print(sprintf("Error occur at: from: %s, to: %s, edge id: %s", from, to, id))
+      #     print(e)
+      #   })
+      # } else if (input$visNetworkId_graphChange$cmd == "editEdge") {
+      #   id <- isolate(input$visNetworkId_graphChange$id)
+      #   from = isolate(input$visNetworkId_graphChange$from)
+      #   to = isolate(input$visNetworkId_graphChange$to)
+      #   g <- Graph$Current
+      # # save attributes asided
+      #   attrs <- edge_attr(g, index = id)
+      # # add and delete edges
+      #   g <- g - edge(id)
+      #   Graph$Current <- add_edges(g, c(from, to), attr = attrs)
+      # } else if (input$visNetworkId_graphChange$cmd == "deleteElements") {
+      #   g <- Graph$Current
+      #   edges <- isolate(unlist(input$visNetworkId_graphChange$edges))
+      #   nodes <- isolate(unlist(input$visNetworkId_graphChange$nodes))
+      #   g <- g - edge(edges)
+      #   g <- igraph::delete_vertices(g, nodes)
+      #   Graph$Current <- g
+      # }
+      G = Graph$Current
+      G = try(modify_graph_i(G, input$visNetworkId_graphChange))
+      if(G |> inherits('try-error')) {
+        warning(sprintf(
+          "error occured when %s",
+          input$visNetworkId_graphChange$cmd
+          ))
+        G = Graph$Current
+        shinyjs::click('save')
+      } else {
+        Graph$Current = G
       }
+
     })
     # DEV AREA -----------------------------------------------------------------
     output$dev <- shiny::renderPrint({
@@ -220,7 +232,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
       }
     })
     # RETURN -------------------------------------------------------------------
-    return(reactive(Graph$Main))
+    return(Graph)
     # MODULE END ---------------------------------------------------------------
   })
 }

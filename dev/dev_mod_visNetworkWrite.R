@@ -57,4 +57,8 @@ if(interactive()) {
   shinyApp(ui, server)
 }
 
+V(g)$log[1] = Sys.Date
+V(g)$log[2] = 2
 
+igraph::set_vertex_attr()
+vertex_attr(g)

@@ -129,9 +129,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
       edgeAttrType=typeof(edgeAttr())
       if(edgeAttrType == 'double') {
         req(length(input$edgeAttr)==2)
-        message("double edge.attr selected")
-        message(input$edgeAttrName)
-        message(input$edgeAttr)
+        # message("double edge.attr selected")
         inbond=input$edgeAttr[1]
         outbond=input$edgeAttr[2]
         edgeFound <- try({
@@ -139,7 +137,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
         })
       } else {
         req(length(input$edgeAttr)==1)
-        message("single edge.attr selected")
+        # message("single edge.attr selected")
         edgeFound <- which(edgeAttr() == input$edgeAttr)
       }
       if(inherits(edgeFound, 'try-error')) return()
@@ -153,7 +151,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
       req(input$nodeAttr)
       req(!is.null(input$nodeAttr))
       # DEBUG
-      message(sprintf("node is type of %s", typeof(nodeAttr())))
+      # message(sprintf("node is type of %s", typeof(nodeAttr())))
       # cur_attr_name = isolate(input$nodeAttrName)
       if(typeof(nodeAttr())=="double") {
         req(length(input$nodeAttr) == 2) #whenever UI render this notify
