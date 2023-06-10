@@ -35,7 +35,8 @@ mod_visNetworkWrite_ui <- function(id){
 #' @export
 mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
   # stop if not reactive
-
+  stopifnot(igraphObj |> is.reactive())
+  stopifnot(igraphObj() |> inherits())
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     # DYNAMIC UI ---------------------------------------------------------------
@@ -160,6 +161,7 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
     # GRAPH EDITING LOGIC ------------------------------------------------------
     observeEvent(input$visNetworkId_graphChange, {
       req(!is.null(input$visNetworkId_graphChange$cmd))
+      # Going to namespase this to put_visNetwork_graphChange
       if(input$visNetworkId_graphChange$cmd == "addNode") {
         # ADD NODE
         id <- isolate(input$visNetworkId_graphChange$id)
