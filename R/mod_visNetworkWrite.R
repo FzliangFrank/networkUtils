@@ -7,6 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @export
 mod_visNetworkWrite_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -81,12 +82,11 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
       print("current write into main")
     }) |>
       bindEvent(input$save)
-    # SAVE A FILE ANY TIME
+    # SAVE A FILE ANY TIME -----------------------------------------------------
     output$export <- downloadHandler(
       filename = function() {
         # paste("graph-", Sys.Date(), ".gml", sep = "")
         paste("graph-", Sys.Date(), ".xlsx", sep = "")
-
       },
       content = function(file) {
         g <- Graph$Current
@@ -103,11 +103,17 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
         # igraph::write_graph(Graph$Current,file, format = "gml")
         edge = igraph::as_data_frame(Graph$Current, what = "edges")
         node = igraph::as_data_frame(Graph$Current, what = "vertices")
+
+        node = dplyr::mutate_if(node,
+                                ~inherits(., "sfc"),
+                                ~sf::st_as_text(.)
+                                )
+
         wb = openxlsx::createWorkbook()
         wb |> openxlsx::addWorksheet("node")
         wb |> openxlsx::addWorksheet("edge")
-        wb |> openxlsx::writeData(sheet = "node", node)
-        wb |> openxlsx::writeData(sheet = "edge", edge)
+        wb |> openxlsx::writeDataTable(sheet = "node", node)
+        wb |> openxlsx::writeDataTable(sheet = "edge", edge)
         openxlsx::saveWorkbook(wb, file = file)
       }
     )
@@ -155,8 +161,9 @@ mod_visNetworkWrite_server <- function(id, igraphObj, dev = T){
     observeEvent(input$visNetworkId_graphChange, {
       req(!is.null(input$visNetworkId_graphChange$cmd))
       if(input$visNetworkId_graphChange$cmd == "addNode") {
+        # ADD NODE
         id <- isolate(input$visNetworkId_graphChange$id)
-        Graph$Current <- Graph$Current + vertex(id)
+        Graph$Current <- add_vertex_sf(Graph$Current, id)
       } else if (input$visNetworkId_graphChange$cmd == "addEdge") {
         id = as.character(length(E(Graph$Current)) + 1)
         from = isolate(input$visNetworkId_graphChange$from)

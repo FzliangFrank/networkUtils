@@ -50,6 +50,7 @@ golem::add_fct("sumAttributes.http")
 golem::add_utils("callmebyName", with_test = TRUE)
 golem::add_utils("igraph_to_svg")
 golem::add_utils("blurry_range")
+golem::add_utils("add_vertex_sf")
 golem::add_fct("plotPPPdensity")
 ## External resources
 ## Creates .js and .css files at inst/app/www

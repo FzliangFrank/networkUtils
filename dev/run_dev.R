@@ -14,4 +14,7 @@ golem::document_and_reload()
 # Run the application
 # run_app()
 # thematic::thematic_shiny()
+options(shiny.reactlog=T)
+shiny::reactlogReset()
 run_simpleNetworkUtilApp()
+shiny::reactlogShow()

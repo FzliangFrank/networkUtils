@@ -2,6 +2,8 @@
 title: networkD3
 ---
 credit to: [stack-over-flow](https://stackoverflow.com/questions/61979235/how-to-subset-data-in-networkd3-on-shiny)
+
+# Interactive Sankey Networkgraph
 ```{r}
 library(shiny)
 library(networkD3)
@@ -69,5 +71,11 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
+```
+
+# NetworkD3 
+
+```{r}
+library(networkD3)
 ```
 

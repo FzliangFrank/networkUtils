@@ -35,7 +35,6 @@ mod_visNetworkReadDisplay_server <- function(id, graph) {
       V(g)$title <- pasteNodeDetails(g)
       E(g)$title <- pasteEdgeDetails(g)
       # adding local visNetwork default namespace
-
       base_graph <- visNetwork::visIgraph(g, physics = T) |>
         visNetwork::visOptions(
           highlightNearest = list(
@@ -60,7 +59,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
       igraph_rct()
     })
     selectNode <- reactive(input$nodeId)
-    observe(label='Update Attribute Names', {
+    observe(label='Populate Attribute Names', {
       g <- graph()
       edgeAttrNames <- igraph::edge_attr_names(g)
       nodeAttrNames <- igraph::vertex_attr_names(g)
@@ -68,9 +67,11 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
       updateSelectInput(session, "edgeAttrName", choices = c(edgeAttrNames))
     })
     edgeAttr = reactive({
+      req(input$edgeAttrName)
       igraph::edge_attr(graph(), input$edgeAttrName)
     })
     nodeAttr = reactive({
+      req(input$nodeAttrName)
       igraph::vertex_attr(graph(), input$nodeAttrName)
     })
     # DETERMINE UI -------------------------------------------------------------
@@ -106,8 +107,9 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
       }
     })
     observe({
-      nodeAttrs=nodeAttr()
+      nodeAttrs = nodeAttr()
       if(inherits(nodeAttrs, "sfc_POINT")) {
+        nodeAttrs = nodeAttrs |> purrr::discard(sf::st_is_empty)
         output$nodeAttrPlot <- renderPlot({
           sf::st_as_sf(nodeAttrs) |> plotPPPdensity()
         }, bg='transparent')
@@ -118,7 +120,7 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
       } else {
         NULL
       }
-    }, priority = 1)
+    })
     # SELECTING NODE/EDGE BASED ON ATTRIBUTES ----------------------------------
     observe(label= "Edge Selecter", {
       g <- isolate(graph())
@@ -149,6 +151,9 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
     observe(label = "Node Selecter", {
       g <- isolate(graph())
       req(input$nodeAttr)
+      req(!is.null(input$nodeAttr))
+      # DEBUG
+      message(sprintf("node is type of %s", typeof(nodeAttr())))
       # cur_attr_name = isolate(input$nodeAttrName)
       if(typeof(nodeAttr())=="double") {
         req(length(input$nodeAttr) == 2) #whenever UI render this notify
@@ -157,11 +162,16 @@ mod_visNetworkReadControler_server <- function(id, igraph_rct) {
         nodeFound <- which(nodeAttr() >= inbond & nodeAttr() <= outbond)
       } else if(nodeAttr() |> inherits("sfc_POINT")) {
         req(input$nodeAttr |> inherits('list'))
+        req(input$nodeAttr$xmin)
+        req(input$nodeAttr$xmin)
+        message("geometry selected")
         cur = input$nodeAttr
+        # debug
+        # debug/
         brash_area = sf::st_bbox(c(xmin =cur$xmin, xmax = cur$xmax,
                                ymin=cur$ymin, ymax =cur$ymax)) |>
           sf::st_as_sfc()
-        nodeFound =sf::st_intersects(sf::st_as_sf(isolate(nodeAttr())), brash_area, sparse=F) |> which()
+        nodeFound = sf::st_intersects(sf::st_as_sf(nodeAttr()), brash_area, sparse=F) |> which()
       } else {
         req(length(input$nodeAttr)==1)
         nodeFound <- which(nodeAttr() == input$nodeAttr)

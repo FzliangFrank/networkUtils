@@ -5,9 +5,9 @@ account: frank-the-tank
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8799067
-bundleId: 7130574
+bundleId: 7323062
 url: https://frank-the-tank.shinyapps.io/networkutils/
-when: 1682386191.54139
-lastSyncTime: 1682386191.5414
+when: 1686276757.2891
+lastSyncTime: 1686276757.28911
 asMultiple: FALSE
 asStatic: FALSE
