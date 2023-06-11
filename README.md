@@ -80,7 +80,10 @@ server <- function(input, output, session) {
     V(g)$id = seq(length(V(g)))
     g
   })
-  sessionGraph = mod_visNetModification_server("id", myGraph) # Output is reactive value
+  sessionGraph = mod_visNetModification_server("id", 
+                                               myGraph,
+                                               hard_delete = F
+                                               ) # Output is reactive value
   mod_visNetInteraction_server("id", 
                                reactive(sessionGraph$Current)
                                )
@@ -144,7 +147,7 @@ is avaiable on shiny.io
 **Change Management & API readyness**
 
 - [ ] Accept a record of list in function `modify_graph()`.This can the
-  gives you ability to write api calll,
+  gives you ability to write api call,
 - [ ] Ability to trigger side effect on function `modify_graph_i()`. For
   example track what has been change, and what has been.
 - [ ] Arguments in two module to return reactive log.

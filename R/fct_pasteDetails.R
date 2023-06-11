@@ -10,11 +10,17 @@
 pasteDetails <- function(namedList,
                          include,
                          sep.attr = "<br>",
-                         sep.label = ":") {
+                         sep.label = ":",
+                         show_hidden = F
+                         ) {
   if(!missing(include)) namedList <- namedList[include]
   if(length(namedList) == 0) {
     "empty"
   } else {
+    if(!show_hidden) {
+      hidden_lgl = grepl("^\\.",names(namedList))
+      namedList = namedList[!hidden_lgl]
+    }
     namedList |>
       purrr::imap(~paste(.y, sep.label, .x)) |>
       purrr::reduce(paste, sep = sep.attr)

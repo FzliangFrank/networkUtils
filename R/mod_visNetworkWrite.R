@@ -33,7 +33,11 @@ mod_visNetModification_ui <- function(id){
 #' $Current is a reactive igraph Object that every is being modified now
 #' $Main is the igraph Object that has been committed and saved
 #' @export
-mod_visNetModification_server <- function(id, igraphObj, dev = F){
+mod_visNetModification_server <- function(id,
+                                          igraphObj,
+                                          dev = F,
+                                          hard_delete = T
+                                          ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
   moduleServer(id, function(input, output, session){
@@ -195,7 +199,7 @@ mod_visNetModification_server <- function(id, igraphObj, dev = F){
       #   Graph$Current <- g
       # }
       G = Graph$Current
-      G = try(modify_graph_i(G, input$visNetworkId_graphChange))
+      G = try(modify_graph_i(G, input$visNetworkId_graphChange, hard_delete = hard_delete))
       if(G |> inherits('try-error')) {
         warning(sprintf(
           "error occured when %s",

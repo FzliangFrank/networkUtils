@@ -5,15 +5,26 @@
 #' @param igraphObj object that inherit igraph
 #' @param visNetwork_graphChage a single list of command as a result of
 #' visnetwork_graphChange, explained in their package
+#' This list should always has following element:
+#' - *addNode*
+#' - *addEdge*
+#' - *editEdge*
+#' - *deleteElements*
+#' If you ever need side effect, it is possible to add in your function
+#' every time you make some change, add a new attribute to node are edge.
+#' (for example a time stamp) so you can trick what has been changed and what
+#' has not.
+#'
 #' @param sideEffect this namespace is meant to be written down as a function
 #' to trigger side effect different cmd type
-#' @return The return value, if any, from executing the function.
+#' @return a igraph object that has been changed
 #'
 #' @export
 modify_graph_i = function(
     igraphObj,
     visNetwork_graphChange,
-    sideEffect = NULL
+    sideEffect = NULL,
+    hard_delete = T
 ) {
   if(visNetwork_graphChange$cmd == "addNode") {
     # ADD NODE
@@ -36,7 +47,7 @@ modify_graph_i = function(
     # add and delete edges
     g <- g - edge(id)
     igraphObj <- add_edges(g, c(from, to), attr = attrs)
-  } else if (visNetwork_graphChange$cmd == "deleteElements") {
+  } else if (visNetwork_graphChange$cmd == "deleteElements" & hard_delete) {
     # DELETE ELEMENTS
     g <- igraphObj
     edges <- (unlist(visNetwork_graphChange$edges))
@@ -44,6 +55,19 @@ modify_graph_i = function(
     g <- g - edge(edges)
     g <- igraph::delete_vertices(g, nodes)
     igraphObj <- g
+  } else if (isNetwork_graphChange$cmd == "deleteElements" & hard_delete) {
+    g <- igraphObj
+    edges <- (unlist(visNetwork_graphChange$edges))
+    nodes <- (unlist(visNetwork_graphChange$nodes))
+    if(
+      !".delete_at" %in% igraph::vertex_attr_names(g)
+    ) igraph::V(g)$.delete_at = NA
+    if(
+      !".delete_at" %in% igraph::edge_attr_names(g)
+    ) igraph::E(g)$.delete_at = NA
+
+    igraph::V(g)$.delete_at[nodes] = Sys.time()
+    igraph::E(g)$.delete_at[edges] = Sys.time()
   }
   return(igraphObj)
 }
