@@ -51,9 +51,11 @@ mod_visNetworkReadDisplay_server <- function(id, graph) {
 #' @param igraph_rct reactive expression for igraph
 #' @description
 #' This module let you interact with graph
-#'
+#' Require visnetwork rendered in shiny to have base id `visNetworkId`
 #' @export
-mod_visNetInteraction_server <- function(id, igraph_rct) {
+mod_visNetInteraction_server <- function(
+    id,
+    igraph_rct) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     graph = reactive(label='Validate Graph', {

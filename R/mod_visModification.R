@@ -36,7 +36,9 @@ mod_visNetModification_ui <- function(id){
 mod_visNetModification_server <- function(id,
                                           igraphObj,
                                           dev = F,
-                                          hard_delete = T
+                                          hard_delete = T,
+                                          NodeAttrTooltip = F,
+                                          EdgeAttrTooltip = F
                                           ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
@@ -126,8 +128,8 @@ mod_visNetModification_server <- function(id,
       req(!is.null(Graph$Main))
       g <- Graph$Main
       # this to should be done first before adding visNetwork default namespace
-      V(g)$title <- pasteNodeDetails(g)
-      E(g)$title <- pasteEdgeDetails(g)
+      if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
+      if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
       base_graph <- visNetwork::visIgraph(g, randomSeed = "3", type = "square") |>
         visNetwork::visOptions(
           clickToUse = T,

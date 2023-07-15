@@ -47,11 +47,11 @@ if(interactive()) {
   library(shiny)
 
   ui <- fluidPage(
-    mod_visNetworkWrite_ui("id")
+    mod_visNetInteraction_ui("id")
   )
 
   server <- function(input, output, session) {
-    mod_visNetworkWrite_server("id", reactive(g))
+    mod_visNetInteraction_server("id", reactive(g))
   }
   options(shiny.autoreload = T)
   shinyApp(ui, server)
