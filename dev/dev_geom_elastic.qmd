@@ -1,0 +1,41 @@
+---
+title: "GeomElastic"
+format: html
+editor: visual
+---
+
+Goal:
+
+Make a geom_elastic function that conditionally use `StatBezier` when it is y axis is not the same.
+
+### GGplot
+
+Relevant Function
+
+|                 | ggforce::geom_diagonal | ggplot2::geom_curve |
+|-----------------|------------------------|---------------------|
+| ggproto object: | GeomPath               |                     |
+
+
+To create customized geom use function `layer`.
+
+`geom_<you name> = function() {layer(geom=GeomPath)}` this function alwyas call layer `Stat<Youname> = ggproto(...)` function.
+
+To merge those two function you need to go to ggproto object `Geom` 
+add try find the component responsible for computing asestic. 
+
+You need one object. 
+
+```{r}
+?aes
+
+df = data.frame(
+  x = rep(1,4),
+  y = seq(4),
+  xend = rep(3, 4),
+  yend = seq(4) + 3
+)
+df |> 
+  ggplot() + 
+  stat_diagonal(aes(x = x, y = y, xend = xend, yend = yend))
+```

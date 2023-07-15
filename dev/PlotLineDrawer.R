@@ -46,7 +46,7 @@ server <- function(input, output, session) {
     ggplot() +
       geom_point(data = data$dots, aes(x, y), alpha = 0.3) +
       ggforce::geom_diagonal(data = data$lines, aes(x = x1, y = y1, xend = x2, yend = y2), size = 1) +
-      coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
+      coord_cartesian(xlim = c(0, 6), ylim = c(0, 8))
   })
 
   # Track clicks and draw lines
@@ -81,6 +81,7 @@ server <- function(input, output, session) {
 
   # Function to add a line to the drawing data
   addLine <- function(x1, y1, x2, y2) {
+    x1 = round(x1); x2 = round(x2); y1 = round(y1); y2 = round(y2)
     data$lines <- rbind(data$lines, data.frame(x1 = x1, y1 = y1, x2 = x2, y2 = y2))
     # translate in the FAS sheet
     # x1 is from_position , x2 is to_position, y1 is fibre id_from, y2 is fibre id_to
@@ -89,8 +90,13 @@ server <- function(input, output, session) {
 
   # Function to add a dot to the drawing data
   addDot <- function(x, y) {
+    x = round(x); y = round(y) # snap to grid
     data$dots <- rbind(data$dots, data.frame(x = x, y = y))
   }
+
+  # Alternative Function That Dynamically Snap Something
+  #...
+
 }
 
 # Run the app

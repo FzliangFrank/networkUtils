@@ -4,7 +4,12 @@
 \alias{modify_graph_i}
 \title{modify_graph}
 \usage{
-modify_graph_i(igraphObj, visNetwork_graphChange, sideEffect = NULL)
+modify_graph_i(
+  igraphObj,
+  visNetwork_graphChange,
+  sideEffect = NULL,
+  hard_delete = T
+)
 }
 \arguments{
 \item{igraphObj}{object that inherit igraph}
@@ -13,10 +18,19 @@ modify_graph_i(igraphObj, visNetwork_graphChange, sideEffect = NULL)
 to trigger side effect different cmd type}
 
 \item{visNetwork_graphChage}{a single list of command as a result of
-visnetwork_graphChange, explained in their package}
+visnetwork_graphChange, explained in their package
+This list should always has following element:
+- *addNode*
+- *addEdge*
+- *editEdge*
+- *deleteElements*
+If you ever need side effect, it is possible to add in your function
+every time you make some change, add a new attribute to node are edge.
+(for example a time stamp) so you can trick what has been changed and what
+has not.}
 }
 \value{
-The return value, if any, from executing the function.
+a igraph object that has been changed
 }
 \description{
 Modify graph from a single command line
