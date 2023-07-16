@@ -21,6 +21,7 @@ Imports:
     shinyjs,
     shinyWidgets,
     spatstat,
+    tidygraph,
     visNetwork,
     waiter
 Encoding: UTF-8

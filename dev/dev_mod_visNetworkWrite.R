@@ -43,22 +43,45 @@ nE <- length(E(g))
 V(g)$names <- sample(letters, nV, replace = T)
 V(g)$attr1 <- sample(seq(10), nV, replace = T)
 V(g)$attr2 <- sample(LETTERS, nV, replace = T)
+V(g)$title <- pasteNodeDetails(g)
 if(interactive()) {
   library(shiny)
 
   ui <- fluidPage(
-    mod_visNetInteraction_ui("id")
+    mod_visNetInteraction_ui("id"),
+    mod_visNetModification_ui("id")
   )
 
   server <- function(input, output, session) {
-    mod_visNetInteraction_server("id", reactive(g))
+    mod_visNetInteraction_server("id",
+                                 reactive(g),
+                                 v_ignore = c('title')
+                                 )
+    mod_visNetModification_server("id", reactive(g))
   }
   options(shiny.autoreload = T)
   shinyApp(ui, server)
 }
 
-V(g)$log[1] = Sys.Date
-V(g)$log[2] = 2
+library(shiny)
+if(interactive()) {
+  ui <- fluidPage(
+    div(
+      style = 'display:inline-block;vertical-align:top; width = 150px',
+        style = 'display:inline-block;vertical-align:top; width = 150px',
+        shiny::selectizeInput("id",
+                            label = "select city",
+                            choices = c("Washinton", "NYC", "Exeter")),
+        style = 'display:inline-block;vertical-align:center; width = 150px',
+        shiny::actionButton("id",
+                          "",
+                          icon = icon('search'))
+    )
+  )
 
-igraph::set_vertex_attr()
-vertex_attr(g)
+  server <- function(input, output, session) {
+
+  }
+  shinyApp(ui, server)
+}
+

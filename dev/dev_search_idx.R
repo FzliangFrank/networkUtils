@@ -1,0 +1,10 @@
+devtools::load_all()
+set.seed(1)
+g = make_tree(12, 3)
+V(g)$attr <- sample(letters, length(g))
+V(g)$name <- paste0(seq(length(g)), ".", V(g)$attr)
+search_idx(g, "attr == 'v'")
+search_idx(g, '9.w')
+# if tidygraph is loaded in environment this will work
+library(tidygraph)
+search_idx(g, 'node_is_root()')

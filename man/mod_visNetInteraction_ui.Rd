@@ -2,12 +2,13 @@
 % Please edit documentation in R/mod_visInteraction.R
 \name{mod_visNetInteraction_ui}
 \alias{mod_visNetInteraction_ui}
-\title{visNetworkRead UI Function}
+\title{visNetInteraction}
 \usage{
 mod_visNetInteraction_ui(id)
 }
 \arguments{
-\item{id, input, output, session}{Internal parameters for {shiny}.}
+\item{id, input, output, session}{Internal parameters for {shiny}.
+a set of controller that allows interact with graphic}
 }
 \description{
 A shiny Module.

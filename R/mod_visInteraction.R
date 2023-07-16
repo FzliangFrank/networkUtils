@@ -1,63 +1,101 @@
-#' visNetworkRead UI Function
+#' visNetInteraction
 #'
 #' @description A shiny Module.
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
-#'
+#' a set of controller that allows interact with graphic
 #'
 #' @importFrom shiny NS tagList
 #' @export
 mod_visNetInteraction_ui <- function(id){
   ns <- NS(id)
   tagList(
-      # shinyWidgets::switchInput(ns("phy"), "enable physics", NULL),
-      selectInput(ns("nodeAttrName"), "Node attribute to query", NULL),
-      uiOutput(ns("nodeAttrUi")),
-      selectInput(ns("edgeAttrName"), "Edge attribute to query", NULL),
-      uiOutput(ns("edgeAttrUi"))
+      # Insert Search UI
+      # shinyWidgets::searchInput(ns('searchAny'),
+      #                           'Search Any Control Element',
+      #                           btnSearch = icon('search')
+      #                           ),
+      # ===========DIP (Development In Progress) ==========
+      # Here we want segregate node control with edge contorl
+      # radioGroupButtons(
+      #   inputId = "searchIn",
+      #   label = "Search in Node/Edge",
+      #   choices = c("Node",
+      #               "Edge"),
+      #   status = "primary",
+      #   checkIcon = list(
+      #     yes = icon("ok",
+      #                lib = "glyphicon"),
+      #     no = icon("remove",
+      #               lib = "glyphicon"))
+      # ),
+      # ================== DIP ==================
+      # Advanced Options Control
+      # shinyWidgets::prettyCheckbox(ns('showAdvanced'), 'Show Advanced Options'),
+      div(
+        id = ns('advancedOpts'),
+        # Node Control
+        selectInput(ns("nodeAttrName"), "Node attribute to query", NULL),
+        uiOutput(ns("nodeAttrUi")),
+        # Edge Control
+        selectInput(ns("edgeAttrName"), "Edge attribute to query", NULL),
+        uiOutput(ns("edgeAttrUi"))
+      )
   )
 }
-mod_visNetworkReadDisplay_ui <- function(id) {
-  ns <- NS(id)
-  visNetwork::visNetworkOutput(ns("visNetworkId"))
-}
+# mod_visNetworkReadDisplay_ui <- function(id) {
+#   ns <- NS(id)
+#   visNetwork::visNetworkOutput(ns("visNetworkId"))
+# }
 
 # SERVER SIDE ------------------------------------------------------------------
 
 #' NetworkDisplayServer
 
-mod_visNetworkReadDisplay_server <- function(id, graph) {
-  moduleServer(id, function(input, output, session){
-    ns <- session$ns
-    output$visNetworkId <- visNetwork::renderVisNetwork({
-      g <- graph()
-      # this to should be done first before adding visNetwork default namespace
-      V(g)$title <- pasteNodeDetails(g)
-      E(g)$title <- pasteEdgeDetails(g)
-      # adding local visNetwork default namespace
-      base_graph <- visNetwork::visIgraph(g, physics = T) |>
-        visNetwork::visOptions(
-          highlightNearest = list(
-            enabled = T,
-            degree = 0,
-            algorithm = "hierarchical"
-          ))
-    })
-  })
-}
-
+# mod_visNetworkReadDisplay_server <- function(id, graph) {
+#   moduleServer(id, function(input, output, session){
+#     ns <- session$ns
+#     output$visNetworkId <- visNetwork::renderVisNetwork({
+#       g <- graph()
+#       # this to should be done first before adding visNetwork default namespace
+#       V(g)$title <- pasteNodeDetails(g)
+#       E(g)$title <- pasteEdgeDetails(g)
+#       # adding local visNetwork default namespace
+#       base_graph <- visNetwork::visIgraph(g, physics = T) |>
+#         visNetwork::visOptions(
+#           highlightNearest = list(
+#             enabled = T,
+#             degree = 0,
+#             algorithm = "hierarchical"
+#           ))
+#     })
+#   })
+# }
 #' visNetworkReadControler Server Functions
 #' @param id id
 #' @param igraph_rct reactive expression for igraph
+#' @param e_ignore a vector of edge attributes name to ignore
+#' @param v_ignore a vector of node attributes name to ignore
 #' @description
 #' This module let you interact with graph
 #' Require visnetwork rendered in shiny to have base id `visNetworkId`
 #' @export
 mod_visNetInteraction_server <- function(
     id,
-    igraph_rct) {
+    igraph_rct,
+    e_ignore = c(),
+    v_ignore = c()
+    ) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
+    # =========== DIP ==================
+    # Dynamic UI to uncollabse more functions
+    # observe(label = "Advanced Functions ",
+    #   {
+    #   shinyjs::toggle("advancedOpts", condition = input$showAdvanced)
+    # })
+    # =========== DIP =================
+    # Data Transfer
     graph = reactive(label='Validate Graph', {
       golem::print_dev("Validating input")
       req(!is.null(igraph_rct()) )
@@ -69,8 +107,8 @@ mod_visNetInteraction_server <- function(
     observe(label='Populate Attribute Names', {
       g <- graph()
       golem::print_dev("Populating attribute name")
-      edgeAttrNames <- igraph::edge_attr_names(g)
-      nodeAttrNames <- igraph::vertex_attr_names(g)
+      edgeAttrNames <- igraph::edge_attr_names(g) |> purrr::discard(~.x %in% e_ignore)
+      nodeAttrNames <- igraph::vertex_attr_names(g) |> purrr::discard(~.x %in% v_ignore)
       updateSelectInput(session, "nodeAttrName", choices = c(nodeAttrNames))
       updateSelectInput(session, "edgeAttrName", choices = c(edgeAttrNames))
     })

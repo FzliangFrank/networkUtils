@@ -30,6 +30,7 @@ usethis::use_package("waiter")
 usethis::use_package("sf")
 usethis::use_package("RColorBrewer")
 usethis::use_package("spatstat")
+usethis::use_package("tidygraph") # I have to give up to tidy evalutation
 # usethis::use_package_doc()
 usethis::use_import_from("igraph", "V")
 usethis::use_import_from("igraph", "E")
@@ -47,12 +48,17 @@ golem::add_module(name = "fileUploader", with_test = TRUE) # Upload file with co
 ## Creates fct_* and utils_*
 golem::add_fct("spiderOptions", with_test = TRUE)
 golem::add_fct("sumAttributes.http")
+golem::add_fct("modify_graph", with_test = TRUE) # api for modifying graph based on
+# selected list
+# this is useful when develop against an API instead of develop against
+# static excel sheet or R obejct
+golem::add_fct("plotPPPdensity") # for rendering geometries (pretty)
 golem::add_utils("callmebyName", with_test = TRUE)
-golem::add_utils("igraph_to_svg")
+golem::add_utils("igraph_to_svg") #
 golem::add_utils("blurry_range")
-golem::add_utils("add_vertex_sf") # for compatability of sf
-golem::add_fct("modify_graph", with_test = TRUE)
-golem::add_fct("plotPPPdensity")
+golem::add_utils("add_vertex_sf") # for comparability of sf
+golem::add_utils("search_idx")
+
 ## External resources
 ## Creates .js and .css files at inst/app/www
 golem::add_js_file("script")

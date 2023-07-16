@@ -2,14 +2,19 @@
 % Please edit documentation in R/mod_visInteraction.R
 \name{mod_visNetInteraction_server}
 \alias{mod_visNetInteraction_server}
-\title{visNetworkReadControler Server Functions}
+\title{NetworkDisplayServer
+visNetworkReadControler Server Functions}
 \usage{
-mod_visNetInteraction_server(id, igraph_rct)
+mod_visNetInteraction_server(id, igraph_rct, e_ignore = c(), v_ignore = c())
 }
 \arguments{
 \item{id}{id}
 
 \item{igraph_rct}{reactive expression for igraph}
+
+\item{e_ignore}{a vector of edge attributes name to ignore}
+
+\item{v_ignore}{a vector of node attributes name to ignore}
 }
 \description{
 This module let you interact with graph
