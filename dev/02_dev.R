@@ -30,6 +30,7 @@ usethis::use_package("waiter")
 usethis::use_package("sf")
 usethis::use_package("RColorBrewer")
 usethis::use_package("spatstat")
+usethis::use_package("shinyjqui")
 usethis::use_package("tidygraph") # I have to give up to tidy evalutation
 # usethis::use_package_doc()
 usethis::use_import_from("igraph", "V")

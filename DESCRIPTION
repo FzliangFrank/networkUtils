@@ -18,6 +18,7 @@ Imports:
     readr,
     sf,
     shiny (>= 1.7.2),
+    shinyjqui,
     shinyjs,
     shinyWidgets,
     spatstat,

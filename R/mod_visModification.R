@@ -14,7 +14,10 @@ mod_visNetModification_ui <- function(id){
     shinyjs::useShinyjs(),
     shinyWidgets::switchInput(ns("edit"), "enable edit", size = "small"),
     p("You are in editing mode, exit without save will revert to original", id = ns("note")),
-    visNetwork::visNetworkOutput(ns("visNetworkId")),
+    shinyjqui::jqui_resizable(
+      visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%"),
+      options = list(handles = "s")
+    ),
     wellPanel(
       actionButton(ns("save"), "Commit Change"),
       downloadButton(ns("export")),
