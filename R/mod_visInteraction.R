@@ -47,8 +47,10 @@ mod_visNetInteraction_ui <- function(id){
         outline = TRUE,
         plain = TRUE,
         inline = T,
-        icon_on = icon("thumbs-up"),
-        icon_off = icon("thumbs-down")
+        status_on = 'info',
+        status_off = 'info',
+        icon_on = icon("paint-roller"),
+        icon_off = icon("hand-pointer")
       ),
         # Node Control
         div(
@@ -105,6 +107,11 @@ mod_visNetInteraction_server <- function(
       selected = input$graphSelector
       cond = selected == 'Nodes' || selected == 'All'
       shinyjs::toggle("nodeSelectors",anim = T, condition = cond)
+    })
+    observe({
+      selected = input$graphSelector
+      cond = selected == 'All'
+      shinyjs::toggle("paint",anim = T, condition = cond)
     })
     # =========== DIP =================
     # Data Transfer
