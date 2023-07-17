@@ -87,7 +87,8 @@ simpleNetworkUtilApp_ui <- function(request) {
           ),
           bs4Dash::controlbarItem(
             title = "",
-            icon = icon("upload", "fa-shake"),
+            icon = icon("upload"#, "fa-shake"
+                        ),
             mod_fileUploader_ui("file")
           ),
           bs4Dash::controlbarItem(

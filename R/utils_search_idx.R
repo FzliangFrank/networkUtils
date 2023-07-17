@@ -24,19 +24,27 @@ search_idx = function(g,
                       as_ids = F,
                       search_in = 'nodes'
                         ) {
-  g = tidygraph::as_tbl_graph(g)
+  stopifnot(search_in %in% c('nodes', 'edges'))
   actived = as.symbol(search_in)
-  G = g |>
+  G = tidygraph::as_tbl_graph(g) |>
     tidygraph::activate({{actived}})
   # {G |> tidygraph::filter(eval(parse(text = expr_txt)))}
   G_res = try({
-    rlang::inject(tidygraph::filter(G, name == !!expr_txt))
+    rlang::inject(tidygraph::convert(G, tidygraph::to_subgraph,
+                                     subset_by = search_in,
+                                     name == !!expr_txt))
   }, silent = T)
   if(inherits(G_res, "try-error") || length(G_res) == 0) {
-    G_res = try({G |> tidygraph::filter(eval(parse(text = expr_txt)))})
+    G_res = try({G |> tidygraph::convert(tidygraph::to_subgraph,
+                                        subset_by = search_in,
+                                        eval(parse(text = expr_txt)))})
   }
-  if(inherits(G_res, "try-error") || length(G_res) == 0) {G_res = G; message("No Search")}
-  idx = V(G_res)
+  if(inherits(G_res, "try-error")) {G_res = make_empty_graph(); message("No Search")}
+  if(search_in == 'nodes') idx = V(G_res)
+  if(search_in == 'edges') {
+    e = E(G_res)
+    idx = V(G_res)[.inc(e)]
+  }
   if(as_ids) idx = as_ids(idx)
   return(idx)
 }

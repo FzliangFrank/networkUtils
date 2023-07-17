@@ -12,7 +12,8 @@ mod_visNetModification_ui <- function(id){
   ns <- NS(id)
   tagList(
     shinyjs::useShinyjs(),
-    shinyWidgets::switchInput(ns("edit"), "enable edit", size = "small"),
+    shinyWidgets::prettyCheckbox(ns("edit"), "Edit", animation = "smooth", status = 'primary',inline = T),
+    shinyWidgets::prettyCheckbox(ns('phy'), 'Physics', animation = "smooth", inline = T),
     p("You are in editing mode, exit without save will revert to original", id = ns("note")),
     shinyjqui::jqui_resizable(
       visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%"),
@@ -40,8 +41,8 @@ mod_visNetModification_server <- function(id,
                                           igraphObj,
                                           dev = F,
                                           hard_delete = T,
-                                          NodeAttrTooltip = F,
-                                          EdgeAttrTooltip = F
+                                          NodeAttrTooltip = T,
+                                          EdgeAttrTooltip = T
                                           ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
@@ -89,6 +90,7 @@ mod_visNetModification_server <- function(id,
         # if(!"name" %in% vertex_attr_names(Graph$Main)) delete_graph_attr(g, "name")
       Graph$Main <- g
       print("current write into main")
+      # shinyWidgets::updatePrettyCheckbox(session = session,inputId = "edit", status = 'success')
     }) |>
       bindEvent(input$save)
     # SAVE A FILE ANY TIME -----------------------------------------------------
@@ -133,7 +135,12 @@ mod_visNetModification_server <- function(id,
       # this to should be done first before adding visNetwork default namespace
       if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
       if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
-      base_graph <- visNetwork::visIgraph(g, randomSeed = "3", type = "square") |>
+      base_graph <- visNetwork::visIgraph(
+        g,
+        randomSeed = "3",
+        type = "square",
+        physics = input$phy
+        ) |>
         visNetwork::visOptions(
           clickToUse = T,
           collapse = T,
@@ -214,6 +221,7 @@ mod_visNetModification_server <- function(id,
         shinyjs::click('save')
       } else {
         Graph$Current = G
+        # shinyWidgets::updatePrettyCheckbox(session = session, inputId = 'edit')
       }
 
     })

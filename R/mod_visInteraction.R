@@ -10,36 +10,58 @@
 mod_visNetInteraction_ui <- function(id){
   ns <- NS(id)
   tagList(
+      # ========= DIP (Development In Progress) ====
       # Insert Search UI
-      # shinyWidgets::searchInput(ns('searchAny'),
-      #                           'Search Any Control Element',
-      #                           btnSearch = icon('search')
-      #                           ),
-      # ===========DIP (Development In Progress) ==========
+      shinyWidgets::searchInput(ns('searchBar'),
+                                'Search Any Control Element',
+                                placeholder = 'attr1 < 23; node_is_root()',
+                                btnSearch = icon('search')
+      ),
       # Here we want segregate node control with edge contorl
-      # radioGroupButtons(
-      #   inputId = "searchIn",
-      #   label = "Search in Node/Edge",
-      #   choices = c("Node",
-      #               "Edge"),
-      #   status = "primary",
-      #   checkIcon = list(
-      #     yes = icon("ok",
-      #                lib = "glyphicon"),
-      #     no = icon("remove",
-      #               lib = "glyphicon"))
-      # ),
-      # ================== DIP ==================
+      shinyWidgets::radioGroupButtons(
+        inputId = ns("graphSelector"),
+        label = "Search in Node/Edge",
+        choices = c(
+          "Nodes",
+          "Edges",
+          "All"
+                ),
+        status = "primary",
+        checkIcon = list(
+          yes = icon("ok",
+                     lib = "glyphicon")
+          # no = icon("remove",
+          #           lib = "glyphicon")
+          )
+      ),
+      # ~====================================~
       # Advanced Options Control
-      # shinyWidgets::prettyCheckbox(ns('showAdvanced'), 'Show Advanced Options'),
+      shinyWidgets::prettyCheckbox(ns('showAdvanced'), 'More options'),
       div(
-        id = ns('advancedOpts'),
+      id = ns('advancedOpts'),
+        # Color or Select
+      shinyWidgets::prettyToggle(
+        inputId = ns('paint'),
+        label_on = "Fix Color..",
+        label_off = "Select only..",
+        outline = TRUE,
+        plain = TRUE,
+        inline = T,
+        icon_on = icon("thumbs-up"),
+        icon_off = icon("thumbs-down")
+      ),
         # Node Control
-        selectInput(ns("nodeAttrName"), "Node attribute to query", NULL),
-        uiOutput(ns("nodeAttrUi")),
+        div(
+          id = ns('nodeSelectors'),
+          selectInput(ns("nodeAttrName"), "Specify Node Attribute:", NULL),
+          uiOutput(ns("nodeAttrUi")),
+        ),
         # Edge Control
-        selectInput(ns("edgeAttrName"), "Edge attribute to query", NULL),
-        uiOutput(ns("edgeAttrUi"))
+        div(
+          id = ns('edgeSelectors'),
+          selectInput(ns("edgeAttrName"), "Specify Edge Attribute:", NULL),
+          uiOutput(ns("edgeAttrUi"))
+        )
       )
   )
 }
@@ -51,26 +73,6 @@ mod_visNetInteraction_ui <- function(id){
 # SERVER SIDE ------------------------------------------------------------------
 
 #' NetworkDisplayServer
-
-# mod_visNetworkReadDisplay_server <- function(id, graph) {
-#   moduleServer(id, function(input, output, session){
-#     ns <- session$ns
-#     output$visNetworkId <- visNetwork::renderVisNetwork({
-#       g <- graph()
-#       # this to should be done first before adding visNetwork default namespace
-#       V(g)$title <- pasteNodeDetails(g)
-#       E(g)$title <- pasteEdgeDetails(g)
-#       # adding local visNetwork default namespace
-#       base_graph <- visNetwork::visIgraph(g, physics = T) |>
-#         visNetwork::visOptions(
-#           highlightNearest = list(
-#             enabled = T,
-#             degree = 0,
-#             algorithm = "hierarchical"
-#           ))
-#     })
-#   })
-# }
 #' visNetworkReadControler Server Functions
 #' @param id id
 #' @param igraph_rct reactive expression for igraph
@@ -90,10 +92,20 @@ mod_visNetInteraction_server <- function(
     ns <- session$ns
     # =========== DIP ==================
     # Dynamic UI to uncollabse more functions
-    # observe(label = "Advanced Functions ",
-    #   {
-    #   shinyjs::toggle("advancedOpts", condition = input$showAdvanced)
-    # })
+    observe(label = "Advanced Functions ",
+      {
+      shinyjs::toggle("advancedOpts", condition = input$showAdvanced)
+    })
+    observe({
+      selected = input$graphSelector
+      cond = selected == 'Edges' || selected == "All"
+      shinyjs::toggle("edgeSelectors",anim = T, condition = cond)
+    })
+    observe({
+      selected = input$graphSelector
+      cond = selected == 'Nodes' || selected == 'All'
+      shinyjs::toggle("nodeSelectors",anim = T, condition = cond)
+    })
     # =========== DIP =================
     # Data Transfer
     graph = reactive(label='Validate Graph', {
@@ -168,6 +180,7 @@ mod_visNetInteraction_server <- function(
       }
     })
     # SELECTING NODE/EDGE BASED ON ATTRIBUTES ----------------------------------
+    NodeFound = reactiveValues(id = NULL)
     observe(label= "Edge Selecter", {
       g <- isolate(graph())
       req(input$edgeAttr)
@@ -188,9 +201,9 @@ mod_visNetInteraction_server <- function(
       }
       if(inherits(edgeFound, 'try-error')) return()
       nodeFound <- V(g)[.inc(edgeFound)] |> as_ids()
-        # c(edgeList[edgeFound, 1], edgeList[tail(edgeFound, 1), 2])
-      visNetwork::visNetworkProxy(ns("visNetworkId")) |>
-        visNetwork::visSelectNodes(nodeFound)
+      NodeFound$id = nodeFound
+      # visNetwork::visNetworkProxy(ns("visNetworkId")) |>
+      #   visNetwork::visSelectNodes(nodeFound)
     })
     observe(label = "Node Selecter", {
       g <- isolate(graph())
@@ -210,8 +223,6 @@ mod_visNetInteraction_server <- function(
         req(input$nodeAttr$xmin)
         message("geometry selected")
         cur = input$nodeAttr
-        # debug
-        # debug/
         brash_area = sf::st_bbox(c(xmin =cur$xmin, xmax = cur$xmax,
                                ymin=cur$ymin, ymax =cur$ymax)) |>
           sf::st_as_sfc()
@@ -220,14 +231,29 @@ mod_visNetInteraction_server <- function(
         req(length(input$nodeAttr)==1)
         nodeFound <- which(nodeAttr() == input$nodeAttr)
       }
-      visNetwork::visNetworkProxy(ns("visNetworkId")) |>
-        visNetwork::visSelectNodes(nodeFound)
+      NodeFound$id <- nodeFound
+    })
+    observeEvent(input$searchBar,{
+      g <- isolate(graph())
+      search_input = tolower(input$graphSelector)
+      req(search_input %in% c("nodes", "edges"))
+      nodeFound = search_idx(g,
+                             input$searchBar,
+                             search_in = search_input,
+                             as_ids = T)
+      NodeFound$id = nodeFound
     })
     observe({
+      # Inject if Select Or Color Selected node
+      # ============ DIP ================
+      # if() {
       visNetwork::visNetworkProxy(ns("visNetworkId")) |>
-        visNetwork::visPhysics(
-          solver = 'barnesHut',
-          enabled = input$phy)
+        visNetwork::visSelectNodes(NodeFound$id)
+      # } else {
+      # visNetwork::visNetworkProxy(ns("visNetworkId")) |>
+      # visNetwork::visNodes(id = nodeFound)
+      # }
+      # =================================
     })
   })
 }
