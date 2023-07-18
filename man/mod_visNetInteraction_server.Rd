@@ -5,7 +5,14 @@
 \title{NetworkDisplayServer
 visNetworkReadControler Server Functions}
 \usage{
-mod_visNetInteraction_server(id, igraph_rct, e_ignore = c(), v_ignore = c())
+mod_visNetInteraction_server(
+  id,
+  igraph_rct,
+  e_ignore = c(),
+  v_ignore = c(),
+  show_hidden = F,
+  domain = getDefaultReactiveDomain()
+)
 }
 \arguments{
 \item{id}{id}
@@ -15,6 +22,8 @@ mod_visNetInteraction_server(id, igraph_rct, e_ignore = c(), v_ignore = c())
 \item{e_ignore}{a vector of edge attributes name to ignore}
 
 \item{v_ignore}{a vector of node attributes name to ignore}
+
+\item{domain}{session for when nesting module}
 }
 \description{
 This module let you interact with graph

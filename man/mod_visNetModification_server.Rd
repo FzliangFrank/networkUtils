@@ -9,14 +9,17 @@ mod_visNetModification_server(
   igraphObj,
   dev = F,
   hard_delete = T,
-  NodeAttrTooltip = F,
-  EdgeAttrTooltip = F
+  NodeAttrTooltip = T,
+  EdgeAttrTooltip = T,
+  domain = getDefaultReactiveDomain()
 )
 }
 \arguments{
 \item{id}{shiny server id}
 
 \item{igraphObj}{a reactive graph object}
+
+\item{domain}{session for}
 }
 \value{
 reactiveValues $Curent and $Main

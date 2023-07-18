@@ -3,8 +3,9 @@
 #' @description A shiny Module.
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
-#'
-#' @noRd
+#' @param label message show before upload a file
+#' @return bs4Dash UI
+#' @export
 #'
 #' @importFrom shiny NS tagList
 #' @importFrom shinyWidgets pickerInput updatePickerInput
@@ -59,9 +60,10 @@ mod_fileUploader_ui <- function(id, label = "Upload a File",...){
 }
 
 #' fileUploader Server Functions
-#'
-#' @noRd
-mod_fileUploader_server <- function(id, fn_ingest, fn_valide){
+#' @param id shiny id
+#' @return reactive igraph object
+#' @export
+mod_fileUploader_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     observe({

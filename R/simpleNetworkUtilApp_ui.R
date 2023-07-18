@@ -94,7 +94,9 @@ simpleNetworkUtilApp_ui <- function(request) {
           bs4Dash::controlbarItem(
             title = "",
             icon = icon("palette", `data-toggle`="tooltip", `data-toggle`="top", title='Themes'),
-            div(class = 'p-3', bs4Dash::skinSelector())
+            div(class = 'p-3',
+                bs4Dash::skinSelector()
+                )
           )
         )
 

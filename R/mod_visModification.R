@@ -32,6 +32,7 @@ mod_visNetModification_ui <- function(id){
 
 #' @param id shiny server id
 #' @param igraphObj a reactive graph object
+#' @param domain session for
 #' @return reactiveValues $Curent and $Main
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
@@ -42,7 +43,8 @@ mod_visNetModification_server <- function(id,
                                           dev = F,
                                           hard_delete = T,
                                           NodeAttrTooltip = T,
-                                          EdgeAttrTooltip = T
+                                          EdgeAttrTooltip = T,
+                                          domain = getDefaultReactiveDomain()
                                           ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
@@ -68,10 +70,10 @@ mod_visNetModification_server <- function(id,
       # id will be used by igraph to pick up edges. It has to be a numeric vector
       # other input will cause function `edge()` to crash
       # Needs to clean up on session end?
-        if("id" %in% vertex_attr_names(g)) V(g)$.ir_id <- V(g)$id
-        if("id" %in% edge_attr_names(g)) E(g)$.ir_id <- E(g)$id
+        if("id" %in% vertex_attr_names(g)) V(g)$.id <- V(g)$id
+        if("id" %in% edge_attr_names(g)) E(g)$.id <- E(g)$id
         if(!"name" %in% vertex_attr_names(g)) V(g)$name <- seq(length(V(g))) |> as.character()
-      E(g)$id <- seq(length(E(g))) |> as.character()
+        E(g)$id <- seq(length(E(g))) |> as.character()
       Graph$Current <- g
       Graph$Main <- g
     })
@@ -102,13 +104,13 @@ mod_visNetModification_server <- function(id,
       content = function(file) {
         g <- Graph$Current
         # Below code reverse actions
-        if(".ir_id" %in% vertex_attr_names(g)) {
-          V(g)$id <- V(g)$.ir_id
-          delete_vertex_attr(g, ".ir_id")
+        if(".id" %in% vertex_attr_names(g)) {
+          V(g)$id <- V(g)$.id
+          delete_vertex_attr(g, ".id")
         }
-        if(".ir_id" %in% edge_attr_names(g)) {
+        if(".id" %in% edge_attr_names(g)) {
           E(g)$id <- E(g)$.ir_id
-          delete_edge_attr(g, ".ir_id")
+          delete_edge_attr(g, ".id")
         }
         if(!"name" %in% vertex_attr_names(igraphObj())) delete_graph_attr(g, "name")
         # igraph::write_graph(Graph$Current,file, format = "gml")
@@ -139,7 +141,8 @@ mod_visNetModification_server <- function(id,
         g,
         randomSeed = "3",
         type = "square",
-        physics = input$phy
+        physics = input$phy,
+        smooth = input$phy
         ) |>
         visNetwork::visOptions(
           clickToUse = T,
@@ -177,39 +180,6 @@ mod_visNetModification_server <- function(id,
     observeEvent(input$visNetworkId_graphChange, {
       req(!is.null(input$visNetworkId_graphChange$cmd))
       message(class(input$visNetworkId_graphChange))
-      # # Going to namespase this to put_visNetwork_graphChange
-      # if(input$visNetworkId_graphChange$cmd == "addNode") {
-      #   # ADD NODE
-      #   id <- isolate(input$visNetworkId_graphChange$id)
-      #   Graph$Current <- add_vertex_sf(Graph$Current, id)
-      # } else if (input$visNetworkId_graphChange$cmd == "addEdge") {
-      #   id = as.character(length(E(Graph$Current)) + 1)
-      #   from = isolate(input$visNetworkId_graphChange$from)
-      #   to = isolate(input$visNetworkId_graphChange$to)
-      #   tryCatch({
-      #     Graph$Current <- Graph$Current + edge(c(from, to), id = id)
-      #   }, error = function(e){
-      #     print(sprintf("Error occur at: from: %s, to: %s, edge id: %s", from, to, id))
-      #     print(e)
-      #   })
-      # } else if (input$visNetworkId_graphChange$cmd == "editEdge") {
-      #   id <- isolate(input$visNetworkId_graphChange$id)
-      #   from = isolate(input$visNetworkId_graphChange$from)
-      #   to = isolate(input$visNetworkId_graphChange$to)
-      #   g <- Graph$Current
-      # # save attributes asided
-      #   attrs <- edge_attr(g, index = id)
-      # # add and delete edges
-      #   g <- g - edge(id)
-      #   Graph$Current <- add_edges(g, c(from, to), attr = attrs)
-      # } else if (input$visNetworkId_graphChange$cmd == "deleteElements") {
-      #   g <- Graph$Current
-      #   edges <- isolate(unlist(input$visNetworkId_graphChange$edges))
-      #   nodes <- isolate(unlist(input$visNetworkId_graphChange$nodes))
-      #   g <- g - edge(edges)
-      #   g <- igraph::delete_vertices(g, nodes)
-      #   Graph$Current <- g
-      # }
       G = Graph$Current
       G = try(modify_graph_i(G, input$visNetworkId_graphChange, hard_delete = hard_delete))
       if(G |> inherits('try-error')) {
@@ -251,7 +221,7 @@ mod_visNetModification_server <- function(id,
     # RETURN -------------------------------------------------------------------
     return(Graph)
     # MODULE END ---------------------------------------------------------------
-  })
+  }, session = domain)
 }
 
 ## To be copied in the UI

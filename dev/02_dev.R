@@ -36,15 +36,17 @@ usethis::use_package("tidygraph") # I have to give up to tidy evalutation
 usethis::use_import_from("igraph", "V")
 usethis::use_import_from("igraph", "E")
 usethis::use_import_from("bs4Dash", "box")
+usethis::use_import_from("golem", "print_dev")
 ## Amend DESCRIPTION with dependencies read from package code parsing
 ## install.package('attachment') # if needed.
 attachment::att_amend_desc()
 
 ## Add modules ----
 ## Create a module infrastructure in R/
-golem::add_module(name = "visNetworkRead", with_test = TRUE) # Query node or edge in network
-golem::add_module(name = "visNetworkWrite", with_test = TRUE) # Write a node or Edge
+golem::add_module(name = "visNetInteraction", with_test = TRUE) # Query node or edge in network
+golem::add_module(name = "visNetModification", with_test = TRUE) # Write a node or Edge
 golem::add_module(name = "fileUploader", with_test = TRUE) # Upload file with confidence
+golem::add_module(name = 'visNet', with_test = T) # modification and interaction module is conter intuatiive
 ## Add helper functions ----
 ## Creates fct_* and utils_*
 golem::add_fct("spiderOptions", with_test = TRUE)
@@ -53,6 +55,7 @@ golem::add_fct("modify_graph", with_test = TRUE) # api for modifying graph based
 # selected list
 # this is useful when develop against an API instead of develop against
 # static excel sheet or R obejct
+golem::add_fct('networkUtilApp')
 golem::add_fct("plotPPPdensity") # for rendering geometries (pretty)
 golem::add_utils("callmebyName", with_test = TRUE)
 golem::add_utils("igraph_to_svg") #

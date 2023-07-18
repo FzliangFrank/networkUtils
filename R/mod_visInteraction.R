@@ -80,6 +80,7 @@ mod_visNetInteraction_ui <- function(id){
 #' @param igraph_rct reactive expression for igraph
 #' @param e_ignore a vector of edge attributes name to ignore
 #' @param v_ignore a vector of node attributes name to ignore
+#' @param domain session for when nesting module
 #' @description
 #' This module let you interact with graph
 #' Require visnetwork rendered in shiny to have base id `visNetworkId`
@@ -88,7 +89,9 @@ mod_visNetInteraction_server <- function(
     id,
     igraph_rct,
     e_ignore = c(),
-    v_ignore = c()
+    v_ignore = c(),
+    show_hidden = F,
+    domain = getDefaultReactiveDomain()
     ) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
@@ -111,7 +114,7 @@ mod_visNetInteraction_server <- function(
     observe({
       selected = input$graphSelector
       cond = selected == 'All'
-      shinyjs::toggle("paint",anim = T, condition = cond)
+      shinyjs::toggle("paint", anim = T, condition = cond)
     })
     # =========== DIP =================
     # Data Transfer
@@ -126,8 +129,15 @@ mod_visNetInteraction_server <- function(
     observe(label='Populate Attribute Names', {
       g <- graph()
       golem::print_dev("Populating attribute name")
-      edgeAttrNames <- igraph::edge_attr_names(g) |> purrr::discard(~.x %in% e_ignore)
-      nodeAttrNames <- igraph::vertex_attr_names(g) |> purrr::discard(~.x %in% v_ignore)
+      if(!show_hidden) {
+        # if hide attr start with a . append those ones to e_ignore
+        e_ignore = c(e_ignore, (edge_attr_names(g) |> stringr::str_detect('^\\.')))
+        v_ignore = c(v_ignore, (vertex_attr_names(g) |> stringr::str_detect('^\\.')))
+      }
+      edgeAttrNames <- igraph::edge_attr_names(g) |>
+        purrr::discard(~.x %in% e_ignore)
+      nodeAttrNames <- igraph::vertex_attr_names(g) |>
+        purrr::discard(~.x %in% v_ignore)
       updateSelectInput(session, "nodeAttrName", choices = c(nodeAttrNames))
       updateSelectInput(session, "edgeAttrName", choices = c(edgeAttrNames))
     })
@@ -154,6 +164,7 @@ mod_visNetInteraction_server <- function(
     })
     output$nodeAttrUi <- renderUI({
       nodeAttrLabel ="Query node attributes fits these"
+      golem::print_dev('Creating node UI..')
       if(typeof(nodeAttr())=="double") {
         sliderInput(ns("nodeAttr"), nodeAttrLabel,
                     min=blurry_range(nodeAttr())[1], max=blurry_range(nodeAttr())[2],
@@ -199,12 +210,12 @@ mod_visNetInteraction_server <- function(
         inbond=input$edgeAttr[1]
         outbond=input$edgeAttr[2]
         edgeFound <- try({
-          which(edgeAttr() >= inbond & edgeAttr() <= outbond)
+          E(g)[which(edgeAttr() >= inbond & edgeAttr() <= outbond)] |> as_ids()
         })
       } else {
         req(length(input$edgeAttr)==1)
         # message("single edge.attr selected")
-        edgeFound <- which(edgeAttr() == input$edgeAttr)
+        edgeFound <- E(g)[which(edgeAttr() == input$edgeAttr)] |> as_ids()
       }
       if(inherits(edgeFound, 'try-error')) return()
       nodeFound <- V(g)[.inc(edgeFound)] |> as_ids()
@@ -212,18 +223,19 @@ mod_visNetInteraction_server <- function(
       # visNetwork::visNetworkProxy(ns("visNetworkId")) |>
       #   visNetwork::visSelectNodes(nodeFound)
     })
+    # Node Selector ---------------------------------------------------------
     observe(label = "Node Selecter", {
       g <- isolate(graph())
       req(input$nodeAttr)
       req(!is.null(input$nodeAttr))
       # DEBUG
-      # message(sprintf("node is type of %s", typeof(nodeAttr())))
+      # golem::print_dev(sprintf("Enter node selector: %s", typeof(nodeAttr() )))
       # cur_attr_name = isolate(input$nodeAttrName)
-      if(typeof(nodeAttr())=="double") {
+      if(typeof(nodeAttr()) =="double") {
         req(length(input$nodeAttr) == 2) #whenever UI render this notify
         inbond=input$nodeAttr[1]
         outbond=input$nodeAttr[2]
-        nodeFound <- which(nodeAttr() >= inbond & nodeAttr() <= outbond)
+        nodeFound <- V(g)[which(nodeAttr() >= inbond & nodeAttr() <= outbond)]
       } else if(nodeAttr() |> inherits("sfc_POINT")) {
         req(input$nodeAttr |> inherits('list'))
         req(input$nodeAttr$xmin)
@@ -233,14 +245,20 @@ mod_visNetInteraction_server <- function(
         brash_area = sf::st_bbox(c(xmin =cur$xmin, xmax = cur$xmax,
                                ymin=cur$ymin, ymax =cur$ymax)) |>
           sf::st_as_sfc()
-        nodeFound = sf::st_intersects(sf::st_as_sf(nodeAttr()), brash_area, sparse=F) |> which()
+        nodeFound = V(g)[sf::st_intersects(sf::st_as_sf(nodeAttr()), brash_area, sparse=F) |> which()]
+      } else if(length(input$nodeAttr) == 1) {
+        req(length(input$nodeAttr) == 1 )
+        nodeFound <- V(g)[which(as.character(nodeAttr()) == input$nodeAttr)]
+      } else if(length(input$nodeAttr) > 1) {
+        nodeFound <- V(g)[which(as.character(nodeAttr()) %in% input$nodeAttr)]
       } else {
-        req(length(input$nodeAttr)==1)
-        nodeFound <- which(nodeAttr() == input$nodeAttr)
+        message('unrecognised graph input')
+        nodeFound = NULL
       }
-      NodeFound$id <- nodeFound
+      NodeFound$id <- nodeFound |> as_ids()
     })
     observeEvent(input$searchBar,{
+      # golem::print_dev('search bar in context %s', input$graphSelector)
       g <- isolate(graph())
       search_input = tolower(input$graphSelector)
       req(search_input %in% c("nodes", "edges"))
@@ -248,6 +266,7 @@ mod_visNetInteraction_server <- function(
                              input$searchBar,
                              search_in = search_input,
                              as_ids = T)
+      # golem::print_dev(sprintf('search bar found: %s', paste(nodeFound, collapse = ',')))
       NodeFound$id = nodeFound
     })
     observe({
@@ -262,7 +281,7 @@ mod_visNetInteraction_server <- function(
       # }
       # =================================
     })
-  })
+  }, session = domain)
 }
 
 ## To be copied in the UI
