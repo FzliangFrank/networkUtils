@@ -8,11 +8,11 @@
 #' `Main` for graph that has been committed editing;
 #' `Current` for graph on display;
 #' @export
-mod_visNet_server <- function(id, graph_rct){
+mod_visNet_server <- function(id, graph_rct, debug = F){
   domain = getDefaultReactiveDomain()
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    SessionGraph = mod_visNetModification_server(id, graph_rct, dev = T, domain = domain)
+    SessionGraph = mod_visNetModification_server(id, graph_rct, dev = debug, domain = domain)
     mod_visNetInteraction_server(id, reactive(SessionGraph$Current), domain = domain)
     return(SessionGraph)
   })

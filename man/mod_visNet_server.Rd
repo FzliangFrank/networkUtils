@@ -4,7 +4,7 @@
 \alias{mod_visNet_server}
 \title{visNet Server Functions}
 \usage{
-mod_visNet_server(id, graph_rct)
+mod_visNet_server(id, graph_rct, debug = F)
 }
 \arguments{
 \item{id}{shiny}

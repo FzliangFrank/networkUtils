@@ -193,7 +193,6 @@ mod_visNetModification_server <- function(id,
         Graph$Current = G
         # shinyWidgets::updatePrettyCheckbox(session = session, inputId = 'edit')
       }
-
     })
     # DEV AREA -----------------------------------------------------------------
     output$dev <- shiny::renderPrint({
