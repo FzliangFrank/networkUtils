@@ -1,5 +1,8 @@
 library(shiny)
 library(ggplot2)
+# This shiny module is used specifically for the purpose of any sub-graph structure
+# connect panel a to b. This is usefully for any engineer I think to do whatever
+# specification they want; Example of Instruct an engineer to connect one to another;
 
 # Define UI
 ui <- fluidPage(
@@ -37,9 +40,16 @@ ui <- fluidPage(
 # Define server
 server <- function(input, output, session) {
   # Initialize the data for drawing
+  # From commercial point of view I need customers to be able to map function
+  # from whatever they need to whatever the
   data <- reactiveValues(dots = data.frame(x = numeric(0), y = numeric(0)),
-                         lines = data.frame(x1 = numeric(0), y1 = numeric(0),
-                                            x2 = numeric(0), y2 = numeric(0)))
+                         lines = data.frame(
+                           # FROM
+                           # in a splicing schedule y would be mapped to fiber index
+                           # x would be mapped to initial position of whatever;
+                           x1 = numeric(0), y1 = numeric(0),
+                           # TO
+                           x2 = numeric(0), y2 = numeric(0)))
 
   # Update the plot with the dots and lines
   output$plot <- renderPlot({

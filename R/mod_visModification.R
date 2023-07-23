@@ -44,7 +44,8 @@ mod_visNetModification_server <- function(id,
                                           hard_delete = T,
                                           NodeAttrTooltip = T,
                                           EdgeAttrTooltip = T,
-                                          domain = getDefaultReactiveDomain()
+                                          domain = getDefaultReactiveDomain(),
+                                          config = NULL
                                           ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
@@ -161,7 +162,7 @@ mod_visNetModification_server <- function(id,
                   Shiny.setInputValue('%s',
                   this.body.data.nodes.get(properties.nodes[0]).id)
                   ;}", ns("click_node") # Your shiny module have namespace
-        )),
+            )),
      #    select = "function(properties) {
      # alert('selected nodes: ' + properties.nodes);}",
         # selectEdge = htmlwidgets::JS(sprintf("function(properties){
@@ -173,7 +174,7 @@ mod_visNetModification_server <- function(id,
                     Shiny.setInputValue('%s',
                     properties.edges)
                     }", ns("click_edge")
-       ))
+          ))
         )
     })
     # GRAPH EDITING LOGIC ------------------------------------------------------
