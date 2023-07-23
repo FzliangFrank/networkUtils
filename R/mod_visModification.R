@@ -33,6 +33,7 @@ mod_visNetModification_ui <- function(id){
 #' @param id shiny server id
 #' @param igraphObj a reactive graph object
 #' @param domain session for
+#' @param options list of option passed to `visSetOptions`
 #' @return reactiveValues $Curent and $Main
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
@@ -45,7 +46,7 @@ mod_visNetModification_server <- function(id,
                                           NodeAttrTooltip = T,
                                           EdgeAttrTooltip = T,
                                           domain = getDefaultReactiveDomain(),
-                                          config = NULL
+                                          options = NULL
                                           ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
@@ -170,12 +171,13 @@ mod_visNetModification_server <- function(id,
         #           this.body.data.edges.get(properties.edges[0]).id)
         #           }", ns("click_edge")
         # )),
-       selectEdge = htmlwidgets::JS(sprintf("function(properties){
-                    Shiny.setInputValue('%s',
-                    properties.edges)
-                    }", ns("click_edge")
-          ))
-        )
+         selectEdge = htmlwidgets::JS(sprintf("function(properties){
+                      Shiny.setInputValue('%s',
+                      properties.edges)
+                      }", ns("click_edge")
+            ))
+        ) |>
+        visNetwork::visSetOptions(options = options)
     })
     # GRAPH EDITING LOGIC ------------------------------------------------------
     observeEvent(input$visNetworkId_graphChange, {

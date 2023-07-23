@@ -33,6 +33,7 @@ ui <- fluidPage(
     ')
   ),
   shinyWidgets::switchInput("enableDrawing", "Enable Drawing", value = FALSE, onLabel = "On", offLabel = "Off"),
+  actionButton("edit", "Edit Drawing"),
   actionButton("clearBtn", "Clear Drawing"),
   plotOutput("plot", click = "plot_click")
 )
@@ -40,8 +41,9 @@ ui <- fluidPage(
 # Define server
 server <- function(input, output, session) {
   # Initialize the data for drawing
-  # From commercial point of view I need customers to be able to map function
-  # from whatever they need to whatever the
+  # From commercial point of view I need user to specify what they want to map
+  # on an X and Y plain? Also perhaps I need them to change linedraw ()
+  # Further more x y needs to be dymamically mapped back to data structure;
   data <- reactiveValues(dots = data.frame(x = numeric(0), y = numeric(0)),
                          lines = data.frame(
                            # FROM

@@ -11,7 +11,8 @@ mod_visNetModification_server(
   hard_delete = T,
   NodeAttrTooltip = T,
   EdgeAttrTooltip = T,
-  domain = getDefaultReactiveDomain()
+  domain = getDefaultReactiveDomain(),
+  options = NULL
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ mod_visNetModification_server(
 \item{igraphObj}{a reactive graph object}
 
 \item{domain}{session for}
+
+\item{options}{list of option passed to `visSetOptions`}
 }
 \value{
 reactiveValues $Curent and $Main
