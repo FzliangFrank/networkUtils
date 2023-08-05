@@ -11,7 +11,7 @@ simpleNetworkUtilApp_server <- function(input, output, session) {
   data = reactiveValues(demo = NULL, prod = NULL)
   observe(label="Example Graph", {
     if(is.null(graph) || !inherits(graph, 'igraph')) {
-      data$demo = create_demo_graph()
+      data$demo = create_demo_graph(input$n_node, input$bch)
     } else {
       data$demo = graph
     }
@@ -24,8 +24,30 @@ simpleNetworkUtilApp_server <- function(input, output, session) {
     return(data$prod)
   })
   # gr <- reactive(grv$Current)
-
-  G = mod_visNetModification_server("id", g, dev = F, layout = 'layout_with_kk')
+  observe({
+    layout_options = c(
+      "layout_nicely",
+      "component_wise",
+      "layout_in_circle",
+      "layout_as_bipartite",
+      "layout_as_tree",
+      "layout_as_star",
+      "layout_on_grid",
+      "layout_on_sphere",
+      "layout_with_dh",
+      "layout_with_fr",
+      "layout_with_lgl",
+      "layout_with_kk",
+      "layout_with_kk",
+      "layout_with_mds",
+      "layout_with_sugiyama"
+    )
+    updateSelectizeInput(session, "g_layout", choices = layout_options)
+  })
+  G = mod_visNetModification_server(
+    "id", g, dev = F,
+    layout = reactive(input$g_layout)
+    )
   mod_visNetInteraction_server("id", reactive(G$Current))
 
 

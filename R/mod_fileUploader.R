@@ -16,7 +16,10 @@ mod_fileUploader_ui <- function(id, label = "Upload a File",...){
     fileInput(ns("file"), label = label, accept = c(".xlsx", ".csv"), ...),
     div(
       id = ns("info"), class = "simpleDiv",
-      "Either a .xlsx excel fille with two sheets or a .csv format with at least two column"
+      "A Edge List in either a .xlsx excel file with two sheets or a .csv format with at least two column",
+      tags$a(href = "https://dshizuka.github.io/networkanalysis/02_dataformats.html",
+             style = 'color: #5DADE2',
+             "(learn more here)")
     ),
     pickerInput(ns("pickEdgeSheet"), labe = "Select Edge Sheet",
                 choices = NULL,

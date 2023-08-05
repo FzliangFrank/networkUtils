@@ -6,8 +6,8 @@
 #'
 #' @noRd
 
-create_demo_graph = function() {
-  g <- igraph::make_tree(20, 3, mode = "out")
+create_demo_graph = function(n = 20, b = 3) {
+  g <- igraph::make_tree(n, b, mode = "out")
   nV <- length(V(g))
   nE <- length(E(g))
   V(g)$label <- sample(letters, nV, replace = T) # fix this latter NAME needs to not identical

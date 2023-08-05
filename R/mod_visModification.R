@@ -52,8 +52,42 @@ mod_visNetModification_server <- function(id,
                                           ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
+  valid_layout = c(
+    "layout_nicely",
+    "component_wise",
+    "layout_in_circle",
+    "layout_as_bipartite",
+    "layout_as_tree",
+    "layout_as_star",
+    "layout_on_grid",
+    "layout_on_sphere",
+    "layout_with_dh",
+    "layout_with_fr",
+    "layout_with_lgl",
+    "layout_with_kk",
+    "layout_with_kk",
+    "layout_with_mds",
+    "layout_with_sugiyama"
+  )
   moduleServer(id, function(input, output, session){
     ns <- session$ns
+    layout_input = reactive({
+      if(!is.reactive(layout)) {
+        if(layout %in% valid_layout) {
+          layout
+        } else {
+          warning("Static layout is not on the list")
+          'layout_nicely'
+        }
+      } else {
+        if(layout() %in% valid_layout) {
+          layout()
+        } else {
+          warning('Reactive layout is not on the the list')
+          'layout_nicely'
+        }
+      }
+    })
     # DYNAMIC UI ---------------------------------------------------------------
     observeEvent(input$edit, {
       shinyjs::toggle("save", T)
@@ -142,11 +176,12 @@ mod_visNetModification_server <- function(id,
         # this to should be done first before adding visNetwork default namespace
         if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
         if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
-        print(sprintf("rendering graph using layout %s", layout))
+        print(sprintf("rendering graph using layout %s", layout_input()))
         base_graph <- visNetwork::visIgraph(
           g,
           randomSeed = "3",
           type = "square",
+          layout = layout_input(),
           physics = input$phy,
           smooth = input$phy
         ) |>
@@ -182,18 +217,6 @@ mod_visNetModification_server <- function(id,
           ))
           ) |>
           visNetwork::visSetOptions(options = options)
-        rn = try({
-          if(!is.null(layout) & layout != "") {
-            visIgraphLayout(base_graph, layout = layout)
-          } else {
-            base_graph
-          }
-        })
-        if(rn |> inherits('try-error')) {
-          warning('layout Errored')
-          return(base_graph)
-        }
-        return(rn)
       })
     })
 

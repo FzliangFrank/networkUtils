@@ -48,8 +48,8 @@
                   lead = ""
                     ,
                   href = "https://github.com/FzliangFrank/networkUtils",
-                  btnName = icon("github"),
-                  status = "success",
+                  btnName =icon("github"),
+                  status = "info",
                   div(
                     tags$figure(
                       align = "center",
@@ -65,8 +65,10 @@
                   `mod_visNetwork_read` let you query node and edge based on attributes.
                   `mod_visNetowrk_write` let you edit and download as node edge
                   sheets. It keeps data from original file you uploaded.
-                    ")
-                )
+                    "),
+                  HTML('<head><script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="fzliangukr" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script></head>')
+                ),
+
                 # ----------------------------------------
               # )
             )
@@ -93,10 +95,14 @@
           ),
           bs4Dash::controlbarItem(
             title = "",
-            icon = icon("palette", `data-toggle`="tooltip", `data-toggle`="top", title='Themes'),
+            icon = icon("gear", `data-toggle`="tooltip", `data-toggle`="top",
+                        title='Options'),
             div(class = 'p-3',
-                # selectizeInput('layout','graph layout', choices = NULL),
-                # actionButton("set", "Set")
+                selectizeInput('g_layout','graph layout', choices = NULL),
+                sliderInput('n_node', 'generate n nodes',
+                            value = 20, min = 20, max = 500),
+                numericInput('bch', "branches",
+                             value = 3, min = 1, max = 20)
                 )
           )
         )
