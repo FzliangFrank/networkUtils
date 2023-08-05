@@ -23,8 +23,11 @@ simpleNetworkUtilApp_server <- function(input, output, session) {
     if(is.null(data$prod)) return(data$demo)
     return(data$prod)
   })
-  G = mod_visNetModification_server("id", g, dev = F)
   # gr <- reactive(grv$Current)
+
+  G = mod_visNetModification_server("id", g, dev = F, layout = 'layout_with_kk')
   mod_visNetInteraction_server("id", reactive(G$Current))
+
+
   # something else
 }

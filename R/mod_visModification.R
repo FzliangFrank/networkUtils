@@ -34,6 +34,7 @@ mod_visNetModification_ui <- function(id){
 #' @param igraphObj a reactive graph object
 #' @param domain session for
 #' @param options list of option passed to `visSetOptions`
+#' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
 #' @return reactiveValues $Curent and $Main
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
@@ -46,7 +47,8 @@ mod_visNetModification_server <- function(id,
                                           NodeAttrTooltip = T,
                                           EdgeAttrTooltip = T,
                                           domain = getDefaultReactiveDomain(),
-                                          options = NULL
+                                          options = NULL,
+                                          layout = 'layout_nicely'
                                           ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
@@ -133,52 +135,68 @@ mod_visNetModification_server <- function(id,
       }
     )
     # MAIN VISUALISATION + CUSTOM EVENT-----------------------------------------
-    output$visNetworkId <- visNetwork::renderVisNetwork({
-      req(!is.null(Graph$Main))
-      g <- Graph$Main
-      # this to should be done first before adding visNetwork default namespace
-      if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
-      if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
-      base_graph <- visNetwork::visIgraph(
-        g,
-        randomSeed = "3",
-        type = "square",
-        physics = input$phy,
-        smooth = input$phy
+    observe({
+      output$visNetworkId <- visNetwork::renderVisNetwork({
+        req(!is.null(Graph$Main))
+        g <- Graph$Main
+        # this to should be done first before adding visNetwork default namespace
+        if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
+        if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
+        print(sprintf("rendering graph using layout %s", layout))
+        base_graph <- visNetwork::visIgraph(
+          g,
+          randomSeed = "3",
+          type = "square",
+          physics = input$phy,
+          smooth = input$phy
         ) |>
-        visNetwork::visOptions(
-          clickToUse = T,
-          collapse = T,
-          manipulation = list(
-            enabled = input$edit,
-            addNodeCols = c("label")
+          visNetwork::visOptions(
+            clickToUse = T,
+            collapse = T,
+            manipulation = list(
+              enabled = input$edit,
+              addNodeCols = c("label")
             ),
-          highlightNearest = list(
-            enabled = T,
-            degree = 0,
-            algorithm = "hierarchical"
+            highlightNearest = list(
+              enabled = T,
+              degree = 0,
+              algorithm = "hierarchical"
             )
           ) |>
-        visNetwork::visEvents(selectNode = htmlwidgets::JS(sprintf("function(properties){
+          visNetwork::visEvents(selectNode = htmlwidgets::JS(sprintf("function(properties){
                   Shiny.setInputValue('%s',
                   this.body.data.nodes.get(properties.nodes[0]).id)
                   ;}", ns("click_node") # Your shiny module have namespace
-            )),
-     #    select = "function(properties) {
-     # alert('selected nodes: ' + properties.nodes);}",
-        # selectEdge = htmlwidgets::JS(sprintf("function(properties){
-        #           Shiny.setInputValue('%s',
-        #           this.body.data.edges.get(properties.edges[0]).id)
-        #           }", ns("click_edge")
-        # )),
-         selectEdge = htmlwidgets::JS(sprintf("function(properties){
+          )),
+          #    select = "function(properties) {
+          # alert('selected nodes: ' + properties.nodes);}",
+          # selectEdge = htmlwidgets::JS(sprintf("function(properties){
+          #           Shiny.setInputValue('%s',
+          #           this.body.data.edges.get(properties.edges[0]).id)
+          #           }", ns("click_edge")
+          # )),
+          selectEdge = htmlwidgets::JS(sprintf("function(properties){
                       Shiny.setInputValue('%s',
                       properties.edges)
                       }", ns("click_edge")
-            ))
-        ) |>
-        visNetwork::visSetOptions(options = options)
+          ))
+          ) |>
+          visNetwork::visSetOptions(options = options)
+        rn = try({
+          if(!is.null(layout) & layout != "") {
+            visIgraphLayout(base_graph, layout = layout)
+          } else {
+            base_graph
+          }
+        })
+        if(rn |> inherits('try-error')) {
+          warning('layout Errored')
+          return(base_graph)
+        }
+        return(rn)
+      })
     })
+
     # GRAPH EDITING LOGIC ------------------------------------------------------
     observeEvent(input$visNetworkId_graphChange, {
       req(!is.null(input$visNetworkId_graphChange$cmd))

@@ -4,7 +4,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
-simpleNetworkUtilApp_ui <- function(request) {
+ simpleNetworkUtilApp_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
@@ -95,7 +95,8 @@ simpleNetworkUtilApp_ui <- function(request) {
             title = "",
             icon = icon("palette", `data-toggle`="tooltip", `data-toggle`="top", title='Themes'),
             div(class = 'p-3',
-                bs4Dash::skinSelector()
+                # selectizeInput('layout','graph layout', choices = NULL),
+                # actionButton("set", "Set")
                 )
           )
         )

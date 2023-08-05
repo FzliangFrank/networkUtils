@@ -12,7 +12,8 @@ mod_visNetModification_server(
   NodeAttrTooltip = T,
   EdgeAttrTooltip = T,
   domain = getDefaultReactiveDomain(),
-  options = NULL
+  options = NULL,
+  layout = "layout_nicely"
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ mod_visNetModification_server(
 \item{domain}{session for}
 
 \item{options}{list of option passed to `visSetOptions`}
+
+\item{layout}{igraph layout to put in `visNetwork::visIgraphLayout`}
 }
 \value{
 reactiveValues $Curent and $Main

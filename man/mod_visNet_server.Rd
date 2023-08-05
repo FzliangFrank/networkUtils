@@ -4,14 +4,17 @@
 \alias{mod_visNet_server}
 \title{visNet Server Functions}
 \usage{
-mod_visNet_server(id, graph_rct, debug = F, options)
+mod_visNet_server(id, graph_rct, debug = F, options, layout = layout)
 }
 \arguments{
 \item{id}{shiny}
 
 \item{graph_rct}{reactive expression of igraph}
 
-\item{options}{mod_visNet_server links both modification and interaction UI and by doing so
+\item{options}{list of option passed to `visSetOptions`}
+
+\item{layout}{igraph layout to put in `visNetwork::visIgraphLayout`
+mod_visNet_server links both modification and interaction UI and by doing so
 make it easy}
 }
 \value{
