@@ -179,6 +179,7 @@ mod_visNetModification_server <- function(id,
         print(sprintf("rendering graph using layout %s", layout_input()))
         base_graph <- visNetwork::visIgraph(
           g,
+          idToLabel = F,
           randomSeed = "3",
           type = "square",
           layout = layout_input(),

@@ -57,7 +57,10 @@ if(interactive()) {
                                  reactive(g),
                                  v_ignore = c('title')
                                  )
-    mod_visNetModification_server("id", reactive(g))
+    mod_visNetModification_server("id",
+                                  reactive(g),
+                                  dev = T
+                                  )
   }
   options(shiny.autoreload = T)
   shinyApp(ui, server)

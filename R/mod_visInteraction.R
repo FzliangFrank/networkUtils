@@ -168,7 +168,7 @@ mod_visNetInteraction_server <- function(
       if(typeof(nodeAttr())=="double") {
         sliderInput(ns("nodeAttr"), nodeAttrLabel,
                     min=blurry_range(nodeAttr())[1], max=blurry_range(nodeAttr())[2],
-                    value=c(quantile(nodeAttr(), 0.33), quantile(nodeAttr(), 0.66))
+                    value=c(quantile(nodeAttr(), 0.33, na.rm = TRUE), quantile(nodeAttr(), 0.66, na.rm = TRUE))
         )
       } else if(inherits(nodeAttr(), "sfc")) {
         plotOutput(ns("nodeAttrPlot"), brush=ns("nodeAttr"),
