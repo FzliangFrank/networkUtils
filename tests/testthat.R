@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(ShinySpider)
+library(networkUtils)
 
-test_check("ShinySpider")
+test_check("networkUtils")

@@ -4,6 +4,8 @@
 #' @param graph_rct reactive expression of igraph
 #' @param options list of option passed to `visSetOptions`
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
+#'
+#' The easiest way to use both modification server and interaction server.
 #' mod_visNet_server links both modification and interaction UI and by doing so
 #' make it easy
 #' @return list of `Current` and `Main`
@@ -13,12 +15,13 @@
 mod_visNet_server <- function(id,
                               graph_rct,
                               debug = F,
-                              options,
-                              layout = layout
+                              options = NULL,
+                              layout = NULL
                               ){
   domain = getDefaultReactiveDomain()
   moduleServer(id, function(input, output, session){
     ns <- session$ns
+    if(is.null(layout)) layout = 'layout_nicely'
     SessionGraph = mod_visNetModification_server(id, graph_rct,
                                                  dev = debug,
                                                  domain = domain,

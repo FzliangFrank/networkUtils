@@ -12,6 +12,14 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 Empowered by shiny and `visNetwork`, this is a font-end development to
 interactively view and modify any graph based network structure.
 
+### License
+
+This package is licensed under MIT license, meaning you are free to use
+it for any intended purposes. However, the UI it has been using is
+`bs4dash` is under Copy Left licenses. Please consult copy right lawyer
+if you intend to distribute any UI component of this pacakge for
+commercial purpose.
+
 ## Installation
 
 You can install the development version of `networkUtils` from

@@ -7,6 +7,7 @@ ui <- fluidPage(
       width = 6,
       jqui_resizable(
        visNetworkOutput("id"),
+       # there are a couple more options you can do
         options = list(handles = "e,s,n,w")
       )
     )

@@ -262,6 +262,8 @@ mod_visNetInteraction_server <- function(
       g <- isolate(graph())
       search_input = tolower(input$graphSelector)
       req(search_input %in% c("nodes", "edges"))
+      req(!is.null(input$searchBar))
+      req(input$searchBar != "")
       nodeFound = search_idx(g,
                              input$searchBar,
                              search_in = search_input,

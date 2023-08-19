@@ -13,13 +13,23 @@ knitr::opts_chunk$set(
 )
 ```
 
+
 # NetworkUtils
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
+
 Empowered by shiny and `visNetwork`, this is a font-end development to interactively view and modify any graph based network structure.
+
+### License
+
+This package is licensed under MIT license, meaning you are free to use it for 
+any intended purposes. However, the UI it has been using is 
+`bs4dash` is under Copy Left licenses. Please consult copy right lawyer if you 
+intend to distribute any UI component of this pacakge for commercial purpose. 
+
 
 ## Installation
 
@@ -157,5 +167,4 @@ track what has been change, and what has been.
 - [x] When scoping namespace within `visNetwork` own function, session id do not
 get appended automatically. This might get fixed in the future. For production 
 reasons, freeze current visNetwork package in namespace
-
 

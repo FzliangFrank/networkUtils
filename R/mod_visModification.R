@@ -21,7 +21,7 @@ mod_visNetModification_ui <- function(id){
     ),
     wellPanel(
       actionButton(ns("save"), "Commit Change"),
-      downloadButton(ns("export")),
+      downloadButton(ns("export")),# build in export option
     ),
     shiny::uiOutput(ns("AttrEditor")),
     shiny::verbatimTextOutput(ns("dev"))
@@ -100,7 +100,9 @@ mod_visNetModification_server <- function(id,
 
     Graph <- reactiveValues(
       Current = NULL,
-      Main = NULL
+      Main = NULL,
+      click_node = NULL,
+      click_edge = NULL
     )
     observe({
       g <- igraphObj()
@@ -212,15 +214,16 @@ mod_visNetModification_server <- function(id,
           #           }", ns("click_edge")
           # )),
           selectEdge = htmlwidgets::JS(sprintf("function(properties){
-                      Shiny.setInputValue('%s',
-                      properties.edges)
-                      }", ns("click_edge")
+                  Shiny.setInputValue('%s',
+                  properties.edges)
+                  }", ns("click_edge")
           ))
           ) |>
           visNetwork::visSetOptions(options = options)
       })
     })
-
+    observe({Graph$click_node = input$click_node})
+    observe({Graph$click_edge = input$click_edge})
     # GRAPH EDITING LOGIC ------------------------------------------------------
     observeEvent(input$visNetworkId_graphChange, {
       req(!is.null(input$visNetworkId_graphChange$cmd))
