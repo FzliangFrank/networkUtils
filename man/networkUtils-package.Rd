@@ -6,7 +6,15 @@
 \alias{networkUtils-package}
 \title{networkUtils: networkUtils}
 \description{
-PKG_DESC.
+Shiny extension for Almende B.V. 's package `visNetwork.`networkUtils let you modify networkgraph or downloadnode and edge sheets. The returned igraph object can be used for any purpose.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/FzliangFrank/networkUtils}
+  \item Report bugs at \url{https://github.com/FzliangFrank/networkUtils/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Fanzhou Liang \email{fzlianguk@gmail.com}

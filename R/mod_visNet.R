@@ -1,5 +1,6 @@
 
 #' visNet Server Functions
+#' @name mod_visNet_
 #' @param id shiny
 #' @param graph_rct reactive expression of igraph
 #' @param options list of option passed to `visSetOptions`
@@ -8,9 +9,14 @@
 #' The easiest way to use both modification server and interaction server.
 #' mod_visNet_server links both modification and interaction UI and by doing so
 #' make it easy
-#' @return list of `Current` and `Main`
+#' @return reactive list
+#'
+#' @details
+#' list of `Current`, `Main` `click_node` and `click_edge`
 #' `Main` for graph that has been committed editing;
 #' `Current` for graph on display;
+#' Two additional `click_node` and `click_edge` let you track
+#' edges and node currently clicked
 #' @export
 mod_visNet_server <- function(id,
                               graph_rct,

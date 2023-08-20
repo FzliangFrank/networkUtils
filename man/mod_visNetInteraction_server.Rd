@@ -2,8 +2,7 @@
 % Please edit documentation in R/mod_visInteraction.R
 \name{mod_visNetInteraction_server}
 \alias{mod_visNetInteraction_server}
-\title{NetworkDisplayServer
-visNetworkReadControler Server Functions}
+\title{NetworkDisplayServer}
 \usage{
 mod_visNetInteraction_server(
   id,

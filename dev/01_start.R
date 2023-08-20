@@ -21,11 +21,15 @@
 golem::fill_desc(
   pkg_name = "networkUtils", # The Name of the package containing the App
   pkg_title = "networkUtils", # The Title of the package containing the App
-  pkg_description = "PKG_DESC.", # The Description of the package containing the App
+  pkg_description = glue::glue(
+      "Shiny extension for Almende B.V. 's package `visNetwork.`",
+      "networkUtils let you modify networkgraph or download",
+      "node and edge sheets. The returned igraph object can be used for any purpose."
+      ), # The Description of the package containing the App
   author_first_name = "Fanzhou", # Your First Name
   author_last_name = "Liang", # Your Last Name
   author_email = "fzlianguk@gmail.com", # Your Email
-  repo_url = NULL # The URL of the GitHub Repo (optional)
+  repo_url = "https://github.com/FzliangFrank/networkUtils" # The URL of the GitHub Repo (optional)
 )
 
 ## Set {golem} options ----
@@ -33,12 +37,11 @@ golem::set_golem_options()
 
 ## Create Common Files ----
 ## See ?usethis for more information
-usethis::use_mit_license("Golem User") # You can set another license here
-usethis::use_apache_license()
-usethis::use_readme_rmd(open = FALSE)
+usethis::use_mit_license("Fanzhou Liang") # You can set another license here
+# usethis::use_readme_rmd(open = FALSE)
 # Note that `contact` is required since usethis version 2.1.5
 # If your {usethis} version is older, you can remove that param
-usethis::use_code_of_conduct(contact = "Golem User")
+usethis::use_code_of_conduct(contact = "Fanzhou Liang")
 usethis::use_lifecycle_badge("Experimental")
 usethis::use_news_md(open = FALSE)
 

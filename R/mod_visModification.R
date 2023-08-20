@@ -28,17 +28,19 @@ mod_visNetModification_ui <- function(id){
   )
 }
 
-#' visNetworkWrite Server Functions
-
+#' visModification Server Functions
+#' @rdname mod_visNet_
 #' @param id shiny server id
 #' @param igraphObj a reactive graph object
 #' @param domain session for
 #' @param options list of option passed to `visSetOptions`
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
-#' @return reactiveValues $Curent and $Main
+#' @return reactiveValues $Curent and $Main and more
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
 #' $Main is the igraph Object that has been committed and saved
+#' In addition it return a set of `reactiveValues` which monitor graph changes
+#' and track node that is currently clicked.
 #' @export
 mod_visNetModification_server <- function(id,
                                           igraphObj,
@@ -102,7 +104,9 @@ mod_visNetModification_server <- function(id,
       Current = NULL,
       Main = NULL,
       click_node = NULL,
-      click_edge = NULL
+      click_edge = NULL,
+      editing = list(NULL),
+      commit = NULL
     )
     observe({
       g <- igraphObj()
@@ -227,7 +231,6 @@ mod_visNetModification_server <- function(id,
     # GRAPH EDITING LOGIC ------------------------------------------------------
     observeEvent(input$visNetworkId_graphChange, {
       req(!is.null(input$visNetworkId_graphChange$cmd))
-      message(class(input$visNetworkId_graphChange))
       G = Graph$Current
       G = try(modify_graph_i(G, input$visNetworkId_graphChange, hard_delete = hard_delete))
       if(G |> inherits('try-error')) {
@@ -238,10 +241,12 @@ mod_visNetModification_server <- function(id,
         G = Graph$Current
         shinyjs::click('save')
       } else {
+        Graph$editing = input$visNetworkId_graphChange
         Graph$Current = G
         # shinyWidgets::updatePrettyCheckbox(session = session, inputId = 'edit')
       }
     })
+    observe({Graph$commit = input$save})
     # DEV AREA -----------------------------------------------------------------
     output$dev <- shiny::renderPrint({
       # print(input$click)
