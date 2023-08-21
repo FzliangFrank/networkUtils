@@ -6,24 +6,49 @@ library(bs4Dash)
 devtools::load_all()
 
 ccl = make_ring(10, T)
-# basic UI
-ui <- fluidPage(
-  column(
-    8,
-    mod_visNetModification_ui('visNet'),
-    verbatimTextOutput('dev'),
-    actionButton('write', "Download Changelog"),
-    downloadButton('save', "Save Changelog")
-  ),
-  column(
-    4,
-    mod_visNetInteraction_ui('visNet')
+log_timeline_item = function(chglog_1) {
+  if(chglog_1 |> is.null()) return(NULL)
+  chglog_1$change -> x
+  chglog_1$time -> time
+  content = jsonlite::toJSON(x, auto_unbox = T, simplifyMatrix = T) |>
+    jsonlite::prettify()
+
+  if(is.null(x) || is.na(x) || length(x) == 0) {
+    return(timelineStart())
+  } else if(x$cmd == 'addNode') {
+    icon = icon("circle-plus")
+    title = "add node"
+    color = 'success'
+  } else if (x$cmd == 'addEdge') {
+    icon = icon('ruler')
+    title = "add edge"
+    color = 'info'
+  } else if (x$cmd == 'deleteElements') {
+    icon = icon("trash")
+    title = sprintf("deleted %i element", length(x$nodes) + length(x$edges))
+    color = 'maroon'
+  } else if (x$cmd == 'editEdge') {
+    icon = icon("pencil")
+    color = 'indigo'
+    title = "edge edited"
+    content = paste(x$from, '-->',x$to)
+  }
+  timelineItem(
+    icon = icon,
+    time = time,
+    title = title,
+    color = color,
+    content
   )
-)
+}
+# basic UI
 # dashboard UI
 ui <- bs4Dash::dashboardPage(
   header = dashboardHeader(
-    title = 'Graph Change Tracker'
+    title = 'Graph Change Tracker',
+    tags$head(
+      tags$script('window.onresize = function() {network.fit();}')
+    )
   ),
   sidebar = dashboardSidebar(),
   controlbar = dashboardControlbar(
@@ -38,25 +63,31 @@ ui <- bs4Dash::dashboardPage(
     width = 300
   ),
   body = dashboardBody(
-    sortable(
-      width = 12,
       fluidRow(
-        box(
-          title = 'Network',
-          mod_visNetModification_ui('visNet'),
-          actionButton('write', "Download Changelog"),
-          downloadButton('save', "Download Changelog")
+        sortable(
+        width = 6,
+          box(
+            width = 12,
+            style = 'overflow-y: scroll;',
+            title = 'Network',
+            maximizable = T,
+            height = 200,
+            mod_visNetModification_ui('visNet')
+          )
         ),
-        box(
-          title = 'Time Line',
-          uiOutput("timeline_ui")
+        sortable(
+          width = 6,
+          box(
+            width = 12,
+            title = 'Time Line',
+            uiOutput("timeline_ui")
+          )
         )
       ),
       box(
         title = "Dev Log",
         verbatimTextOutput('dev')
       )
-    )
   )
 )
 
@@ -79,8 +110,7 @@ server <- function(input, output, session) {
   # change happens.
   observe({
     req(G$editing)
-    req(!is.null(G$editing))
-    req(G$editing != '')
+    req(!is.null(G$editing$cmd) || is.na(G$editing))
     change_log$log = isolate(change_log$log) |>
       append(list(list(
         time = Sys.time(),
@@ -89,14 +119,15 @@ server <- function(input, output, session) {
   })
   output$dev <- renderPrint({
     print(clicked_node())
+    print(change_log$log)
     print(change_log$log |>
             jsonlite::toJSON(auto_unbox = T, simplifyMatrix = T) |>
             jsonlite::prettify())
   })
   observe({
     change_log$log |>
-      jsonlite::toJSON() |>
-      jsonlite::write_json('change_log.json')
+      jsonlite::toJSON(flatten=T) |>
+      jsonlite::write_json('dev/feature_change_management/change_log.json')
   })
   output$save = downloadHandler(
     filename = function() {
@@ -113,10 +144,7 @@ server <- function(input, output, session) {
       width = 12,
       purrr::map(
         change_log$log,
-        ~ timelineItem(
-          time = .x$time,
-          title = .x$change$cmd
-        )
+        log_timeline_item
         )
     )
   })
@@ -156,17 +184,6 @@ if(interactive()){
             time = '2023-02-31'
           )
         )
-        # timelineBlock(
-        #   width = 12,
-        #   # lapply(myList, \(x) timelineItem(
-        #   #   title = x$name,
-        #   #   time = x$time
-        #   # ))
-        #   purrr::map(myList, ~ timelineItem(
-        #     title = .x$name,
-        #     time = .x$time
-        #   ))
-        # )
         timelineBlock(
           width = 12,
           reversed = TRUE,
@@ -201,5 +218,15 @@ if(interactive()){
     }
   )
 }
+if(interactive()) {
+  library(purrr)
+  change_list = jsonlite::read_json('dev/feature_change_management/change_log.json')[[1]] |>
+    jsonlite::parse_json(
+      flatten=T,
+      auto_unbox=T
+    )
+  change_list |>
+    purrr::detect(~.x$change$cmd == 'deleteElements')
 
-jsonlite::read_json('dev/change_log.json')
+}
+

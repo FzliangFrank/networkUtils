@@ -1,15 +1,23 @@
 library(shinyjqui)
 library(visNetwork)
 library(shiny)
-ui <- fluidPage(
-  fluidRow(
-    column(
-      width = 6,
-      jqui_resizable(
-       visNetworkOutput("id"),
-       # there are a couple more options you can do
-        options = list(handles = "e,s,n,w")
-      )
+ui <- dashboardPage(
+  sidebar=dashboardSidebar(),
+  header = dashboardHeader(title="test"),
+  body=dashboardBody(
+    box(
+      # shinyjqui::jqui_resizable(
+      visNetworkOutput("id", width='100%'),
+      ## there are a couple more options you can do
+      # options = list(handles = "e,s,n,w")
+      # options = list(handles = 's')
+      # ),
+      # mod_visNetModification_ui('net'),
+      maximizable = T
+    ),
+    box(
+      mod_visNetModification_ui('net'),
+      maximizable = T
     )
   )
 )
@@ -21,5 +29,9 @@ server <- function(input, output) {
     visIgraph(g) |>
       visOptions(clickToUse = T)
   })
+  G = reactive({
+    igraph::make_tree(12,3)
+  })
+  mod_visNetModification_server('net', G)
 }
 shinyApp(ui, server)

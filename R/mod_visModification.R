@@ -17,7 +17,7 @@ mod_visNetModification_ui <- function(id){
     p("You are in editing mode, exit without save will revert to original", id = ns("note")),
     shinyjqui::jqui_resizable(
       visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%"),
-      options = list(handles = "s")
+      options = list(handles = "e,s,n,w")
     ),
     wellPanel(
       actionButton(ns("save"), "Commit Change"),

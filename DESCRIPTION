@@ -1,6 +1,6 @@
 Package: networkUtils
 Title: networkUtils
-Version: 0.0.0.9000
+Version: 1.0.0.0
 Authors@R: person('Fanzhou', 'Liang', email = 'fzlianguk@gmail.com', role = c('cre', 'aut'))
 Description: Shiny extension for Almende B.V. 's package `visNetwork.`networkUtils let you modify networkgraph or downloadnode and edge sheets. The returned igraph object can be used for any purpose.
 License: MIT + file LICENSE
