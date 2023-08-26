@@ -22,7 +22,9 @@ mod_visNet_server <- function(id,
                               graph_rct,
                               debug = F,
                               options = NULL,
-                              layout = NULL
+                              layout = NULL,
+                              NodeAttrTooltip = F,
+                              EdgeAttrTooltip = F
                               ){
   domain = getDefaultReactiveDomain()
   moduleServer(id, function(input, output, session){
@@ -31,6 +33,8 @@ mod_visNet_server <- function(id,
     SessionGraph = mod_visNetModification_server(id, graph_rct,
                                                  dev = debug,
                                                  domain = domain,
+                                                 NodeAttrTooltip = NodeAttrTooltip,
+                                                 EdgeAttrTooltip = EdgeAttrTooltip,
                                                  options = options,
                                                  layout = layout
                                                  )

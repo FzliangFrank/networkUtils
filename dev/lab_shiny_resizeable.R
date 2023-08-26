@@ -1,13 +1,20 @@
 library(shinyjqui)
 library(visNetwork)
 library(shiny)
+library(htmltools)
 ui <- dashboardPage(
   sidebar=dashboardSidebar(),
   header = dashboardHeader(title="test"),
   body=dashboardBody(
     box(
       # shinyjqui::jqui_resizable(
-      visNetworkOutput("id", width='100%'),
+      id = 'map',
+      # div(
+      #   id = 'map',
+        visNetworkOutput("id", width='100%'),
+      # ),
+      tags$script(src='resize.js'),
+        # style ="width:100%; height:200%; vertical-align:top;"),
       ## there are a couple more options you can do
       # options = list(handles = "e,s,n,w")
       # options = list(handles = 's')

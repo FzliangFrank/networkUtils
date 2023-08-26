@@ -23,6 +23,7 @@ log_timeline_item = function(chglog_1) {
     icon = icon('ruler')
     title = "add edge"
     color = 'info'
+    content = p('add edge from:', x$from, 'to', x$to)
   } else if (x$cmd == 'deleteElements') {
     icon = icon("trash")
     title = sprintf("deleted %i element", length(x$nodes) + length(x$edges))
@@ -32,6 +33,8 @@ log_timeline_item = function(chglog_1) {
     color = 'indigo'
     title = "edge edited"
     content = paste(x$from, '-->',x$to)
+  } else {
+    stop("unrecognised command")
   }
   timelineItem(
     icon = icon,
@@ -73,7 +76,7 @@ ui <- bs4Dash::dashboardPage(
             maximizable = T,
             height = 200,
             mod_visNetModification_ui('visNet')
-          )
+          ),
         ),
         sortable(
           width = 6,

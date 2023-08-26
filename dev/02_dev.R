@@ -62,7 +62,7 @@ golem::add_utils("igraph_to_svg") #
 golem::add_utils("blurry_range")
 golem::add_utils("add_vertex_sf") # for comparability of sf
 golem::add_utils("search_idx")
-
+golem::add_fct('log_timeline_item')
 ## External resources
 ## Creates .js and .css files at inst/app/www
 golem::add_js_file("script")
