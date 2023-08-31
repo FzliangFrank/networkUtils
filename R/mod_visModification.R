@@ -15,10 +15,13 @@ mod_visNetModification_ui <- function(id){
     shinyWidgets::prettyCheckbox(ns("edit"), "Edit", animation = "smooth", status = 'primary',inline = T),
     shinyWidgets::prettyCheckbox(ns('phy'), 'Physics', animation = "smooth", inline = T),
     p("You are in editing mode, exit without save will revert to original", id = ns("note")),
+    # /DEV/ ======
+    # Vacumn this component that this goes into visNetowrkOutput
     shinyjqui::jqui_resizable(
       visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%"),
       options = list(handles = "e,s,n,w")
     ),
+    # \DEV\=========
     wellPanel(
       actionButton(ns("save"), "Commit Change"),
       downloadButton(ns("export")),# build in export option
@@ -33,7 +36,7 @@ mod_visNetModification_ui <- function(id){
 #' @param id shiny server id
 #' @param igraphObj a reactive graph object
 #' @param domain session for
-#' @param options list of option passed to `visSetOptions`
+#' @param visNet_options list of option passed to `visSetOptions`
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
 #' @return reactiveValues $Curent and $Main and more
 #' @details
@@ -41,6 +44,7 @@ mod_visNetModification_ui <- function(id){
 #' $Main is the igraph Object that has been committed and saved
 #' In addition it return a set of `reactiveValues` which monitor graph changes
 #' and track node that is currently clicked.
+#'
 #' @export
 mod_visNetModification_server <- function(id,
                                           igraphObj,
@@ -49,7 +53,7 @@ mod_visNetModification_server <- function(id,
                                           NodeAttrTooltip = T,
                                           EdgeAttrTooltip = T,
                                           domain = getDefaultReactiveDomain(),
-                                          options = NULL,
+                                          visNet_options = NULL,
                                           layout = 'layout_nicely'
                                           ){
   # stop if not reactive
@@ -73,7 +77,7 @@ mod_visNetModification_server <- function(id,
   )
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    layout_input = reactive({
+    layout_input = reactive(label ='layout input', {
       if(!is.reactive(layout)) {
         if(layout %in% valid_layout) {
           layout
@@ -88,6 +92,14 @@ mod_visNetModification_server <- function(id,
           warning('Reactive layout is not on the the list')
           'layout_nicely'
         }
+      }
+    })
+    option_input = reactive(label = 'option input',{
+      if(is.reactive(visNet_options)) {
+        message('visNetOptions is reactive')
+        visNet_options()
+      } else {
+        visNet_options
       }
     })
     # DYNAMIC UI ---------------------------------------------------------------
@@ -135,7 +147,7 @@ mod_visNetModification_server <- function(id,
         # }
         # if(!"name" %in% vertex_attr_names(Graph$Main)) delete_graph_attr(g, "name")
       Graph$Main <- g
-      print("current write into main")
+      if(dev) message("current write into main")
       # shinyWidgets::updatePrettyCheckbox(session = session,inputId = "edit", status = 'success')
     }) |>
       bindEvent(input$save)
@@ -175,16 +187,16 @@ mod_visNetModification_server <- function(id,
       }
     )
     # MAIN VISUALISATION + CUSTOM EVENT-----------------------------------------
-    observe({
-      output$visNetworkId <- visNetwork::renderVisNetwork({
-        req(!is.null(Graph$Main))
-        g <- Graph$Main
-        # this to should be done first before adding visNetwork default namespace
-        if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
-        if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
-        print(sprintf("rendering graph using layout %s", layout_input()))
-        base_graph <- visNetwork::visIgraph(
-          g,
+    visNetObj <- reactive({
+      req(!is.null(Graph$Main))
+      g <- Graph$Main
+      # this to should be done first before adding visNetwork default namespace
+      if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
+      if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
+      if(dev) message(sprintf("rendering graph using layout %s", layout_input()))
+      # /Dev/ This part to be replaced by a customer renderer?
+      g |>
+        visNetwork::visIgraph(
           idToLabel = F,
           randomSeed = "3",
           type = "square",
@@ -192,23 +204,25 @@ mod_visNetModification_server <- function(id,
           physics = input$phy,
           smooth = input$phy
         ) |>
-          visNetwork::visOptions(
-            clickToUse = T,
-            collapse = T,
-            manipulation = list(
-              enabled = input$edit,
-              addNodeCols = c("label")
-            ),
-            highlightNearest = list(
-              enabled = T,
-              degree = 0,
-              algorithm = "hierarchical"
-            )
-          ) |>
-          visNetwork::visEvents(selectNode = htmlwidgets::JS(sprintf("function(properties){
-                  Shiny.setInputValue('%s',
-                  this.body.data.nodes.get(properties.nodes[0]).id)
-                  ;}", ns("click_node") # Your shiny module have namespace
+        visNetwork::visOptions(
+          clickToUse = T,
+          collapse = T,
+          manipulation = list(
+            enabled = input$edit,
+            addNodeCols = c("label")
+          ),
+          highlightNearest = list(
+            enabled = T,
+            degree = 0,
+            algorithm = "hierarchical"
+          )
+        ) |>
+        # Custom Events
+        visNetwork::visEvents(
+          selectNode = htmlwidgets::JS(sprintf("function(properties){
+                    Shiny.setInputValue('%s',
+                    this.body.data.nodes.get(properties.nodes[0]).id)
+                    ;}", ns("click_node") # Your shiny module have namespace
           )),
           #    select = "function(properties) {
           # alert('selected nodes: ' + properties.nodes);}",
@@ -218,13 +232,15 @@ mod_visNetModification_server <- function(id,
           #           }", ns("click_edge")
           # )),
           selectEdge = htmlwidgets::JS(sprintf("function(properties){
-                  Shiny.setInputValue('%s',
-                  properties.edges)
-                  }", ns("click_edge")
+                    Shiny.setInputValue('%s',
+                    properties.edges)
+                    }", ns("click_edge")
           ))
-          ) |>
-          visNetwork::visSetOptions(options = options)
-      })
+        ) |>
+        visNetwork::visSetOptions(options = option_input())
+    })
+    output$visNetworkId <- visNetwork::renderVisNetwork({
+      visNetObj()
     })
     observe({Graph$click_node = input$click_node})
     observe({Graph$click_edge = input$click_edge})

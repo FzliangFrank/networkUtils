@@ -3,7 +3,7 @@
 #' @name mod_visNet_
 #' @param id shiny
 #' @param graph_rct reactive expression of igraph
-#' @param options list of option passed to `visSetOptions`
+#' @param visNet_options list of option passed to `visSetOptions`
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
 #'
 #' The easiest way to use both modification server and interaction server.
@@ -21,7 +21,7 @@
 mod_visNet_server <- function(id,
                               graph_rct,
                               debug = F,
-                              options = NULL,
+                              visNet_options = NULL,
                               layout = NULL,
                               NodeAttrTooltip = F,
                               EdgeAttrTooltip = F
@@ -35,10 +35,15 @@ mod_visNet_server <- function(id,
                                                  domain = domain,
                                                  NodeAttrTooltip = NodeAttrTooltip,
                                                  EdgeAttrTooltip = EdgeAttrTooltip,
-                                                 options = options,
+                                                 visNet_options = visNet_options,
                                                  layout = layout
                                                  )
-    mod_visNetInteraction_server(id, reactive(SessionGraph$Current), domain = domain)
+    Graph = reactive({
+      req(!is.null(SessionGraph$Current))
+      req(inherits(SessionGraph$Current, 'igraph'))
+      SessionGraph$Current
+    })
+    mod_visNetInteraction_server(id, Graph, domain = domain)
     return(SessionGraph)
   })
 }

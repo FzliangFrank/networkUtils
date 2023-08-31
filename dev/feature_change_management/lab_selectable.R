@@ -83,7 +83,11 @@ ui <- bs4Dash::dashboardPage(
           box(
             width = 12,
             title = 'Time Line',
-            uiOutput("timeline_ui")
+            div(
+              style = 'overflow: scroll',
+              height = '300px',
+              uiOutput("timeline_ui")
+            )
           )
         )
       ),
@@ -169,6 +173,8 @@ if(interactive()){
       title = "test",
       body = dashboardBody(
         box(
+          height = '300px',
+          style = 'overflow-y: scroll',
           title = "Timeline",
           uiOutput('timeline_ui')
         )

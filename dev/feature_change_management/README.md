@@ -62,4 +62,11 @@ You can only do so as... when user fetch a set of data, sent into datbase to
 lock it so no one else could edit it. 
 
 
+## Implementation 
+
+This function here `fct_log_timeline_item` transform one reactive log 
+into one `bs4Dash::timelineItem()`. You can apply this function into ui to update
+in whatever manner you like. 
+This function only passively display time log. It would be useful to add buttons in each timeline Item every time someone press commit button.
+
 
