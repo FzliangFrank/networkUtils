@@ -40,5 +40,6 @@ Depends:
     dplyr,
     igraph,
     stats
-URL: https://github.com/FzliangFrank/networkUtils
+URL: https://github.com/FzliangFrank/networkUtils,
+    https://fzliangfrank.github.io/networkUtils/
 BugReports: https://github.com/FzliangFrank/networkUtils/issues
