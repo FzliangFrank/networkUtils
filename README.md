@@ -9,8 +9,10 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-Bundle of shiny modules for editing and interact with small amount of
-graph data.
+Editing and interact with network data is not always easy. This package
+envelope a bundle of shiny modules for editing and interact with small
+amount of graph data, and let you download and load them back in as a
+excel spreadsheet.
 
 This package is intended for R developers who have already familiar with
 basic workflow `shiny` and `shiny module`. If you are not already
@@ -29,8 +31,8 @@ They are:
   *mod_visNetModification_server* and *mod_visNetInteraction_server* at
   the same time.
 
-This development heavy depends on `visNetwork` package and works most
-responsive with below 500 nodes.
+This development heavy depends on `visNetwork` package and will works
+most responsive with graph of below 500 nodes.
 
 ## Installation
 

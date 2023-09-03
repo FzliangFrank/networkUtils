@@ -1,4 +1,4 @@
-#' #' log_timeline_item
+#' log_timeline_item
 #'
 #' @description A convenient function to help render a single bs4Dash::timeline_item
 #' @param chglog_1

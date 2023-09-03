@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_log_timeline_item.R
 \name{log_timeline_item}
 \alias{log_timeline_item}
-\title{#' log_timeline_item}
+\title{log_timeline_item}
 \usage{
 log_timeline_item(chglog_1)
 }
