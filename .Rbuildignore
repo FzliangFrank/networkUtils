@@ -11,6 +11,7 @@ $run_dev.*
 ^rsconnect$
 ^notebook$
 ^README\.md$
+^ROADMAP\.md$
 ^readme_img
 ^pushGit.sh$
 ^_pkgdown\.yml$
