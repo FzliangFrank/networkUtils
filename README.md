@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# NetworkUtils
+# networkUtils <a href="https://fzliangfrank.github.io/networkUtils/"><img src="man/figures/logo.png" align="right" height="139" /></a>
 
 <!-- badges: start -->
 
@@ -9,17 +9,17 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-Pre-written shiny module for editing and interact with small amount of
+Bundle of shiny modules for editing and interact with small amount of
 graph data.
 
-This package is intended for technical people who have already familiar
-with basic workflow `shiny` and `shiny module`. If you are not already
+This package is intended for R developers who have already familiar with
+basic workflow `shiny` and `shiny module`. If you are not already
 familiar with *shiny module* , have a skim at Hadley Wickham’s
 [*Mastering Shiny*](https://mastering-shiny.org/scaling-modules.html).
 
-There are three main pairs pre-written shiny module in this R package
-that will help you build interactive graph-based shiny application
-quickly. They are:
+There are three pairs pre-written shiny module in this R package that
+will help you build interactive graph-based shiny application quickly.
+They are:
 
 - `mod_visNetModification_<ui/server>` for visualize, main graph and
   editing.
@@ -29,16 +29,8 @@ quickly. They are:
   *mod_visNetModification_server* and *mod_visNetInteraction_server* at
   the same time.
 
-This development heavy depends on `visNetwork` package and is suitable
-below 500 nodes.
-
-### License
-
-This package is licensed under MIT license, meaning you are free to use
-it for any intended purposes. However, the UI it has been using is
-`bs4dash` is under Copy Left licenses. Please consult copy right lawyer
-if you intend to distribute any UI component of this package for
-commercial purpose.
+This development heavy depends on `visNetwork` package and works most
+responsive with below 500 nodes.
 
 ## Installation
 
@@ -181,3 +173,11 @@ run_simpleNetworkUtilApp()
 [Simple Network Util
 App](https://frank-the-tank.shinyapps.io/networkutils/?_ga=2.2760560.1153125338.1680970415-1261124081.1680970415)
 is avaiable on shiny.io
+
+### License
+
+This package is licensed under MIT license, meaning you are free to use
+it for any intended purposes. However, the UI it has been using is
+`bs4dash` is under Copy Left licenses. Please consult copy right lawyer
+if you intend to distribute any UI component of this package for
+commercial purpose.
