@@ -33,7 +33,7 @@ They are:
   - `mod_visNetModification_<ui/server>` for visualize, main graph and editing.
   - `mod_visNetInteraction_<ui/server>` for interactively select data
   - `mod_fileUploader_<ui/server>` for ingesting node/edge list
-  - In addition `mod_visNet_server`, a serverside short-cut for *mod_visNetModification_server* and *mod_visNetInteraction_server*. 
+  - In addition `mod_visNet_server`, a serverside short-cut for use *mod_visNetModification_server* and *mod_visNetInteraction_server* at the same time.
 
 This development heavy depends on `visNetwork` package and is suitable
 below 500 nodes.
