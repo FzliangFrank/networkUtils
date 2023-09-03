@@ -20,15 +20,30 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
+Pre-written shiny module for editing and interact with small amount of graph data. 
 
-Empowered by shiny and `visNetwork`, this is a font-end development to interactively view and modify any graph based network structure.
+This package is intended for technical people who have already familiar with 
+basic workflow `shiny` and `shiny module`. If you are not already familiar with 
+*shiny module* , have a skim at Hadley Wickham's [*Mastering Shiny*](https://mastering-shiny.org/scaling-modules.html).
+
+There are three main pairs pre-written shiny module in this R package that will 
+help you build interactive graph-based shiny application quickly.
+They are: 
+
+  - `mod_visNetModification_<ui/server>` for visualize, main graph and editing.
+  - `mod_visNetInteraction_<ui/server>` for interactively select data
+  - `mod_fileUploader_<ui/server>` for ingesting node/edge list
+  - In addition `mod_visNet_server`, a serverside short-cut for *mod_visNetModification_server* and *mod_visNetInteraction_server*. 
+
+This development heavy depends on `visNetwork` package and is suitable
+below 500 nodes.
 
 ### License
 
 This package is licensed under MIT license, meaning you are free to use it for 
 any intended purposes. However, the UI it has been using is 
 `bs4dash` is under Copy Left licenses. Please consult copy right lawyer if you 
-intend to distribute any UI component of this pacakge for commercial purpose. 
+intend to distribute any UI component of this package for commercial purpose. 
 
 
 ## Installation
@@ -39,30 +54,48 @@ You can install the development version of `networkUtils` from [GitHub](https://
 remotes::install_github("FzliangFrank/networkUtils")
 ```
 
+## Quick Run
+
+```{.r}
+library(networkUtils)
+run_simpleNetworkUtilApp()
+```
+
+also hosted on [shiny.io](https://frank-the-tank.shinyapps.io/networkutils/)
+
 ## Introduction
 
-This package is designed for whoever need editing network for their work. 
-There are two main features: 
+Network/Graph data are structured usually in *edge list* or *adjacency matrix*. 
+This data formats are not easy for human to interact with or editing.
 
-  - let you edit a network, interact via a GUI;
-  - support for spatial data (spatial points);
+The modules written in this package {networkUtils} let human interactively search 
+and editing network based data interactively. Much like 
 
-Let's say in you have a network, each node is fixed within a specific location on a
-map. 
-You want to delete a node that is too far away from center. Take it out of you network. But you do not sure if taken it out will have some unintended consequence, 
-(disconnecting a node will disconnect any other off-stream branch). 
-
-You need visual of what happen if I delete this, what happens if I do something.
 
 `networkUtil` package makes it possible.
 
-![](readme_img/Screenshot 2023-06-10 at 16.56.19.png)
+**selecting node or edge based on attributes**
+
+using `mod_visInteractive_ui()` and `mod_visInteractive_server`
+
+
+![](man/figures/demo_selector.gif)
 Selecting it in side bar will select corresponding node on the network. In this 
 instance it tells me deleting this node will disconnect three other nodes!
 
-All the four method of deleting and editing node from package `visNetwork` are supported.
+**editing graph structure**
 
-![](readme_img/Screenshot 2023-06-10 at 17.23.15.png)
+using `mod_visModification_ui()` and `mod_visModification_server()`
+
+![](man/figures/demo_editor.gif)
+
+
+**file upload and download server**
+
+using `mod_fileUploader_ui()` and `mod_fileUploader_server()`.
+
+![](man/figures/demo_putback_in.gif)
+
 ### Key take away.
 
 You need two shiny module made it possible: 
@@ -145,26 +178,4 @@ run_simpleNetworkUtilApp()
 ```
 
 [Simple Network Util App](https://frank-the-tank.shinyapps.io/networkutils/?_ga=2.2760560.1153125338.1680970415-1261124081.1680970415) is avaiable on shiny.io
-
-
-## Trivia
-
-### To-do List
-
-**Change Management & API readyness**
-
-- [ ] Accept a record of list in function `modify_graph()`.This can the gives you 
-ability to write api call,
-- [ ] Ability to trigger side effect on function `modify_graph_i()`. For example 
-track what has been change, and what has been. 
-- [ ] Arguments in two module to return reactive log.
-
-**More Supporting Features**
-
-- [x] `mod_visNetInteraction_` should scope much more data type.
-- [ ]  visualize line geometry as an input to select edge.
-- [x] specialized shiny app
-- [x] When scoping namespace within `visNetwork` own function, session id do not
-get appended automatically. This might get fixed in the future. For production 
-reasons, freeze current visNetwork package in namespace
 

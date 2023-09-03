@@ -17,6 +17,9 @@ modify_graph_i(
 \item{sideEffect}{this namespace is meant to be written down as a function
 to trigger side effect different cmd type}
 
+\item{hard_delete}{if set to false element will not be deleted but added an
+attribute `.deleted_at` instead.}
+
 \item{visNetwork_graphChage}{a single list of command as a result of
 visnetwork_graphChange, explained in their package
 This list should always has following element:

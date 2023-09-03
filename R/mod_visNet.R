@@ -4,7 +4,10 @@
 #' @param id shiny
 #' @param graph_rct reactive expression of igraph
 #' @param visNet_options list of option passed to `visSetOptions`
+#' this could also be reactive
+#' @param debug this flag will create a text output for tracking change.
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
+#' could be static or reactive.
 #'
 #' The easiest way to use both modification server and interaction server.
 #' mod_visNet_server links both modification and interaction UI and by doing so
@@ -48,8 +51,31 @@ mod_visNet_server <- function(id,
   })
 }
 
-## To be copied in the UI
-# mod_visNet_ui("visNet_1")
+#' @examples
+#' if(interactive()) {
+#'   library(shiny)
+#'   g = igraph::make_tree(20, 4)
+#'   V(g)$name = paste0('n_',seq(length(g)))
+#'   V(g)$attr1 = seq(length(g)) |> as.double()
+#'   E(g)$id = seq(length(E(g)))
+#'   ui <- fluidPage(
+#'     column(
+#'       4,
+#'       # UI for the control button set
+#'       mod_visNetInteraction_ui('id')
+#'     ),
+#'     column(
+#'       8,
+#'       # UI for the main network graph
+#'       mod_visNetModification_ui("id")
+#'     )
+#'   )
+#'
+#'   server <- function(input, output, session) {
+#'     # generic server
+#'     mod_visNet_server('id', reactive(g))
+#'   }
+#'
+#'   shinyApp(ui, server)
+#' }
 
-## To be copied in the server
-# mod_visNet_server("visNet_1")

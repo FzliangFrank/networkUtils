@@ -4,6 +4,7 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #' @param label message show before upload a file
+#' @param ... any other argument for `shiny::fileInput`
 #' @return bs4Dash UI
 #' @export
 #'
@@ -21,12 +22,12 @@ mod_fileUploader_ui <- function(id, label = "Upload a File",...){
              style = 'color: #5DADE2',
              "(learn more here)")
     ),
-    pickerInput(ns("pickEdgeSheet"), labe = "Select Edge Sheet",
+    pickerInput(ns("pickEdgeSheet"), label = "Select Edge Sheet",
                 choices = NULL,
                 selected = NULL,
                 options = list(`live-search` = T)
     ),
-    pickerInput(ns("pickNodeSheet"), labe = "Select Node Sheet",
+    pickerInput(ns("pickNodeSheet"), label = "Select Node Sheet",
                 choices = NULL,
                 selected = NULL,
                 options = list(`live-search` = T)

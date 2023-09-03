@@ -22,7 +22,7 @@
 #'   size = 24.22
 #' )
 #' x_html = pasteDetails(nL)
-# 'x_paste = pasteDetails(nL, sep.attr = "\n")
+#' x_paste = pasteDetails(nL, sep.attr = "\n")
 #' cat(x_paste)
 
 # paste a graph attributes

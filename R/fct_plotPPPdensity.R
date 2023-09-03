@@ -20,7 +20,7 @@ plotPPPdensity = function(xy) {
   den1 <- spatstat.explore::density.ppp(pp1, sigma = spatstat.explore::bw.diggle)
   par(mar =c(0.2, 0.2, 0.2, 0.2))
   plot(den1,
-       col = colorRampPalette(RColorBrewer::brewer.pal(9,"BuGn"))(500),
+       col = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,"BuGn"))(500),
        main=NULL,
        legend=F, show.all=F
   )

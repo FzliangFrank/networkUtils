@@ -37,6 +37,7 @@ g <- tidygraph::as_tbl_graph(g)
 ##' DOT is good igraph won't able to read them immediately
 ##'
 # This Return Error
+# create an example graph
 g <- igraph::make_tree(40, 3, mode = "out")
 nV <- length(V(g))
 nE <- length(E(g))

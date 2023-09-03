@@ -14,6 +14,8 @@
 # Engineering
 
 ## Dependencies ----
+usethis::use_package('stats', 'depends')
+usethis::use_package('dplyr', 'depends')
 usethis::use_package("visNetwork")
 usethis::use_package("dplyr")
 usethis::use_package("igraph", "depends")
@@ -28,6 +30,12 @@ usethis::use_package("readr")
 usethis::use_package("purrr")
 usethis::use_package("waiter")
 usethis::use_package("sf")
+usethis::use_package("glue")
+usethis::use_package("rlang")
+usethis::use_package("jsonlite")
+usethis::use_package("spatstat.geom")
+usethis::use_package("spatstat.explore")
+usethis::use_package("stringr")
 usethis::use_package("RColorBrewer")
 usethis::use_package("spatstat")
 usethis::use_package("shinyjqui")

@@ -17,8 +17,19 @@
 #'
 #' @param sideEffect this namespace is meant to be written down as a function
 #' to trigger side effect different cmd type
+#' @param hard_delete if set to false element will not be deleted but added an
+#' attribute `.deleted_at` instead.
 #' @return a igraph object that has been changed
-#'
+#' @importFrom igraph vertex
+#' @importFrom igraph delete_vertex_attr
+#' @importFrom igraph set_vertex_attr
+#' @importFrom igraph V
+#' @importFrom igraph E
+#' @importFrom igraph `E<-`
+#' @importFrom igraph `V<-`
+#' @importFrom igraph add_edges
+#' @importFrom igraph edge
+#' @importFrom igraph edge_attr
 #' @export
 modify_graph_i = function(
     igraphObj,
@@ -55,7 +66,7 @@ modify_graph_i = function(
     g <- g - edge(edges)
     g <- igraph::delete_vertices(g, nodes)
     igraphObj <- g
-  } else if (isNetwork_graphChange$cmd == "deleteElements" & hard_delete) {
+  } else if (visNetwork_graphChange$cmd == "deleteElements" & !hard_delete) {
     g <- igraphObj
     edges <- (unlist(visNetwork_graphChange$edges))
     nodes <- (unlist(visNetwork_graphChange$nodes))

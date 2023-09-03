@@ -4,7 +4,7 @@
 \name{networkUtils-package}
 \alias{networkUtils}
 \alias{networkUtils-package}
-\title{networkUtils: networkUtils}
+\title{networkUtils: Interactive Extension for VisNetwork}
 \description{
 Shiny extension for Almende B.V. 's package `visNetwork.`networkUtils let you modify networkgraph or downloadnode and edge sheets. The returned igraph object can be used for any purpose.
 }

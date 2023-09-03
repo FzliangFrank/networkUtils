@@ -10,6 +10,8 @@ mod_fileUploader_ui(id, label = "Upload a File", ...)
 \item{id, input, output, session}{Internal parameters for {shiny}.}
 
 \item{label}{message show before upload a file}
+
+\item{...}{any other argument for `shiny::fileInput`}
 }
 \value{
 bs4Dash UI

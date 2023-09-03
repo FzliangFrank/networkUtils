@@ -8,9 +8,15 @@
 #' @param ... other arg pass to igraph::vertex
 #' @param geom a geometry that to add if any
 #' @return new added igraph
-#'
+#' @importFrom igraph `vertex`
+#' @importFrom igraph `delete_vertex_attr`
+#' @importFrom igraph `set_vertex_attr`
+#' @importFrom igraph V
+#' @importFrom igraph E
+#' @importFrom igraph `E<-`
+#' @importFrom igraph `V<-`
+#' @importFrom igraph `vertex_attr`
 #' @noRd
-
 
 add_vertex_sf = function(g, id, ..., geom=NULL) {
   stopifnot(is.null(geom) || sf::st_is_valid(geom))

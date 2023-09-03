@@ -1,6 +1,6 @@
 #' #' log_timeline_item
 #'
-#' @description A function to help render a single bs4Dash::timeline_item
+#' @description A convenient function to help render a single bs4Dash::timeline_item
 #' @param chglog_1
 #' A list of two item change and item
 #' @return timeline_item UI component
@@ -22,8 +22,8 @@ log_timeline_item = function(chglog_1) {
   content = jsonlite::toJSON(x, auto_unbox = T, simplifyMatrix = T) |>
     jsonlite::prettify()
 
-  if(is.null(x) || is.na(x) || length(x) == 0) {
-    return(timelineStart())
+  if(length(x) == 0 || is.null(x$cmd)) {
+    return(bs4Dash::timelineStart())
   } else if(x$cmd == 'addNode') {
     icon = icon("circle-plus")
     title = "add node"
@@ -45,7 +45,7 @@ log_timeline_item = function(chglog_1) {
   } else {
     stop("unrecognised command")
   }
-  timelineItem(
+  bs4Dash::timelineItem(
     icon = icon,
     time = time,
     title = title,

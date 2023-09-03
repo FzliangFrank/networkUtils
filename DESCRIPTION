@@ -1,5 +1,5 @@
 Package: networkUtils
-Title: networkUtils
+Title: Interactive Extension for VisNetwork
 Version: 1.0.0.0
 Authors@R: person('Fanzhou', 'Liang', email = 'fzlianguk@gmail.com', role = c('cre', 'aut'))
 Description: Shiny extension for Almende B.V. 's package `visNetwork.`networkUtils let you modify networkgraph or downloadnode and edge sheets. The returned igraph object can be used for any purpose.
@@ -8,20 +8,25 @@ Imports:
     bs4Dash,
     config (>= 0.3.1),
     DiagrammeRsvg,
-    dplyr,
+    glue,
     golem (>= 0.3.5),
     htmlwidgets,
+    jsonlite,
     openxlsx,
     pkgload,
     purrr,
     RColorBrewer,
     readr,
+    rlang,
     sf,
     shiny (>= 1.7.2),
     shinyjqui,
     shinyjs,
     shinyWidgets,
     spatstat,
+    spatstat.explore,
+    spatstat.geom,
+    stringr,
     tidygraph,
     visNetwork,
     waiter
@@ -32,6 +37,8 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
-    igraph
+    dplyr,
+    igraph,
+    stats
 URL: https://github.com/FzliangFrank/networkUtils
 BugReports: https://github.com/FzliangFrank/networkUtils/issues

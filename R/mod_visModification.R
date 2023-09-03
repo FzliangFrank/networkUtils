@@ -4,8 +4,7 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @noRd
-#'
+#' @rdname mod_visNet_
 #' @importFrom shiny NS tagList
 #' @export
 mod_visNetModification_ui <- function(id){
@@ -38,6 +37,9 @@ mod_visNetModification_ui <- function(id){
 #' @param domain session for
 #' @param visNet_options list of option passed to `visSetOptions`
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
+#' @param NodeAttrTooltip,EdgeAttrTooltip when these two flag are set to ture
+#' attributes will be automatically parsed into tooltips, following formula
+#' 'attrName: attr'. There is no good parsing for time series type.
 #' @return reactiveValues $Curent and $Main and more
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
@@ -46,16 +48,17 @@ mod_visNetModification_ui <- function(id){
 #' and track node that is currently clicked.
 #'
 #' @export
-mod_visNetModification_server <- function(id,
-                                          igraphObj,
-                                          dev = F,
-                                          hard_delete = T,
-                                          NodeAttrTooltip = T,
-                                          EdgeAttrTooltip = T,
-                                          domain = getDefaultReactiveDomain(),
-                                          visNet_options = NULL,
-                                          layout = 'layout_nicely'
-                                          ){
+mod_visNetModification_server <- function(
+    id,
+    igraphObj,
+    dev = F,
+    hard_delete = T,
+    NodeAttrTooltip = T,
+    EdgeAttrTooltip = T,
+    domain = getDefaultReactiveDomain(),
+    visNet_options = NULL,
+    layout = 'layout_nicely'
+  ){
   # stop if not reactive
   stopifnot(igraphObj |> is.reactive())
   valid_layout = c(
@@ -265,25 +268,20 @@ mod_visNetModification_server <- function(id,
     observe({Graph$commit = input$save})
     # DEV AREA -----------------------------------------------------------------
     output$dev <- shiny::renderPrint({
-      # print(input$click)
-      print(paste("click node:", input$click_node, class(input$click_node)))
-      print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
-      # print(paste("try find edge:", E(Graph$Current)[input$click_edge]))
-      print(input$visNetworkId_graphChange)
-
-      if(!is.null(input$visNetworkId_graphChange)) {
-        if(input$visNetworkId_graphChange$cmd == "deleteElements") {
-          print(input$visNetworkId_graphChange$edges |> unlist())
-          print(unlist(input$visNetworkId_graphChanges$nodes))
-        }
-      }
-      print(Graph$Current)
-    })
-    observe({
       if(dev) {
-        shinyjs::show("dev")
-      } else {
-        shinyjs::hide("dev")
+        # print(input$click)
+        print(paste("click node:", input$click_node, class(input$click_node)))
+        print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
+        # print(paste("try find edge:", E(Graph$Current)[input$click_edge]))
+        print(input$visNetworkId_graphChange)
+
+        if(!is.null(input$visNetworkId_graphChange)) {
+          if(input$visNetworkId_graphChange$cmd == "deleteElements") {
+            print(input$visNetworkId_graphChange$edges |> unlist())
+            print(unlist(input$visNetworkId_graphChanges$nodes))
+          }
+        }
+        print(Graph$Current)
       }
     })
     # RETURN -------------------------------------------------------------------

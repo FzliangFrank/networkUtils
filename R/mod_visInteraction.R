@@ -3,7 +3,7 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #' a set of controller that allows interact with graphic
-#'
+#' @rdname mod_visNet_
 #' @importFrom shiny NS tagList
 #' @export
 mod_visNetInteraction_ui <- function(id){
@@ -74,14 +74,22 @@ mod_visNetInteraction_ui <- function(id){
 # SERVER SIDE ------------------------------------------------------------------
 
 #' NetworkDisplayServer
+#' @rdname mod_visNet_
 #' @param id id
 #' @param igraph_rct reactive expression for igraph
-#' @param e_ignore a vector of edge attributes name to ignore
-#' @param v_ignore a vector of node attributes name to ignore
+#' @param e_ignore,v_ignore a vector of node/edge attributes. This tells the
+#' interactive UI to stop parsing specific attribute into searchable UI.
+#' @param show_hidden used in conjunction with `e_ignore` and `v_ignore`. If you
+#' have an attribute begain/has with '.' This flag will show it when set to TRUE.
+#' This is useful against attributes created by tidygraph (`.tidygraph_e_index`)
+#' or when you have to create color attributes for visNetwork (`color.border`)
 #' @param domain session for when nesting module
 #' @description
 #' This module let you interact with graph
 #' Require visnetwork rendered in shiny to have base id `visNetworkId`
+#' @importFrom igraph edge_attr_names
+#' @importFrom igraph vertex_attr_names
+#' @importFrom igraph as_ids
 #' @export
 mod_visNetInteraction_server <- function(
     id,
@@ -129,8 +137,8 @@ mod_visNetInteraction_server <- function(
       golem::print_dev("Populating attribute name")
       if(!show_hidden) {
         # if hide attr start with a . append those ones to e_ignore
-        e_ignore = c(e_ignore, (edge_attr_names(g) |> stringr::str_detect('^\\.')))
-        v_ignore = c(v_ignore, (vertex_attr_names(g) |> stringr::str_detect('^\\.')))
+        e_ignore = c(e_ignore, (edge_attr_names(g) |> stringr::str_detect('\\.')))
+        v_ignore = c(v_ignore, (vertex_attr_names(g) |> stringr::str_detect('\\.')))
       }
       edgeAttrNames <- igraph::edge_attr_names(g) |>
         purrr::discard(~.x %in% e_ignore)
@@ -154,7 +162,7 @@ mod_visNetInteraction_server <- function(
         # Resolution is seet to be 0.01 this is not always Correct
         sliderInput(ns("edgeAttr"), edgeAttrLabel,
                     min=blurry_range(edgeAttr())[1], max=blurry_range(edgeAttr())[2],
-                    value=c(quantile(edgeAttr(), 0.33,na.rm=T), quantile(edgeAttr(), 0.66, na.rm=T)))
+                    value=c(stats::quantile(edgeAttr(), 0.33,na.rm=T), quantile(edgeAttr(), 0.66, na.rm=T)))
       } else {
         selectizeInput(ns("edgeAttr"), edgeAttrLabel,
                        choices=edgeAttr(), selected = edgeAttr()[1]) # if selected is NULL app crash when switching to a numeric input
