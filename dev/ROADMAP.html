@@ -68,7 +68,28 @@
 <h3 id="multi-user-support">Multi User support<a class="anchor" aria-label="anchor" href="#multi-user-support"></a></h3>
 <p>This will not be possible without having a back end database. The change could be as complicated as how github manage changes. Because changes could be overlapping on one and another it would be difficult to track which.</p>
 <p>Unless we can disable certain node for editing. For instance, when a user press the editing button, the application ask the area they want to editing, this will set request back to database to lock this selected area (reserve this area). So the next user will not be able to edit this area.</p>
-<p>This will put a lot of font-end development stress I think, that is better to be put in javascript rather than a R- backend. Because if we have to store position, view of the nodes in the network. If the server fetch new data, and we simply ask R - server to re-render visNetwork_html output, the layout will also re-render. Hense the user will lose track of which node they are working on. This is ultimitaly frastrating.</p>
+<p>This will put a lot of font-end development stress I think, that is better to be put in javascript rather than a R- backend. Because if we have to store position, view of the nodes in the network. If the server fetch new data, and we simply ask R - server to re-render visNetwork_html output, the layout will also re-render. Consequently the user will lose track of which node they are working on. This is ultimately frustrating. The example above is just to demonstrate how much server work load is required for the unique experience.</p>
+</div>
+<div class="section level3">
+<h3 id="syntax-simplicity">Syntax simplicity<a class="anchor" aria-label="anchor" href="#syntax-simplicity"></a></h3>
+<p>I come across <a href="https://github.com/iankloo/sigmaNet" class="external-link">Ian Kloo’s</a>’s <code>sigmaNet</code> recently and really liked how he implemented the shiny server.</p>
+<p>The duo, <code>mod_visNetInteractive_server</code>, and <code>mod_visNetModification_server</code> are both too worldly. Use them in conjunction has to be in a weird way to stack together (which is why I temporarily wrote <code>mod_visNet_server</code> for convention of the two).</p>
+<p>I want to be able to potentially pipe these two. Use tidy syntax such as:</p>
+<p><em>pseudocode alert</em></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>...<span class="sc">&lt;</span>ui logic<span class="sc">&gt;</span>....</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>...<span class="sc">&lt;</span>server logic<span class="sc">&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>..</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">observe</span>({})</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">visNetServer</span>(<span class="st">'id'</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># replace modification server</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addModificationListener</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># replace interactive server</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addInteractionListener</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># new feature for hooking into database</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addWebHook</span>()</span></code></pre></div>
+<p><code>visNetServer</code> will then take the responsibility of rendering <code>visNetworkOutput</code>. More perhaps, responsible for resale network with large nodes and able to send request.</p>
 </div>
 </div>
 

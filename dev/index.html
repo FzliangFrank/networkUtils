@@ -77,7 +77,7 @@
 <!-- badges: start -->
 
 <p>Editing and interact with network data is not always easy. This package envelope a bundle of shiny modules for editing and interact with small amount of graph data, and let you download and load them back in as a excel spreadsheet.</p>
-<p>This package is intended for R developers who have already familiar with basic workflow <code>shiny</code> and <code>shiny module</code>. If you are not already familiar with <em>shiny module</em> , have a skim at Hadley Wickham’s <a href="https://mastering-shiny.org/scaling-modules.html" class="external-link"><em>Mastering Shiny</em></a>.</p>
+<p>This package is intended for R developers who have already familiar with basic workflow <code>shiny</code> and <code>shiny module</code>. If you are not already familiar with <em>shiny module</em> , have a skim at <em>Hadley Wickham’s</em> <a href="https://mastering-shiny.org/scaling-modules.html" class="external-link"><em>Mastering Shiny</em></a>.</p>
 <p>There are three pairs pre-written shiny module in this R package that will help you build interactive graph-based shiny application quickly. They are:</p>
 <ul>
 <li>
@@ -108,11 +108,11 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Network/Graph data are structured usually in <em>edge list</em> or <em>adjacency matrix</em>. This data formats are not easy for human to interact with or editing.</p>
-<p>The modules written in this package {networkUtils} let human interactively search and editing network based data interactively. Much like</p>
-<p><code>networkUtil</code> package makes it possible.</p>
+<p>The modules written in this package let human interactively search and editing network based data interactively. It extend interactivity from popular javascript library <a href="https://visjs.github.io/vis-network/docs/network/" class="external-link">{vis.js}</a> and <em>data-storm’s</em> <a href="https://datastorm-open.github.io/visNetwork/" class="external-link">{visNetwork}</a> and make it easily accessible for R-user.</p>
+<p>There we have the <code>networkUtil</code> packages. A make</p>
 <p><strong>selecting node or edge based on attributes</strong></p>
 <p>using <code>mod_visInteractive_ui()</code> and <code>mod_visInteractive_server</code></p>
-<p><img src="reference/figures/demo_selector.gif"> Selecting it in side bar will select corresponding node on the network. In this instance it tells me deleting this node will disconnect three other nodes!</p>
+<p><img src="reference/figures/demo_selector.gif"></p>
 <p><strong>editing graph structure</strong></p>
 <p>using <code>mod_visModification_ui()</code> and <code>mod_visModification_server()</code></p>
 <p><img src="reference/figures/demo_editor.gif"></p>
@@ -120,7 +120,7 @@
 <p>using <code><a href="reference/mod_fileUploader_ui.html">mod_fileUploader_ui()</a></code> and <code><a href="reference/mod_fileUploader_server.html">mod_fileUploader_server()</a></code>.</p>
 <p><img src="reference/figures/demo_putback_in.gif"></p>
 <div class="section level3">
-<h3 id="key-take-away">Key take away.<a class="anchor" aria-label="anchor" href="#key-take-away"></a>
+<h3 id="geting-started">Geting Started<a class="anchor" aria-label="anchor" href="#geting-started"></a>
 </h3>
 <p>You need two shiny module made it possible:</p>
 <ul>
@@ -135,31 +135,37 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span>
 <span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/fluidPage.html" class="external-link">fluidPage</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/column.html" class="external-link">column</a></span><span class="op">(</span><span class="fl">4</span>,</span>
+<span>         <span class="co"># must-have ui for interactive control bar</span></span>
 <span>         <span class="fu"><a href="reference/mod_visNet_.html">mod_visNetInteraction_ui</a></span><span class="op">(</span><span class="st">"id"</span><span class="op">)</span></span>
 <span>         <span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/column.html" class="external-link">column</a></span><span class="op">(</span><span class="fl">8</span>, </span>
+<span>         <span class="co"># must-have ui for main graph</span></span>
 <span>         <span class="fu"><a href="reference/mod_visNet_.html">mod_visNetModification_ui</a></span><span class="op">(</span><span class="st">"id"</span><span class="op">)</span></span>
 <span>         <span class="op">)</span>  </span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">myGraph</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/reactive.html" class="external-link">reactive</a></span><span class="op">(</span><span class="op">{</span></span>
-<span>    <span class="va">g</span> <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/make_tree.html" class="external-link">make_tree</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">attr1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">LETTERS</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">id</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="va">g</span></span>
+<span>    <span class="co"># fake a graph </span></span>
+<span>    <span class="va">n</span> <span class="op">=</span> <span class="fl">20</span></span>
+<span>    <span class="va">b</span> <span class="op">=</span> <span class="fl">3</span></span>
+<span>    <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/make_tree.html" class="external-link">make_tree</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">b</span>, mode <span class="op">=</span> <span class="st">"out"</span><span class="op">)</span></span>
+<span>    <span class="co"># fake some attributes</span></span>
+<span>    <span class="va">nV</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">nE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">letters</span>, <span class="va">nV</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="co"># fix this latter NAME needs to not identical</span></span>
+<span>    <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">attr1_int</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, <span class="va">nV</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">attr2_letter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">LETTERS</span>, <span class="va">nV</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">attr3_numb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">nV</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span></span>
+<span>    <span class="va">sp_df</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">nV</span><span class="op">)</span>, y<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">nV</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">attr4_geom</span> <span class="op">&lt;-</span> <span class="va">sp_df</span><span class="op">$</span><span class="va">geom</span></span>
+<span>    <span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">attr1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">nE</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
-<span>  <span class="va">sessionGraph</span> <span class="op">=</span> <span class="fu"><a href="reference/mod_visNet_.html">mod_visNetModification_server</a></span><span class="op">(</span><span class="st">"id"</span>, </span>
-<span>                                               <span class="va">myGraph</span>,</span>
-<span>                                               hard_delete <span class="op">=</span> <span class="cn">F</span></span>
-<span>                                               <span class="op">)</span> <span class="co"># Output is reactive value</span></span>
-<span>  <span class="fu"><a href="reference/mod_visNet_.html">mod_visNetInteraction_server</a></span><span class="op">(</span><span class="st">"id"</span>, </span>
-<span>                               <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/reactive.html" class="external-link">reactive</a></span><span class="op">(</span><span class="va">sessionGraph</span><span class="op">$</span><span class="va">Current</span><span class="op">)</span></span>
-<span>                               <span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observe.html" class="external-link">observe</a></span><span class="op">(</span><span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">myGraph</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu">myGraph</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  <span class="co"># hello world</span></span>
+<span>  <span class="fu"><a href="reference/mod_visNet_.html">mod_visNet_server</a></span><span class="op">(</span><span class="st">"id"</span>, </span>
+<span>                     <span class="va">myGraph</span>,</span>
+<span>                     hard_delete <span class="op">=</span> <span class="cn">F</span></span>
+<span>                     <span class="op">)</span> <span class="co"># Output is reactive value</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
 <p>Note always pass igraph as reacitve expression. The output of mod_visNetModification_server is always a list of two:</p>
@@ -197,11 +203,6 @@
 <span><span class="fu"><a href="reference/run_simpleNetworkUtilApp.html">run_simpleNetworkUtilApp</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://frank-the-tank.shinyapps.io/networkutils/?_ga=2.2760560.1153125338.1680970415-1261124081.1680970415" class="external-link">Simple Network Util App</a> is avaiable on shiny.io</p>
 </div>
-<div class="section level3">
-<h3 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
-</h3>
-<p>This package is licensed under MIT license, meaning you are free to use it for any intended purposes. However, the UI it has been using is <code>bs4dash</code> is under Copy Left licenses. Please consult copy right lawyer if you intend to distribute any UI component of this package for commercial purpose.</p>
-</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -209,6 +210,7 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/FzliangFrank/networkUtils/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/FzliangFrank/networkUtils/issues" class="external-link">Report a bug</a></li>
+<li><a href="ROADMAP.html">Roadmap</a></li>
 </ul>
 </div>
 
