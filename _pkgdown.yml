@@ -2,6 +2,37 @@ url: https://fzliangfrank.github.io/networkUtils/
 template:
   bootstrap: 5
   bootswatch: simplex
+  highlight: tango
+
+home:
+  links:
+  - text: Roadmap
+    href: ROADMAP.html
+
+reference:
+  - title: Modules
+    desc: >
+      Pairs of shiny module and servers that are building block for
+      interactive shiny network app.
+  - contents:
+    - starts_with('mod_')
+  - title: UI building block
+    desc: >
+      Parse graph editing command list into `bs4Dash` UI components.
+  - contents:
+      log_timeline_item
+  - title: Utility Function
+    desc: >
+      Paste node attributes into tooltip; Parse expression and find
+      matching node id; Take a command list and use it to modify igraph object.
+  - contents:
+    - starts_with('paste')
+    - search_idx
+    - modify_graph_i
+  - title: All Functions
+    desc: everything
+  - contents:
+    - lacks_concepts(c())
 
 
 development:

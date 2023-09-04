@@ -99,14 +99,6 @@ ui <- bs4Dash::dashboardPage(
 )
 
 server <- function(input, output, session) {
-  # output$visNet <- renderVisNetwork({
-  #   visIgraph(ccl)
-  # })
-  # observe({
-  #   visNetworkProxy('visNet') |>
-  #     visGetNodes()
-  #   print(input$visNet_nodes)
-  # })
   graph = reactive(ccl)
   G = mod_visNet_server('visNet', graph)
   clicked_node = reactive({
@@ -130,11 +122,6 @@ server <- function(input, output, session) {
     print(change_log$log |>
             jsonlite::toJSON(auto_unbox = T, simplifyMatrix = T) |>
             jsonlite::prettify())
-  })
-  observe({
-    change_log$log |>
-      jsonlite::toJSON(flatten=T) |>
-      jsonlite::write_json('dev/feature_change_management/change_log.json')
   })
   output$save = downloadHandler(
     filename = function() {

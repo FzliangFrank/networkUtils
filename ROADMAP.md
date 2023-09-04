@@ -32,7 +32,36 @@ This will not be possible without having a back end database. The change could b
 Unless we can disable certain node for editing. For instance, when 
 a user press the editing button, the application ask the area they want to editing, this will set request back to database to lock this selected area (reserve this area). So the next user will not be able to edit this area. 
 
-This will put a lot of font-end development stress I think, that is better to be put in javascript rather than a R- backend. Because if we have to store position, view of the nodes in the network. If the server fetch new data, and we simply ask R - server to re-render visNetwork_html output, the layout will also re-render. Hense the user will lose track of which node they are working on. This is ultimitaly frastrating. 
+This will put a lot of font-end development stress I think, that is better to be put in javascript rather than a R- backend. Because if we have to store position, view of the nodes in the network. If the server fetch new data, and we simply ask R - server to re-render visNetwork_html output, the layout will also re-render. Consequently the user will lose track of which node they are working on. This is ultimately frustrating. The example above is just to demonstrate how much server work load is required for the unique experience.
+
+### Syntax simplicity
+
+I come across  [Ian Kloo's](https://github.com/iankloo/sigmaNet)'s `sigmaNet` recently and really liked how he implemented the shiny server.
+
+The duo, `mod_visNetInteractive_server`, and `mod_visNetModification_server` are both too worldly. Use them in conjunction has to be in a weird way to stack together (which is why I temporarily wrote `mod_visNet_server` for convention of the two). 
+
+I want to be able to potentially pipe these two. Use tidy syntax such as: 
+
+*pseudocode alert*
+
+```r
+...<ui logic>....
+...
+...<server logic>
+..
+observe({})
+...
+visNetServer('id') |> 
+  # replace modification server
+  addModificationListener() |> 
+  # replace interactive server
+  addInteractionListener() |> 
+  # new feature for hooking into database
+  addWebHook()
+```
+
+`visNetServer` will then take the responsibility of rendering `visNetworkOutput`. More perhaps, responsible for resale network with large nodes and able to send request. 
+
 
 
 

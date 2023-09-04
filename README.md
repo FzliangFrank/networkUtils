@@ -16,7 +16,7 @@ excel spreadsheet.
 
 This package is intended for R developers who have already familiar with
 basic workflow `shiny` and `shiny module`. If you are not already
-familiar with *shiny module* , have a skim at Hadley Wickham’s
+familiar with *shiny module* , have a skim at *Hadley Wickham’s*
 [*Mastering Shiny*](https://mastering-shiny.org/scaling-modules.html).
 
 There are three pairs pre-written shiny module in this R package that
@@ -59,19 +59,21 @@ Network/Graph data are structured usually in *edge list* or *adjacency
 matrix*. This data formats are not easy for human to interact with or
 editing.
 
-The modules written in this package {networkUtils} let human
-interactively search and editing network based data interactively. Much
-like
+The modules written in this package let human interactively search and
+editing network based data interactively. It extend interactivity from
+popular javascript library
+[{vis.js}](https://visjs.github.io/vis-network/docs/network/) and
+*data-storm’s*
+[{visNetwork}](https://datastorm-open.github.io/visNetwork/) and make it
+easily accessible for R-user.
 
-`networkUtil` package makes it possible.
+There we have the `networkUtil` packages. A make
 
 **selecting node or edge based on attributes**
 
 using `mod_visInteractive_ui()` and `mod_visInteractive_server`
 
-![](man/figures/demo_selector.gif) Selecting it in side bar will select
-corresponding node on the network. In this instance it tells me deleting
-this node will disconnect three other nodes!
+![](man/figures/demo_selector.gif)
 
 **editing graph structure**
 
@@ -85,7 +87,7 @@ using `mod_fileUploader_ui()` and `mod_fileUploader_server()`.
 
 ![](man/figures/demo_putback_in.gif)
 
-### Key take away.
+### Geting Started
 
 You need two shiny module made it possible:
 
@@ -102,31 +104,37 @@ library(shiny)
 library(igraph)
 ui <- fluidPage(
   column(4,
+         # must-have ui for interactive control bar
          mod_visNetInteraction_ui("id")
          ),
   column(8, 
+         # must-have ui for main graph
          mod_visNetModification_ui("id")
          )  
 )
 
 server <- function(input, output, session) {
   myGraph = reactive({
-    g = igraph::make_tree(30, 2)
-    V(g)$attr1 = sample(LETTERS, length(V(g)), replace = T)
-    V(g)$id = seq(length(V(g)))
-    g
+    # fake a graph 
+    n = 20
+    b = 3
+    g <- igraph::make_tree(n, b, mode = "out")
+    # fake some attributes
+    nV <- length(V(g))
+    nE <- length(E(g))
+    V(g)$label <- sample(letters, nV, replace = T) # fix this latter NAME needs to not identical
+    V(g)$attr1_int <- sample(seq(10), nV, replace = T)
+    V(g)$attr2_letter <- sample(LETTERS, nV, replace = T)
+    V(g)$attr3_numb <- runif(nV) * 100
+    sp_df = data.frame(x = runif(nV), y= runif(nV)) |> sf::st_as_sf(coords=c('x', 'y'))
+    V(g)$attr4_geom <- sp_df$geom
+    E(g)$attr1 <- runif(nE) * 100
   })
-  sessionGraph = mod_visNetModification_server("id", 
-                                               myGraph,
-                                               hard_delete = F
-                                               ) # Output is reactive value
-  mod_visNetInteraction_server("id", 
-                               reactive(sessionGraph$Current)
-                               )
-  observe({
-    print(class(myGraph))
-    print(class(myGraph()))
-  })
+  # hello world
+  mod_visNet_server("id", 
+                     myGraph,
+                     hard_delete = F
+                     ) # Output is reactive value
 }
 shinyApp(ui, server)
 ```
@@ -175,11 +183,3 @@ run_simpleNetworkUtilApp()
 [Simple Network Util
 App](https://frank-the-tank.shinyapps.io/networkutils/?_ga=2.2760560.1153125338.1680970415-1261124081.1680970415)
 is avaiable on shiny.io
-
-### License
-
-This package is licensed under MIT license, meaning you are free to use
-it for any intended purposes. However, the UI it has been using is
-`bs4dash` is under Copy Left licenses. Please consult copy right lawyer
-if you intend to distribute any UI component of this package for
-commercial purpose.
