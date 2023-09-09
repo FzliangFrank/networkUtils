@@ -94,7 +94,7 @@
 </h2>
 <p>You can install the development version of <code>networkUtils</code> from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"FzliangFrank/networkUtils"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"FzliangFrank/networkUtils"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-run">Quick Run<a class="anchor" aria-label="anchor" href="#quick-run"></a>
@@ -117,7 +117,7 @@
 <p>using <code>mod_visModification_ui()</code> and <code>mod_visModification_server()</code></p>
 <p><img src="reference/figures/demo_editor.gif"></p>
 <p><strong>file upload and download server</strong></p>
-<p>using <code><a href="reference/mod_fileUploader_ui.html">mod_fileUploader_ui()</a></code> and <code><a href="reference/mod_fileUploader_server.html">mod_fileUploader_server()</a></code>.</p>
+<p>using <code><a href="reference/fileUploader.html">mod_fileUploader_ui()</a></code> and <code><a href="reference/fileUploader.html">mod_fileUploader_server()</a></code>.</p>
 <p><img src="reference/figures/demo_putback_in.gif"></p>
 <div class="section level3">
 <h3 id="geting-started">Geting Started<a class="anchor" aria-label="anchor" href="#geting-started"></a>
@@ -136,11 +136,11 @@
 <span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/fluidPage.html" class="external-link">fluidPage</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/column.html" class="external-link">column</a></span><span class="op">(</span><span class="fl">4</span>,</span>
 <span>         <span class="co"># must-have ui for interactive control bar</span></span>
-<span>         <span class="fu"><a href="reference/mod_visNet_.html">mod_visNetInteraction_ui</a></span><span class="op">(</span><span class="st">"id"</span><span class="op">)</span></span>
+<span>         <span class="fu"><a href="reference/interaction.html">mod_visNetInteraction_ui</a></span><span class="op">(</span><span class="st">"id"</span><span class="op">)</span></span>
 <span>         <span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/column.html" class="external-link">column</a></span><span class="op">(</span><span class="fl">8</span>, </span>
 <span>         <span class="co"># must-have ui for main graph</span></span>
-<span>         <span class="fu"><a href="reference/mod_visNet_.html">mod_visNetModification_ui</a></span><span class="op">(</span><span class="st">"id"</span><span class="op">)</span></span>
+<span>         <span class="fu"><a href="reference/visNetModification.html">mod_visNetModification_ui</a></span><span class="op">(</span><span class="st">"id"</span><span class="op">)</span></span>
 <span>         <span class="op">)</span>  </span>
 <span><span class="op">)</span></span>
 <span></span>
