@@ -1,19 +1,21 @@
 
 #' visNet Server Functions
 #' @name mod_visNet_
-#' @param id shiny
+#' @param id Internal parameters for {shiny}.
 #' @param graph_rct reactive expression of igraph
 #' @param visNet_options list of option passed to `visSetOptions`
 #' this could also be reactive
+#' @param NodeAttrTooltip,EdgeAttrTooltip when these two flag are set to ture
+#' attributes will be automatically parsed into tooltips, following formula
+#' 'attrName: attr'. There is no good parsing for time series type.
 #' @param debug this flag will create a text output for tracking change.
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
 #' could be static or reactive.
 #'
-#' The easiest way to use both modification server and interaction server.
+#' @description The easiest way to use both modification server and interaction server.
 #' mod_visNet_server links both modification and interaction UI and by doing so
 #' make it easy
 #' @return reactive list
-#'
 #' @details
 #' list of `Current`, `Main` `click_node` and `click_edge`
 #' `Main` for graph that has been committed editing;

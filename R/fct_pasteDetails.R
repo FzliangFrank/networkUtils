@@ -11,6 +11,7 @@
 #' @param sep.label the speperator between attribute name and attributes
 #' @param show_hidden attributes begain with '.' will be pasted into this.
 #' @param g igraph object specifically used for graph objects
+#' @param ... other argument to put into pasteDetails
 #' @examples
 #' # example code
 #'
@@ -48,7 +49,7 @@ pasteDetails <- function(namedList,
 }
 
 #'
-#' @name pasteDetails
+#' @rdname pasteDetails
 #' @export
 pasteNodeDetails <- function(g, include, ...) {
   vertex_attr(g) |>
@@ -58,7 +59,7 @@ pasteNodeDetails <- function(g, include, ...) {
 #' @details
 #' exclusivedly works for pasting
 #'
-#' @name pasteDetails
+#' @rdname pasteDetails
 #' @export
 pasteEdgeDetails <- function(g, include, ...) {
   edge_attr(g) |>

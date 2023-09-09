@@ -2,7 +2,6 @@
 #'
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
-#' @param graph igraph object to set up as default
 #' @import shiny
 #' @export
 simpleNetworkUtilApp_server <- function(input, output, session) {
@@ -49,7 +48,5 @@ simpleNetworkUtilApp_server <- function(input, output, session) {
     layout = reactive(input$g_layout)
     )
   mod_visNetInteraction_server("id", reactive(G$Current))
-
-
   # something else
 }

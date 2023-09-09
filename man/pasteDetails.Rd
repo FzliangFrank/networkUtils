@@ -30,6 +30,8 @@ pasteEdgeDetails(g, include, ...)
 \item{show_hidden}{attributes begain with '.' will be pasted into this.}
 
 \item{g}{igraph object specifically used for graph objects}
+
+\item{...}{other argument to put into pasteDetails}
 }
 \value{
 The return value, if any, from executing the function.

@@ -14,13 +14,7 @@ modify_graph_i(
 \arguments{
 \item{igraphObj}{object that inherit igraph}
 
-\item{sideEffect}{this namespace is meant to be written down as a function
-to trigger side effect different cmd type}
-
-\item{hard_delete}{if set to false element will not be deleted but added an
-attribute `.deleted_at` instead.}
-
-\item{visNetwork_graphChage}{a single list of command as a result of
+\item{visNetwork_graphChange}{a single list of command as a result of
 visnetwork_graphChange, explained in their package
 This list should always has following element:
 - *addNode*
@@ -31,6 +25,12 @@ If you ever need side effect, it is possible to add in your function
 every time you make some change, add a new attribute to node are edge.
 (for example a time stamp) so you can trick what has been changed and what
 has not.}
+
+\item{sideEffect}{this namespace is meant to be written down as a function
+to trigger side effect different cmd type}
+
+\item{hard_delete}{if set to false element will not be deleted but added an
+attribute `.deleted_at` instead.}
 }
 \value{
 a igraph object that has been changed

@@ -9,8 +9,6 @@ simpleNetworkUtilApp_server(input, output, session)
 \arguments{
 \item{input, output, session}{Internal parameters for {shiny}.
 DO NOT REMOVE.}
-
-\item{graph}{igraph object to set up as default}
 }
 \description{
 The application server-side

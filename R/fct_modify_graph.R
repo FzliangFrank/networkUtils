@@ -2,24 +2,6 @@
 #'
 #' @description
 #' Modify graph from a single command line
-#' @param igraphObj object that inherit igraph
-#' @param visNetwork_graphChage a single list of command as a result of
-#' visnetwork_graphChange, explained in their package
-#' This list should always has following element:
-#' - *addNode*
-#' - *addEdge*
-#' - *editEdge*
-#' - *deleteElements*
-#' If you ever need side effect, it is possible to add in your function
-#' every time you make some change, add a new attribute to node are edge.
-#' (for example a time stamp) so you can trick what has been changed and what
-#' has not.
-#'
-#' @param sideEffect this namespace is meant to be written down as a function
-#' to trigger side effect different cmd type
-#' @param hard_delete if set to false element will not be deleted but added an
-#' attribute `.deleted_at` instead.
-#' @return a igraph object that has been changed
 #' @importFrom igraph vertex
 #' @importFrom igraph delete_vertex_attr
 #' @importFrom igraph set_vertex_attr
@@ -30,6 +12,23 @@
 #' @importFrom igraph add_edges
 #' @importFrom igraph edge
 #' @importFrom igraph edge_attr
+#' @param igraphObj object that inherit igraph
+#' @param visNetwork_graphChange a single list of command as a result of
+#' visnetwork_graphChange, explained in their package
+#' This list should always has following element:
+#' - *addNode*
+#' - *addEdge*
+#' - *editEdge*
+#' - *deleteElements*
+#' If you ever need side effect, it is possible to add in your function
+#' every time you make some change, add a new attribute to node are edge.
+#' (for example a time stamp) so you can trick what has been changed and what
+#' has not.
+#' @param sideEffect this namespace is meant to be written down as a function
+#' to trigger side effect different cmd type
+#' @param hard_delete if set to false element will not be deleted but added an
+#' attribute `.deleted_at` instead.
+#' @return a igraph object that has been changed
 #' @export
 modify_graph_i = function(
     igraphObj,

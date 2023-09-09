@@ -1,10 +1,8 @@
 #' visNetworkWrite UI Function
 #'
 #' @description A shiny Module.
+#' @name visNetModification
 #'
-#' @param id,input,output,session Internal parameters for {shiny}.
-#'
-#' @rdname mod_visNet_
 #' @importFrom shiny NS tagList
 #' @export
 mod_visNetModification_ui <- function(id){
@@ -31,10 +29,12 @@ mod_visNetModification_ui <- function(id){
 }
 
 #' visModification Server Functions
-#' @rdname mod_visNet_
+#' @rdname visNetModification
 #' @param id shiny server id
 #' @param igraphObj a reactive graph object
-#' @param domain session for
+#' @param domain session
+#' @param dev open a printer
+#' @param hard_delete when this flag is turn off, no edge can be actually deleted/
 #' @param visNet_options list of option passed to `visSetOptions`
 #' @param layout igraph layout to put in `visNetwork::visIgraphLayout`
 #' @param NodeAttrTooltip,EdgeAttrTooltip when these two flag are set to ture

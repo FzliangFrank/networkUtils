@@ -1,9 +1,8 @@
 #' visNetInteraction
 #' @description A shiny Module.
-#'
-#' @param id,input,output,session Internal parameters for {shiny}.
+#' @name interaction
+#' @param id Internal parameters for {shiny}.
 #' a set of controller that allows interact with graphic
-#' @rdname mod_visNet_
 #' @importFrom shiny NS tagList
 #' @export
 mod_visNetInteraction_ui <- function(id){
@@ -74,7 +73,7 @@ mod_visNetInteraction_ui <- function(id){
 # SERVER SIDE ------------------------------------------------------------------
 
 #' NetworkDisplayServer
-#' @rdname mod_visNet_
+#' @rdname interaction
 #' @param id id
 #' @param igraph_rct reactive expression for igraph
 #' @param e_ignore,v_ignore a vector of node/edge attributes. This tells the

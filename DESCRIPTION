@@ -7,7 +7,7 @@ License: MIT + file LICENSE
 Imports: 
     bs4Dash,
     config (>= 0.3.1),
-    DiagrammeRsvg,
+    devtools,
     glue,
     golem (>= 0.3.5),
     htmlwidgets,

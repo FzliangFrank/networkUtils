@@ -13,7 +13,9 @@ log_timeline_item(chglog_1)
 timeline_item UI component
 }
 \description{
-A convenient function to help render a single bs4Dash::timeline_item
+A convenient function to help render
+a single bs4Dash::timeline_item. Useful for visualise version change
+of a graph modified.
 }
 \examples{
 graph_chg_log = list(
