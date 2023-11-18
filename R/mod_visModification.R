@@ -1,3 +1,49 @@
+#' @rdname visNetModification
+#' @export
+visNetId = function(id) {
+  a_id=paste0(id,'-','visNetworkId')
+}
+#' @rdname visNetModification
+#' @export
+vizNetId = function(id) {
+  visNetId(id)
+}
+#' @rdname visNetModification
+#' @export
+maximise_helper=function(id, offset=180) {
+  maximize_helper(id,offset)
+}
+#' @rdname visNetModification
+#' @export
+maximize_helper=function(id, offset = 180) {
+  HTML(sprintf(r'(
+  // Access JS Object
+  var target=document.getElementById('%s');
+  var cardBody=target.parentElement
+  var card = cardBody.parentElement
+  var cardHeader = card.getElementsByClassName('card-header')[0]
+  var cardTool = cardHeader.getElementsByClassName('card-tools')[0]
+  var maximizeBtn = cardTool.querySelectorAll('[data-card-widget="maximize"]')[0]
+
+  console.log("find btn", maximizeBtn)
+  let maximized=false
+  const ogHeight = target.offsetHeight
+
+  maximizeBtn.addEventListener('click', function(){
+      maximized = !maximized
+      console.log('button is clicked')
+      if(maximized) {
+          console.log('try to maiximise target')
+          const h = window.innerHeight - %i
+          target.style.height = h + 'px'
+      } else {
+          console.log('try to reset target')
+          target.style.height = ogHeight + 'px'
+      }
+  })
+  )',id, offset))
+}
+
 #' visNetworkWrite UI Function
 #'
 #' @description A shiny Module.
@@ -5,7 +51,7 @@
 #'
 #' @importFrom shiny NS tagList
 #' @export
-mod_visNetModification_ui <- function(id){
+mod_visNetModification_ui <- function(id, useJQ=F, dev=F){
   ns <- NS(id)
   tagList(
     shinyjs::useShinyjs(),
@@ -13,18 +59,29 @@ mod_visNetModification_ui <- function(id){
     shinyWidgets::prettyCheckbox(ns('phy'), 'Physics', animation = "smooth", inline = T),
     p("You are in editing mode, exit without save will revert to original", id = ns("note")),
     # /DEV/ ======
-    # Vacumn this component that this goes into visNetowrkOutput
-    shinyjqui::jqui_resizable(
-      visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%"),
-      options = list(handles = "e,s,n,w")
-    ),
+    # Vacumn this component that this goes into visNetworkOutput
+    #shinyjqui::jqui_resizable(
+      # visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%"),
+      #options = list(handles = "e,s,n,w")
+    #),
+    {if(useJQ) {
+      shinyjqui::jqui_resizable(options = list(handles = "s,e"),
+        visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%")
+      )
+    } else {
+      visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%")
+    }},
     # \DEV\=========
-    wellPanel(
-      actionButton(ns("save"), "Commit Change"),
-      downloadButton(ns("export")),# build in export option
+    div(id=ns('editor'),
+      wellPanel(
+        actionButton(ns("save"), "Commit Change"),
+        downloadButton(ns("export"))# build in export option
+      )
     ),
     shiny::uiOutput(ns("AttrEditor")),
-    shiny::verbatimTextOutput(ns("dev"))
+    if(dev) {
+      shiny::verbatimTextOutput(ns("dev"))
+    }
   )
 }
 
@@ -40,12 +97,20 @@ mod_visNetModification_ui <- function(id){
 #' @param NodeAttrTooltip,EdgeAttrTooltip when these two flag are set to ture
 #' attributes will be automatically parsed into tooltips, following formula
 #' 'attrName: attr'. There is no good parsing for time series type.
+#' @param offset number of pixel to off set when use maixmize button
 #' @return reactiveValues $Curent and $Main and more
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
 #' $Main is the igraph Object that has been committed and saved
 #' In addition it return a set of `reactiveValues` which monitor graph changes
 #' and track node that is currently clicked.
+#'
+#' Two utility function are added `maximize_helper` return a javascript allow you
+#' to resize monitored object to full size. You can use this script on any shiny
+#' widget (where you know id), when you use `bs4Dash::box`
+#'
+#' To resize this network specifically add this script below `bs4Dash::box`
+#' `tags$script(maximize_helper(visNetId('<id>')))`
 #'
 #' @export
 mod_visNetModification_server <- function(
@@ -107,8 +172,9 @@ mod_visNetModification_server <- function(
     })
     # DYNAMIC UI ---------------------------------------------------------------
     observeEvent(input$edit, {
-      shinyjs::toggle("save", T)
-      shinyjs::toggle("export", T)
+      shinyjs::toggle("editor",T)
+      # shinyjs::toggle("save", T)
+      # shinyjs::toggle("export", T)
       shinyjs::toggle("note", T)
     })
     # STAGE  -------------------------------------------------------------------
@@ -267,23 +333,25 @@ mod_visNetModification_server <- function(
     })
     observe({Graph$commit = input$save})
     # DEV AREA -----------------------------------------------------------------
-    output$dev <- shiny::renderPrint({
-      if(dev) {
-        # print(input$click)
-        print(paste("click node:", input$click_node, class(input$click_node)))
-        print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
-        # print(paste("try find edge:", E(Graph$Current)[input$click_edge]))
-        print(input$visNetworkId_graphChange)
+    if(dev) {
+      output$dev <- shiny::renderPrint({
+        if(dev) {
+          # print(input$click)
+          print(paste("click node:", input$click_node, class(input$click_node)))
+          print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
+          # print(paste("try find edge:", E(Graph$Current)[input$click_edge]))
+          print(input$visNetworkId_graphChange)
 
-        if(!is.null(input$visNetworkId_graphChange)) {
-          if(input$visNetworkId_graphChange$cmd == "deleteElements") {
-            print(input$visNetworkId_graphChange$edges |> unlist())
-            print(unlist(input$visNetworkId_graphChanges$nodes))
+          if(!is.null(input$visNetworkId_graphChange)) {
+            if(input$visNetworkId_graphChange$cmd == "deleteElements") {
+              print(input$visNetworkId_graphChange$edges |> unlist())
+              print(unlist(input$visNetworkId_graphChanges$nodes))
+            }
           }
+          print(Graph$Current)
         }
-        print(Graph$Current)
-      }
-    })
+      })
+    }
     # RETURN -------------------------------------------------------------------
     return(Graph)
     # MODULE END ---------------------------------------------------------------

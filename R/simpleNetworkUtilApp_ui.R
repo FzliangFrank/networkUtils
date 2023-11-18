@@ -29,7 +29,8 @@
               column(12, bs4Dash::box(mod_visNetModification_ui("id"),
                                       width = 12,
                                       action = "update",
-                                      maximizable = T
+                                      maximizable = T,
+                                      tags$script(maximize_helper(visNetId('id')))
               ))
             )
           ),
@@ -54,7 +55,7 @@
                     tags$figure(
                       align = "center",
                       tags$img(
-                        src = "www/hex-shinySpider.png",
+                        src = "www/hex-NetworkUtils.png",
                         width = 200
                       ))
                   ),
