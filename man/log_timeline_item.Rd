@@ -28,7 +28,7 @@ graph_chg_log = list(
 )
 log_timeline_item(graph_chg_log)
 
-if(interactive()) {
+if(FALSE) {
   library(shiny)
   library(visNetwork)
   library(igraph)
