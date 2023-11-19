@@ -34,7 +34,16 @@
     <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/log_timeline_item.html</loc>
   </url>
   <url>
+    <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/maximise_helper.html</loc>
+  </url>
+  <url>
+    <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/maximize_helper.html</loc>
+  </url>
+  <url>
     <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/mod_visNet_.html</loc>
+  </url>
+  <url>
+    <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/mod_visNet_Modifictaion.html</loc>
   </url>
   <url>
     <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/modify_graph_i.html</loc>
@@ -61,9 +70,12 @@
     <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/simpleNetworkUtilApp_server.html</loc>
   </url>
   <url>
-    <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/visNetModification.html</loc>
+    <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/visNetId.html</loc>
   </url>
   <url>
     <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/visNetinteraction.html</loc>
+  </url>
+  <url>
+    <loc>https://fzliangfrank.github.io/networkUtils/dev/reference/vizNetId.html</loc>
   </url>
 </urlset>
