@@ -14,7 +14,7 @@ of a graph modified."><meta property="og:image" content="https://fzliangfrank.gi
     
     <a class="navbar-brand me-2" href="../index.html">networkUtils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,7 +105,7 @@ of a graph modified.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;/div&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/" class="external-link">shiny</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://datastorm-open.github.io/visNetwork/" class="external-link">visNetwork</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rinterface.github.io/bs4Dash/index.html" class="external-link">bs4Dash</a></span><span class="op">)</span></span></span>
@@ -166,7 +166,7 @@ of a graph modified.</p>
 <span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/pkg/bs4Dash/man/dashboardControlbar.html" class="external-link">controlbarItem</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>          title <span class="op">=</span> <span class="st">'Find Node'</span>,</span></span>
 <span class="r-in"><span>          icon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/icon.html" class="external-link">icon</a></span><span class="op">(</span><span class="st">'magnifying-glass-arrow-right'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>          <span class="fu"><a href="interaction.html">mod_visNetInteraction_ui</a></span><span class="op">(</span><span class="st">'visNet'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          <span class="fu"><a href="visNetinteraction.html">mod_visNetInteraction_ui</a></span><span class="op">(</span><span class="st">'visNet'</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>        <span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span>,</span></span>
 <span class="r-in"><span>      width <span class="op">=</span> <span class="fl">300</span></span></span>
@@ -181,7 +181,7 @@ of a graph modified.</p>
 <span class="r-in"><span>            title <span class="op">=</span> <span class="st">'Network'</span>,</span></span>
 <span class="r-in"><span>            maximizable <span class="op">=</span> <span class="cn">T</span>,</span></span>
 <span class="r-in"><span>            height <span class="op">=</span> <span class="fl">200</span>,</span></span>
-<span class="r-in"><span>            <span class="fu"><a href="visNetModification.html">mod_visNetModification_ui</a></span><span class="op">(</span><span class="st">'visNet'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>            <span class="fu"><a href="mod_visNet_Modifictaion.html">mod_visNetModification_ui</a></span><span class="op">(</span><span class="st">'visNet'</span><span class="op">)</span></span></span>
 <span class="r-in"><span>          <span class="op">)</span>,</span></span>
 <span class="r-in"><span>        <span class="op">)</span>,</span></span>
 <span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/pkg/bs4Dash/man/sortable.html" class="external-link">sortable</a></span><span class="op">(</span></span></span>
