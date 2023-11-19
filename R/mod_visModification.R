@@ -3,7 +3,6 @@
 #'
 #' @description A shiny Module.
 #' @name visNetModification
-#'
 #' @importFrom shiny NS tagList
 #' @export
 mod_visNetModification_ui <- function(id, useJQ=F, dev=F){
