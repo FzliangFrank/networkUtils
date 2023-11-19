@@ -1,6 +1,6 @@
 #' visNetInteraction
 #' @description A shiny Module.
-#' @name interaction
+#' @name visNetinteraction
 #' @param id Internal parameters for {shiny}.
 #' a set of controller that allows interact with graphic
 #' @importFrom shiny NS tagList
