@@ -36,5 +36,5 @@ reference:
 
 
 development:
-  mode: auto
+  mode: release
 
