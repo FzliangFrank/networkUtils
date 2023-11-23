@@ -33,7 +33,7 @@ maximize_helper=function(id, offset = 180) {
 
   console.log("find btn", maximizeBtn)
   let maximized=false
-  const ogHeight = target.offsetHeight
+  const ogHeight = target.style.height
 
   maximizeBtn.addEventListener('click', function(){
       maximized = !maximized
@@ -43,8 +43,8 @@ maximize_helper=function(id, offset = 180) {
           const h = window.innerHeight - %i
           target.style.height = h + 'px'
       } else {
-          console.log('try to reset target')
-          target.style.height = ogHeight + 'px'
+          console.log('try to reset target to', ogHeight)
+          target.style.height = ogHeight
       }
   })
   )',id, offset))
