@@ -45,8 +45,37 @@ simpleNetworkUtilApp_server <- function(input, output, session) {
   })
   G = mod_visNetModification_server(
     "id", g, dev = F,
-    layout = reactive(input$g_layout)
+    layout = reactive(input$g_layout),
+    visNet_options=list(clickToUse=F),
     )
   mod_visNetInteraction_server("id", reactive(G$Current))
   # something else
+  changeLog <- reactiveVal(value=list())
+  observe({
+    req(G$editing)
+    req(!is.null(G$editing$cmd) || is.na(G$editing))
+    # print('recording change')
+    x =isolate(changeLog()) |>
+      append(list(list(
+        time = Sys.time(),
+        change = G$editing
+      )), after=0)
+    changeLog(x)
+  })
+  output$timeline <- renderUI({
+      bs4Dash::timelineBlock(
+        width=12,elevation=4,reversed=F,
+        style='overflow: auto important!;',
+        purrr::map(
+          changeLog(),
+          log_timeline_item
+        )
+      )
+    # )
+  })
+  output$logjson <- renderPrint({
+    changeLog() |>
+      jsonlite::toJSON(auto_unbox = T, simplifyMatrix = T) |>
+      jsonlite::prettify()
+  })
 }

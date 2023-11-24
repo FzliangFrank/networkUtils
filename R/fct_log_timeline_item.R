@@ -178,6 +178,12 @@ log_timeline_item = function(chglog_1) {
     icon = icon("circle-plus")
     title = "add node"
     color = 'success'
+    content = purrr::imap_chr(
+      purrr::discard_at(x,'cmd'),
+      ~paste0(.y, ': ',.x)
+    ) |>
+      paste(collapse = '<br>') |>
+      HTML()
   } else if (x$cmd == 'addEdge') {
     icon = icon('ruler')
     title = "add edge"
@@ -200,6 +206,7 @@ log_timeline_item = function(chglog_1) {
     time = time,
     title = title,
     color = color,
-    content
+    content,
+    style='overflow: auto;'
   )
 }
