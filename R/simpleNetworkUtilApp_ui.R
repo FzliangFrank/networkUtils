@@ -24,25 +24,51 @@
         bs4Dash::tabItems(
           # TABITEMS ===========================================================
           bs4Dash::tabItem(
-            tabName = "graph",
+            tabName = "graph",#-------------------------------------------------
             fluidRow(
-              column(12, bs4Dash::box(mod_visNetModification_ui("id"),
-                                      width = 12,
-                                      action = "update",
-                                      maximizable = T,
-                                      tags$script(maximize_helper(visNetId('id')))
-              ))
+              bs4Dash::box(width = 12,title=HTML('Graph Network: <i>a editable network that can represent anything</i>'),
+                mod_visNetModification_ui("id"),
+                action = "update",
+                maximizable = T,
+                tags$script(maximize_helper(visNetId('id')))
+              )
+            ),
+            fluidRow(
+              # column(6,
+              bs4Dash::box(width=6,height=300,title='Change log',
+                  div(
+                    style=glue::glue(
+                      'overflow: auto !important;',
+                      'height: 270px !important;',
+                      'padding-bottom: 30px;'
+                      ),
+                    uiOutput('timeline')
+                  )
+                ),
+              # ),
+              # column(6,
+              bs4Dash::box(width=6,height=300,title='Change log in json',
+                  #json box
+                  div(
+                    style=glue::glue(
+                      'overflow: auto !important;',
+                      'height: 280px !important;',
+                      'padding-bottom: 10px;',
+                      'font-family: "Consolas" !important;'
+                      # 'color: #00FFFF !important;',
+                      # 'background-color: #212F3C;'
+                      ),
+                    verbatimTextOutput(
+                      'logjson'
+                    )
+                  )
+                )
+              # )
             )
           ),
           bs4Dash::tabItem(
-            tabName = "about",
+            tabName = "about", # -----------------------------------------------
             fluidRow(
-              # column(
-              #   width = 6,
-              #   # title = "About",
-              # ),
-              # column(
-                # ----------------------------------------
                 width = 6,
                 bs4Dash::jumbotron(
                   title = "NetworkUtils Apps",
@@ -67,11 +93,12 @@
                   `mod_visNetowrk_write` let you edit and download as node edge
                   sheets. It keeps data from original file you uploaded.
                     "),
-                  HTML('<head><script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="fzliangukr" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script></head>')
+                  HTML(glue::glue('<head><script type="text/javascript"',
+                                  'src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button"',
+                                  'data-slug="fzliangukr" data-color="#FFDD00" data-emoji=""',
+                                  'data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000"',
+                                  'data-font-color="#000000" data-coffee-color="#ffffff" ></script></head>'))
                 ),
-
-                # ----------------------------------------
-              # )
             )
           )
           #  ========================================================== TABITEMS
@@ -107,7 +134,6 @@
                 )
           )
         )
-
       )
     )
   )
