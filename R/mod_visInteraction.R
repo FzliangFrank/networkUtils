@@ -13,7 +13,8 @@ mod_visNetInteraction_ui <- function(id){
       shinyWidgets::searchInput(ns('searchBar'),
                                 'Search Any Control Element',
                                 placeholder = 'attr1 < 23; node_is_root()',
-                                btnSearch = icon('search')
+                                btnSearch = icon('search'),
+                                btnReset=icon('xmark')
       ),
       # Here we want segregate node control with edge contorl
       shinyWidgets::radioGroupButtons(
@@ -39,15 +40,15 @@ mod_visNetInteraction_ui <- function(id){
       id = ns('advancedOpts'),
         # Color or Select
       shinyWidgets::prettyToggle(
-        inputId = ns('paint'),
-        label_on = "Fix Color..",
+        inputId = ns('mode-zoom'),
+        label_on = "Zoom in..",
         label_off = "Select only..",
         outline = TRUE,
         plain = TRUE,
         inline = T,
         status_on = 'info',
         status_off = 'info',
-        icon_on = icon("paint-roller"),
+        icon_on = icon("magnifying-glass-plus"),
         icon_off = icon("hand-pointer")
       ),
         # Node Control
@@ -277,16 +278,21 @@ mod_visNetInteraction_server <- function(
       NodeFound$id = nodeFound
     })
     observe({
+      req(input$`mode-zoom`)
       # Inject if Select Or Color Selected node
       # ============ DIP ================
-      # if() {
+      if(!input$`mode-zoom`) {
       visNetwork::visNetworkProxy(ns("visNetworkId")) |>
         visNetwork::visSelectNodes(NodeFound$id)
-      # } else {
+      } else {
+        visNetwork::visNetworkProxy(ns('visNetworkId')) |>
+          visNetwork::visSelectNodes(NodeFound$id) |>
+          visNetwork::visFit(nodes=NodeFound$id)
       # visNetwork::visNetworkProxy(ns("visNetworkId")) |>
       # visNetwork::visNodes(id = nodeFound)
-      # }
+      }
       # =================================
+
     })
   }, session = domain)
 }
