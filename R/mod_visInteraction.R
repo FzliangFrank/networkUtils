@@ -43,6 +43,7 @@ mod_visNetInteraction_ui <- function(id){
         inputId = ns('mode-zoom'),
         label_on = "Zoom in..",
         label_off = "Select only..",
+        value= FALSE,
         outline = TRUE,
         plain = TRUE,
         inline = T,
@@ -277,19 +278,21 @@ mod_visNetInteraction_server <- function(
       # golem::print_dev(sprintf('search bar found: %s', paste(nodeFound, collapse = ',')))
       NodeFound$id = nodeFound
     })
-    observe({
-      req(input$`mode-zoom`)
+    observeEvent(NodeFound$id, {
+      zoom_mod = isolate(input$`mode-zoom`)
+      # print(sprintf('node selection updated. mode: %s', zoom_mod))
+
       # Inject if Select Or Color Selected node
       # ============ DIP ================
-      if(!input$`mode-zoom`) {
-      visNetwork::visNetworkProxy(ns("visNetworkId")) |>
-        visNetwork::visSelectNodes(NodeFound$id)
-      } else {
-        visNetwork::visNetworkProxy(ns('visNetworkId')) |>
+      if(zoom_mod) {
+        # print("zoom mode")
+        visNetwork::visNetworkProxy(ns("visNetworkId")) |>
           visNetwork::visSelectNodes(NodeFound$id) |>
           visNetwork::visFit(nodes=NodeFound$id)
-      # visNetwork::visNetworkProxy(ns("visNetworkId")) |>
-      # visNetwork::visNodes(id = nodeFound)
+      } else {
+        # print("select mode")
+        visNetwork::visNetworkProxy(ns("visNetworkId")) |>
+          visNetwork::visSelectNodes(NodeFound$id)
       }
       # =================================
 

@@ -9,8 +9,15 @@ mod_visNetModification_ui <- function(id, useJQ=F, dev=F){
   ns <- NS(id)
   tagList(
     shinyjs::useShinyjs(),
-    shinyWidgets::prettyCheckbox(ns("edit"), "Edit", animation = "smooth", status = 'primary',inline = T),
-    shinyWidgets::prettyCheckbox(ns('phy'), 'Physics', animation = "smooth", inline = T),
+    shinyWidgets::prettyToggle(ns("edit"),inline = T,bigger=T,outline = TRUE,plain=T,
+                                 label_off="Edit..",status_on='warning',icon_off=icon('pen'),
+                                 label_on='Exit..',status_off='info',icon_on=icon('eye'),
+                                 value=F,
+                                 animation = "smooth",),
+    shinyWidgets::prettyToggle(ns('phy'),inline = T, bigger=T,outline = TRUE,plain=T,
+                               label_off='Play physics',icon_off=icon("play"),status_off='danger',
+                               label_on='Stop physics',icon_on=icon("circle-stop","fa-beat-fade"),status_on='success',
+                               animation = "smooth" ),
     p("You are in editing mode, exit without save will revert to original", id = ns("note")),
     # /DEV/ ======
     # Vacumn this component that this goes into visNetworkOutput
