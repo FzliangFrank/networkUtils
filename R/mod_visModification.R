@@ -62,9 +62,10 @@ mod_visNetModification_ui <- function(id, useJQ=F, dev=F){
 #' @return reactiveValues $Curent and $Main and more
 #' @details
 #' $Current is a reactive igraph Object that every is being modified now
-#' $Main is the igraph Object that has been committed and saved
+#' $Main is the igraph Object that has been committed and saved;
 #' In addition it return a set of `reactiveValues` which monitor graph changes
-#' and track node that is currently clicked.
+#' and track node that is currently clicked. `click_node` and `click_edge`
+#'
 #'
 #' Two utility function are added `maximize_helper` return a javascript allow you
 #' to resize monitored object to full size. You can use this script on any shiny
@@ -80,7 +81,7 @@ mod_visNetModification_server <- function(
     dev = F,
     hard_delete = T,
     NodeAttrTooltip = T,
-    EdgeAttrTooltip = T,
+    EdgeAttrTooltip = F,
     domain = getDefaultReactiveDomain(),
     visNet_options = NULL,
     layout = 'layout_nicely'
@@ -156,8 +157,8 @@ mod_visNetModification_server <- function(
       # id will be used by igraph to pick up edges. It has to be a numeric vector
       # other input will cause function `edge()` to crash
       # Needs to clean up on session end?
-        if("id" %in% vertex_attr_names(g)) V(g)$.id <- V(g)$id
-        if("id" %in% edge_attr_names(g)) E(g)$.id <- E(g)$id
+        if("id" %in% vertex_attr_names(g)) V(g)$id_imported <- V(g)$id
+        if("id" %in% edge_attr_names(g)) E(g)$id_imported <- E(g)$id
         if(!"name" %in% vertex_attr_names(g)) V(g)$name <- seq(length(V(g))) |> as.character()
         E(g)$id <- seq(length(E(g))) |> as.character()
       Graph$Current <- g
@@ -224,6 +225,7 @@ mod_visNetModification_server <- function(
       if(NodeAttrTooltip) V(g)$title <- pasteNodeDetails(g)
       if(EdgeAttrTooltip) E(g)$title <- pasteEdgeDetails(g)
       if(dev) message(sprintf("rendering graph using layout %s", layout_input()))
+      print(E(g)$title[1])
       # /Dev/ This part to be replaced by a customer renderer?
       g |>
         visNetwork::visIgraph(
@@ -254,13 +256,6 @@ mod_visNetModification_server <- function(
                     this.body.data.nodes.get(properties.nodes[0]).id)
                     ;}", ns("click_node") # Your shiny module have namespace
           )),
-          #    select = "function(properties) {
-          # alert('selected nodes: ' + properties.nodes);}",
-          # selectEdge = htmlwidgets::JS(sprintf("function(properties){
-          #           Shiny.setInputValue('%s',
-          #           this.body.data.edges.get(properties.edges[0]).id)
-          #           }", ns("click_edge")
-          # )),
           selectEdge = htmlwidgets::JS(sprintf("function(properties){
                     Shiny.setInputValue('%s',
                     properties.edges)
@@ -296,7 +291,6 @@ mod_visNetModification_server <- function(
     # DEV AREA -----------------------------------------------------------------
     if(dev) {
       output$dev <- shiny::renderPrint({
-        if(dev) {
           # print(input$click)
           print(paste("click node:", input$click_node, class(input$click_node)))
           print(paste("click edge (id):", input$click_edge, class(input$click_edge)))
@@ -310,7 +304,6 @@ mod_visNetModification_server <- function(
             }
           }
           print(Graph$Current)
-        }
       })
     }
     # RETURN -------------------------------------------------------------------

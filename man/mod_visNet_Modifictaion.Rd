@@ -14,7 +14,7 @@ mod_visNetModification_server(
   dev = F,
   hard_delete = T,
   NodeAttrTooltip = T,
-  EdgeAttrTooltip = T,
+  EdgeAttrTooltip = F,
   domain = getDefaultReactiveDomain(),
   visNet_options = NULL,
   layout = "layout_nicely"
@@ -49,9 +49,10 @@ A shiny Module.
 }
 \details{
 $Current is a reactive igraph Object that every is being modified now
-$Main is the igraph Object that has been committed and saved
+$Main is the igraph Object that has been committed and saved;
 In addition it return a set of `reactiveValues` which monitor graph changes
-and track node that is currently clicked.
+and track node that is currently clicked. `click_node` and `click_edge`
+
 
 Two utility function are added `maximize_helper` return a javascript allow you
 to resize monitored object to full size. You can use this script on any shiny

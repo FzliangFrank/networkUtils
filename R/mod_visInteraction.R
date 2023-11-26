@@ -85,6 +85,8 @@ mod_visNetInteraction_ui <- function(id){
 #' This is useful against attributes created by tidygraph (`.tidygraph_e_index`)
 #' or when you have to create color attributes for visNetwork (`color.border`)
 #' @param domain session for when nesting module
+#' @param searchENGINE a function for searching node edge index. Must have argument
+#' `g` a graph object, `search_in` for edge or node, `search_term`
 #' @description
 #' This module let you interact with graph
 #' Require visnetwork rendered in shiny to have base id `visNetworkId`
@@ -98,7 +100,8 @@ mod_visNetInteraction_server <- function(
     e_ignore = c(),
     v_ignore = c(),
     show_hidden = F,
-    domain = getDefaultReactiveDomain()
+    domain = getDefaultReactiveDomain(),
+    searchENGINE = networkUtils::search_idx
     ) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
@@ -271,7 +274,7 @@ mod_visNetInteraction_server <- function(
       req(search_input %in% c("nodes", "edges"))
       req(!is.null(input$searchBar))
       req(input$searchBar != "")
-      nodeFound = search_idx(g,
+      nodeFound = searchENGINE(g,
                              input$searchBar,
                              search_in = search_input,
                              as_ids = T)
