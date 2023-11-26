@@ -10,7 +10,8 @@ mod_visNetInteraction_server(
   e_ignore = c(),
   v_ignore = c(),
   show_hidden = F,
-  domain = getDefaultReactiveDomain()
+  domain = getDefaultReactiveDomain(),
+  searchENGINE = networkUtils::search_idx
 )
 }
 \arguments{
@@ -27,6 +28,9 @@ This is useful against attributes created by tidygraph (`.tidygraph_e_index`)
 or when you have to create color attributes for visNetwork (`color.border`)}
 
 \item{domain}{session for when nesting module}
+
+\item{searchENGINE}{a function for searching node edge index. Must have argument
+`g` a graph object, `search_in` for edge or node, `search_term`}
 }
 \description{
 This module let you interact with graph

@@ -4,12 +4,12 @@
 \alias{search_idx}
 \title{Search index}
 \usage{
-search_idx(g, expr_txt, as_ids = F, search_in = "nodes")
+search_idx(g, search_term, as_ids = F, search_in = "nodes")
 }
 \arguments{
 \item{g}{igraph object}
 
-\item{expr_txt}{string of expression or names of node to search}
+\item{search_term}{string of expression or names of node to search}
 
 \item{as_ids}{when T return only index}
 

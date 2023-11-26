@@ -4,7 +4,7 @@
 #'
 #' @return a vector
 #' @param g igraph object
-#' @param expr_txt string of expression or names of node to search
+#' @param search_term string of expression or names of node to search
 #' @param as_ids when T return only index
 #' @param search_in dip argument that when set to edge can search in edges
 #' @export
@@ -20,7 +20,7 @@
 #' search_idx(g, 'node_is_root()')
 #'
 search_idx = function(g,
-                      expr_txt,
+                      search_term,
                       as_ids = F,
                       search_in = 'nodes'
                         ) {
@@ -28,16 +28,16 @@ search_idx = function(g,
   actived = as.symbol(search_in)
   G = tidygraph::as_tbl_graph(g) |>
     tidygraph::activate({{actived}})
-  # {G |> tidygraph::filter(eval(parse(text = expr_txt)))}
+  # {G |> tidygraph::filter(eval(parse(text = search_term)))}
   G_res = try({
     rlang::inject(tidygraph::convert(G, tidygraph::to_subgraph,
                                      subset_by = search_in,
-                                     name == !!expr_txt))
+                                     name == !!search_term))
   }, silent = T)
   if(inherits(G_res, "try-error") || length(G_res) == 0) {
     G_res = try({G |> tidygraph::convert(tidygraph::to_subgraph,
                                         subset_by = search_in,
-                                        eval(parse(text = expr_txt)))})
+                                        eval(parse(text = search_term)))})
   }
   if(inherits(G_res, "try-error")) {G_res = make_empty_graph(); message("No Search")}
   if(search_in == 'nodes') idx = V(G_res)
