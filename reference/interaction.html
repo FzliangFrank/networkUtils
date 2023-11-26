@@ -60,7 +60,8 @@ Require visnetwork rendered in shiny to have base id `visNetworkId`</p>
 <span>  e_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  v_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  show_hidden <span class="op">=</span> <span class="cn">F</span>,</span>
-<span>  domain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/domains.html" class="external-link">getDefaultReactiveDomain</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  domain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/domains.html" class="external-link">getDefaultReactiveDomain</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  searchENGINE <span class="op">=</span> <span class="fu">networkUtils</span><span class="fu">::</span><span class="va"><a href="search_idx.html">search_idx</a></span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -88,6 +89,11 @@ or when you have to create color attributes for visNetwork (`color.border`)</p><
 
 <dt>domain</dt>
 <dd><p>session for when nesting module</p></dd>
+
+
+<dt>searchENGINE</dt>
+<dd><p>a function for searching node edge index. Must have argument
+`g` a graph object, `search_in` for edge or node, `search_term`</p></dd>
 
 </dl></div>
 

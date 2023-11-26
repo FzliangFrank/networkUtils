@@ -59,7 +59,7 @@
 <span>  dev <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  hard_delete <span class="op">=</span> <span class="cn">T</span>,</span>
 <span>  NodeAttrTooltip <span class="op">=</span> <span class="cn">T</span>,</span>
-<span>  EdgeAttrTooltip <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>  EdgeAttrTooltip <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  domain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/domains.html" class="external-link">getDefaultReactiveDomain</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  visNet_options <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layout <span class="op">=</span> <span class="st">"layout_nicely"</span></span>
@@ -115,9 +115,10 @@ attributes will be automatically parsed into tooltips, following formula
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>$Current is a reactive igraph Object that every is being modified now
-$Main is the igraph Object that has been committed and saved
+$Main is the igraph Object that has been committed and saved;
 In addition it return a set of `reactiveValues` which monitor graph changes
-and track node that is currently clicked.</p>
+and track node that is currently clicked. `click_node` and `click_edge`</p>
+
 <p>Two utility function are added `maximize_helper` return a javascript allow you
 to resize monitored object to full size. You can use this script on any shiny
 widget (where you know id), when you use `bs4Dash::box`</p>
