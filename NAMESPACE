@@ -3,6 +3,8 @@
 export(log_timeline_item)
 export(maximise_helper)
 export(maximize_helper)
+export(mod_dynamic_attr_selector_server)
+export(mod_dynamic_attr_selector_ui)
 export(mod_fileUploader_server)
 export(mod_fileUploader_ui)
 export(mod_visNetInteraction_server)

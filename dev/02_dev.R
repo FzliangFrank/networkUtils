@@ -61,6 +61,7 @@ golem::add_module(name = 'visNet', with_test = T) # modification and interaction
 golem::add_fct("spiderOptions", with_test = TRUE)
 golem::add_fct("sumAttributes.http")
 golem::add_fct("modify_graph", with_test = TRUE) # api for modifying graph based on
+golem::add_module("dynamic_attr_selector", with_test=T)
 # selected list
 # this is useful when develop against an API instead of develop against
 # static excel sheet or R obejct
@@ -72,6 +73,7 @@ golem::add_utils("blurry_range")
 golem::add_utils("add_vertex_sf") # for comparability of sf
 golem::add_utils("search_idx")
 golem::add_fct('log_timeline_item')
+
 ## External resources
 ## Creates .js and .css files at inst/app/www
 golem::add_js_file("script")
