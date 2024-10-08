@@ -27,10 +27,10 @@ mod_visNetModification_ui <- function(id, useJQ=F, dev=F){
     #),
     {if(useJQ) {
       shinyjqui::jqui_resizable(options = list(handles = "s,e"),
-        visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%")
+        visNetwork::visNetworkOutput(ns("visNetworkId"))
       )
     } else {
-      visNetwork::visNetworkOutput(ns("visNetworkId"), width = "100%")
+      visNetwork::visNetworkOutput(ns("visNetworkId"))
     }},
     # \DEV\=========
     div(id=ns('editor'),

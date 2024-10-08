@@ -14,7 +14,9 @@ mod_dynamic_attr_selector_ui <- function(id, name="an"){
   ns <- NS(id)
   tagList(
     selectInput(ns("AttrName"), sprintf("Specify %s Attribute:",name), NULL),
-    uiOutput(ns("AttrUi"))
+    uiOutput(ns("AttrUi")),
+    div(actionButton(ns("reset"), "Clear",#style="background-color: #BB6464; color: #FFFFFF"
+                     ), align="left")
   )
 }
 
@@ -31,54 +33,73 @@ mod_dynamic_attr_selector_server <- function(
     dataNames = reactiveVal()
     idx = reactiveVal()
     bool_FUN=reactiveVal(value=any) # for putting
+    name_placeholder ="<Select Something>"
 
     observe({
       # This is the Module
+      shinyjs::hide(ns("reset"))
       data_names=dataInput() |> names()
-      updateSelectInput(inputId="AttrName",choices=data_names)
+      updateSelectInput(inputId="AttrName",choices= c(name_placeholder, data_names))
       dataNames(data_names)
-
+    })
+    observeEvent(input$reset,{
+      message("Try reset")
+      updateSelectInput(inputId="AttrName",selected=name_placeholder)
+      idx(NULL)
     })
 
     Attr=reactive({
       req(input$AttrName)
-      f= which(dataNames() == input$AttrName)
-      dataInput()[[f]]
+      if(input$AttrName != name_placeholder) {
+        shinyjs::show(ns("reset"))
+        f= which(dataNames() == input$AttrName)
+        dataInput()[[f]]
+      } else if(input$AttrName == name_placeholder) {
+        shinyjs::hide(ns("reset"))
+      } else {
+        NULL
+      }
     })
     output$AttrUi <- renderUI({
       golem::print_dev('Creating node UI..')
       AttrLabel=""
-      if(typeof(Attr())=="double") {
-        sliderInput(ns("Attr"), AttrLabel,
-                    min=blurry_range(Attr())[1], max=blurry_range(Attr())[2],
-                    value=c(quantile(Attr(), 0.33, na.rm = TRUE), quantile(Attr(), 0.66, na.rm = TRUE))
-        )
-      } else if(inherits(Attr(), "sfc")) {
-        plotOutput(ns("AttrPlot"), brush=ns("Attr"),
-                   inline=F,
-                   height='200px')
-      } else if(typeof(Attr()) == "list") {
-        flattend_list = purrr::flatten(Attr()) |> as.character()
-        tagList(
-          selectizeInput(ns("Attr"),
-                       AttrLabel,
-                       choices=flattend_list,
-                       selected=flattend_list[1],
-                       multiple=T
-                       ),
-          shinyWidgets::prettyToggle(
-            ns("bool"),
-            label_on="All",
-            label_off="Any",
-            value=F
-          )
-        )
+      if(Attr() |> is.null()) {
+        p("no attribute selected")
       } else {
-        selectizeInput(ns('Attr'),
-                       AttrLabel,
-                       choices=Attr(),
-                       selected=Attr()[1]
-        )
+        if(typeof(Attr())=="double") {
+          sliderInput(ns("Attr"), AttrLabel,
+                      min=blurry_range(Attr())[1], max=blurry_range(Attr())[2],
+                      value=c(quantile(Attr(), 0.33, na.rm = TRUE), quantile(Attr(), 0.66, na.rm = TRUE))
+          )
+        } else if(inherits(Attr(), "sfc")) {
+          plotOutput(ns("AttrPlot"), brush=ns("Attr"),
+                     inline=F,
+                     height='200px')
+        } else if(typeof(Attr()) == "list") {
+          flattend_list = purrr::flatten(Attr()) |> as.character()
+          tagList(
+            selectizeInput(ns("Attr"),
+                         AttrLabel,
+                         choices=flattend_list,
+                         selected=flattend_list[1],
+                         multiple=T
+                         ),
+            shinyWidgets::prettyToggle(
+              ns("bool"),
+              label_on="All",
+              label_off="Any",
+              status_off="success",
+              status_on="danger",
+              value=F
+            )
+          )
+        } else {
+          selectizeInput(ns('Attr'),
+                         AttrLabel,
+                         choices=Attr(),
+                         selected=Attr()[1]
+          )
+        }
       }
     })
     observe(label="spatial data ploter", {# this step has to be after ui is rendered
@@ -101,8 +122,9 @@ mod_dynamic_attr_selector_server <- function(
         }
       }
     })
-    observe(label = "generic data handler", {
+    observe(label = "Matching Index", {
       req(input$Attr)
+      req(Attr())
       # DEBUG
       # golem::print_dev(sprintf("Enter node selector: %s", typeof(Attr() )))
       # cur_attr_name = isolate(input$AttrName)

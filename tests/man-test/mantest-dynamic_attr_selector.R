@@ -6,17 +6,22 @@ library(reactable)
 # starwars
 #
 ui <- fluidPage(
-  mod_dynamic_attr_selector_ui('id'),
-  reactableOutput("rct")
+  column(4, mod_dynamic_attr_selector_ui('id')),
+  column(8, reactableOutput("rct"))
 )
 
 server <- function(input, output, session) {
   exampleData = reactive({
+    starwars[["height"]]<-as.double(starwars[["height"]])
     starwars
   })
   idx=mod_dynamic_attr_selector_server("id", exampleData)
   slicedData = reactive({
-    exampleData()[idx(),]
+    if(!is.null(idx())) {
+      exampleData()[idx(),]
+    } else {
+      exampleData()
+    }
   })
   output$rct<-renderReactable({
     slicedData() |>
